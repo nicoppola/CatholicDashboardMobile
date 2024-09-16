@@ -2,15 +2,18 @@ package ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,13 +54,14 @@ fun App() {
             val uiState by viewModel.uiState.collectAsState()
             Scaffold(
                 topBar = {
-                    TopAppBar(
+                    CenterAlignedTopAppBar(
                         title = { Text("Catholic Dashboard") },
                         colors = TopAppBarDefaults.topAppBarColors()
-                            .copy(containerColor = uiState.color.color)
+                            .copy(containerColor = uiState.color.color, titleContentColor = primaryWhite)
                     )
                 },
-                content = {
+                containerColor = LiturgicalColor.GREEN.color,
+                content = { innerPadding ->
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if (uiState.isLoading) {
                             CircularProgressIndicator(
@@ -66,9 +70,11 @@ fun App() {
                                 color = Color.Magenta
                             )
                         } else {
-                            MainContent(
-                                uiState = uiState,
-                                onRefresh = { viewModel.updateFromMyApi() })
+                            Box(modifier = Modifier.padding(innerPadding)) {
+                                MainContent(
+                                    uiState = uiState,
+                                    onRefresh = { viewModel.updateFromMyApi() })
+                            }
                         }
                     }
                 }
@@ -81,7 +87,11 @@ fun App() {
 fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
     LazyColumn(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(
+                LiturgicalColor.GREEN.color
+            ),
         horizontalAlignment = Alignment.Start
     ) {
         item {
