@@ -19,7 +19,7 @@ data class FeastUiState(
     )
 
 data class ListObject(
-    val icon: DrawableResource,
+    val icon: DrawableResource? = null,
     val headline: String = "",
     val subText: String? = null,
     val link: String = "",

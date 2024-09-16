@@ -4,11 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,25 +19,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import catholicdashboard.composeapp.generated.resources.Res
-import catholicdashboard.composeapp.generated.resources.baseline_keyboard_arrow_right_24
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import ui.theme.CatholicDashboardTheme
+import ui.theme.LiturgicalColor
+import ui.theme.primaryWhite
+import ui.theme.secondaryWhite
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +53,8 @@ fun App() {
                 topBar = {
                     TopAppBar(
                         title = { Text("Catholic Dashboard") },
-                        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = uiState.color.color)
+                        colors = TopAppBarDefaults.topAppBarColors()
+                            .copy(containerColor = uiState.color.color)
                     )
                 },
                 content = {
@@ -62,11 +66,9 @@ fun App() {
                                 color = Color.Magenta
                             )
                         } else {
-                            Button(
-                                onClick = { viewModel.update() },
-                                content = { Text("Refresh") }
-                            )
-                            MainContent(uiState)
+                            MainContent(
+                                uiState = uiState,
+                                onRefresh = { viewModel.updateFromMyApi() })
                         }
                     }
                 }
@@ -76,7 +78,7 @@ fun App() {
 }
 
 @Composable
-fun MainContent(uiState: MainUiState) {
+fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth(),
@@ -86,131 +88,94 @@ fun MainContent(uiState: MainUiState) {
             Column(
                 Modifier
                     .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                uiState.color.color,
-                                uiState.color.color,
-                                uiState.color.color,
-                                Color.White
-                            )
-                        )
+                        LiturgicalColor.GREEN.color
                     )
-                    .padding(start = 24.dp, end = 24.dp, top = 24.dp)
+                    .padding(16.dp)
             ) {
                 // Date
                 Text(
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.headlineSmall,
-                    text = uiState.date
+                    style = MaterialTheme.typography.titleLarge,
+                    color = primaryWhite,
+                    text = uiState.date,
                 )
                 // Season
                 Text(
                     modifier = Modifier.padding(bottom = 12.dp),
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = secondaryWhite,
                     text = uiState.season
                 )
+                // Feasts
 
-                uiState.feasts.forEach {
-                    // Feasts
-                    Row(Modifier.padding(bottom = 24.dp)) {
+                Row(Modifier.padding(bottom = 24.dp)) {
+                    uiState.feasts.forEach {
                         Text(
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Start,
+                            color = secondaryWhite,
                             text = it.feast
                         )
                     }
-                }
 
-                uiState.upcoming.groupBy { it.title }
-                    .forEach {
-                        UpcomingRowTitle(it.key)
-                        it.value.forEach { j ->
-                            UpcomingRow(j.feast)
-                        }
-                    }
+                }
+                LinkCard(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    text = "Daily Readings",
+                    subText = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14"
+                )
+                LinkCard(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    text = "Divine Office",
+                    subText = "Evening Prayer 4:00p - 6:00p"
+                )
             }
         }
-        item {
-            Column(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                uiState.listObjects.forEach {
-                    ListItemApp(
-                        text = it.headline,
-                        subText = it.subText,
-                        leadingIcon = painterResource(it.icon),
-                        link = it.link
-                    )
-                }
-            }
-        }
-
     }
 }
 
 @Composable
-fun UpcomingRowTitle(
+fun LinkCard(
+    modifier: Modifier = Modifier,
     text: String,
-) {
-    Row(Modifier.padding(bottom = 8.dp)) {
-        Text(
-            style = MaterialTheme.typography.titleSmall,
-            textAlign = TextAlign.Start,
-            text = text
-        )
-    }
-}
-
-@Composable
-fun UpcomingRow(
-    text: String,
-    link: String? = null,
-) {
-    Row(Modifier.padding(bottom = 16.dp)) {
-        Text(
-            modifier = Modifier.weight(9F),
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Start,
-            text = text
-        )
-        Icon(
-            painterResource(Res.drawable.baseline_keyboard_arrow_right_24),
-            modifier = Modifier.weight(1F),
-            contentDescription = null,
-        )
-
-    }
-}
-
-@Composable
-fun ListItemApp(
-    text: String,
-    subText: String?,
-    leadingIcon: Painter,
+    subText: String,
     link: String = "",
 ) {
     val uriHandler = LocalUriHandler.current
-    ListItem(
-        modifier = Modifier
-            .background(Color.Transparent)
-            .clickable{
-                uriHandler.openUri(link)
-            },
-        headlineContent = { Text(text = text) },
-        supportingContent = subText?.let { { Text(text = subText) } },
-        leadingContent = {
-            Icon(
-                leadingIcon,
-                contentDescription = null,
-            )
-        },
-        trailingContent = {
-            Icon(
-                painterResource(Res.drawable.baseline_keyboard_arrow_right_24),
-                contentDescription = null,
-            )
-        },
-    )
+
+    Column {
+        Text(
+            modifier = Modifier.padding(vertical = 8.dp)
+                .clickable {
+                    uriHandler.openUri(link)
+                },
+            color = primaryWhite,
+            style = MaterialTheme.typography.titleSmall,
+            text = text
+        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(modifier)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = subText
+                )
+                Spacer(modifier = Modifier.weight(1F))
+//                Icon(
+//                    painter = painterResource(
+//                        id = R.drawable.baseline_keyboard_arrow_right_24
+//                    ), contentDescription = null
+//                )
+
+            }
+        }
+    }
 }
 
 @Preview

@@ -2,9 +2,6 @@ package ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import catholicdashboard.composeapp.generated.resources.Res
-import catholicdashboard.composeapp.generated.resources.breviary
-import catholicdashboard.composeapp.generated.resources.readings
 import data.MainRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,10 +41,42 @@ class MainViewModel(
     }
 
     init {
-        update()
+        updateFromMyApi()
+        //update()
     }
 
-    fun update(){
+    fun updateFromMyApi() {
+        viewModelScope.launch {
+            _uiState.update {
+                uiState.value.copy(isLoading = true)
+            }
+            repo.myRetrieveData()
+                .onSuccess { data ->
+                    _uiState.update { _ ->
+                        uiState.value.copy(
+                            date = data.date,
+                            season = data.season,
+//                            feasts = getFeasts(data),
+                            color = LiturgicalColor.GREEN,
+                        )
+                    }
+                }
+                .onError { data ->
+                    _uiState.update { _ ->
+                        uiState.value.copy(
+                            date = "ERROR!!! AHHHHHHHH",
+                            season = data.name,
+                        )
+                    }
+
+                }
+            _uiState.update {
+                uiState.value.copy(isLoading = false)
+            }
+        }
+    }
+
+    private fun update() {
         viewModelScope.launch {
             _uiState.update {
                 uiState.value.copy(isLoading = true)
@@ -68,7 +97,7 @@ class MainViewModel(
         }
     }
 
-    private fun getUpcoming(): List<FeastUiState>{
+    private fun getUpcoming(): List<FeastUiState> {
         return listOf(
             FeastUiState(
                 title = "Upcoming Holy Day of Obligation",
@@ -85,21 +114,21 @@ class MainViewModel(
         )
     }
 
-    private fun getReadingsItem(): ListObject{
+    private fun getReadingsItem(): ListObject {
         return ListObject(
-            icon = Res.drawable.readings,
+            //icon = Resource .drawable.readings,
             headline = "Daily Readings",
             subText = "Matt 18:1-5, 10, 12-14  \n\"Unless you turn and become like children, you will not enter the Kingdom of heaven\"",
-            link = getReadingsLink()
+            link = getReadingsLink(),
         )
     }
 
-    private fun getOficeItem(): ListObject{
+    private fun getOficeItem(): ListObject {
         return ListObject(
-            icon = Res.drawable.breviary,
+            //icon = Res.drawable.breviary,
             headline = "Divine Office",
             subText = "Evening Prayer 4:00p - 6:00p",
-            link = getOfficeLink()
+            link = getOfficeLink(),
         )
     }
 
@@ -189,10 +218,15 @@ class MainViewModel(
         val feastsUiStates = mutableListOf<FeastUiState>()
         byRank?.forEach {
             it.value.forEach { celebration ->
-                feastsUiStates.add(FeastUiState(title = it.key ?: "", feast = celebration.title ?: ""))
+                feastsUiStates.add(
+                    FeastUiState(
+                        title = it.key ?: "",
+                        feast = celebration.title ?: ""
+                    )
+                )
             }
         }
-    return feastsUiStates
-}
+        return feastsUiStates
+    }
 
 }
