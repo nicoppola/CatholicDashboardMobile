@@ -36,6 +36,12 @@ class MainViewModel(
         }
     }
 
+    fun clearUiStatus(){
+        _uiStatus.update {
+            null
+        }
+    }
+
     fun updateFromMyApi() {
         viewModelScope.launch {
             _uiState.update {

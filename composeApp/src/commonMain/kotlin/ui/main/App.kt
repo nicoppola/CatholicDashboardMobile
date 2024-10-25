@@ -48,61 +48,60 @@ import ui.theme.tertiaryWhite
 @Composable
 fun App(navToSettings: () -> Unit) {
     //val dbClient = koinInject<DbClient>()
-    CatholicDashboardTheme {
-        KoinContext {
-            val viewModel = koinViewModel<MainViewModel>()
-            val uiState by viewModel.uiState.collectAsState()
-            val uiStatus by viewModel.uiStatus.collectAsState()
+    val viewModel = koinViewModel<MainViewModel>()
+    val uiState by viewModel.uiState.collectAsState()
+    val uiStatus by viewModel.uiStatus.collectAsState()
 
-            when(uiStatus){
-                MainUiStatus.NavToSettings -> navToSettings()
-                else -> {}
-            }
+    when (uiStatus) {
+        MainUiStatus.NavToSettings -> {
+            navToSettings()
+            viewModel.clearUiStatus()
+        }
+        else -> {}
+    }
 
-            Scaffold(
-                topBar = {
-                    CenterAlignedTopAppBar(
-                        title = { Text("Catholic Dashboard") },
-                        colors = TopAppBarDefaults.topAppBarColors()
-                            .copy(
-                                containerColor = uiState.color.color,
-                                titleContentColor = primaryWhite
-                            ),
-                        actions = {
-                            IconButton(onClick = viewModel::onSettingsClicked){
-                                Box(
-                                    modifier = Modifier
-                                        .background(Color.LightGray)
-                                        .size(24.dp)
-                                )
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Catholic Dashboard") },
+                colors = TopAppBarDefaults.topAppBarColors()
+                    .copy(
+                        containerColor = uiState.color.color,
+                        titleContentColor = primaryWhite
+                    ),
+                actions = {
+                    IconButton(onClick = viewModel::onSettingsClicked) {
+                        Box(
+                            modifier = Modifier
+                                .background(Color.LightGray)
+                                .size(24.dp)
+                        )
 //                                Icon(
 //                                    painter = painterResource()
 //                                )
-                            }
-                        }
-                    )
-                },
-                containerColor = LiturgicalColor.GREEN.color,
-                content = { innerPadding ->
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (uiState.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(15.dp),
-                                strokeWidth = 1.dp,
-                                color = Color.Magenta
-                            )
-                        } else {
-                            Box(modifier = Modifier.padding(innerPadding)) {
-                                MainContent(
-                                    uiState = uiState,
-                                    onRefresh = { viewModel.updateFromMyApi() })
-                            }
-                        }
                     }
                 }
             )
+        },
+        containerColor = LiturgicalColor.GREEN.color,
+        content = { innerPadding ->
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(15.dp),
+                        strokeWidth = 1.dp,
+                        color = Color.Magenta
+                    )
+                } else {
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        MainContent(
+                            uiState = uiState,
+                            onRefresh = { viewModel.updateFromMyApi() })
+                    }
+                }
+            }
         }
-    }
+    )
 }
 
 @Composable

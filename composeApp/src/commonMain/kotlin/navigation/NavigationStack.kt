@@ -13,10 +13,16 @@ fun NavigationStack() {
 
     NavHost(navController = navController, startDestination = Screen.Main.route) {
         composable(route = Screen.Main.route) {
-            App(navToSettings = {navController.navigate(route = Screen.Settings.route)})
+            App(navToSettings = {
+                println("nav to settings " + navController.currentBackStack.value.size)
+                navController.navigate(route = Screen.Settings.route) })
         }
         composable(route = Screen.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(onBack = {
+                println("nav back " + navController.currentBackStack.value.size)
+                val ret = navController.popBackStack()
+                println(ret)
+            })
         }
     }
 }
