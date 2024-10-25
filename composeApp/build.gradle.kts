@@ -9,12 +9,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-//compose.resources {
-//    publicResClass = true
-//    packageOfResClass = "com.catholicdashboard.resources"
-//    generateResClass = always
-//}
-
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -35,10 +29,10 @@ kotlin {
     }
     
     sourceSets {
-        
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.ui.tooling.preview)
             implementation(compose.preview)
 
             implementation(libs.ktor.client.okhttp)
@@ -56,6 +50,7 @@ kotlin {
             implementation(libs.bundles.ktor)
             implementation(libs.kotlinx.datetime)
             implementation(compose.components.resources)
+            implementation(compose.materialIconsExtended)
 
             api(libs.koin.core)
             implementation(libs.koin.compose)
@@ -108,5 +103,6 @@ android {
 dependencies {
     implementation(libs.androidx.core.i18n)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.ui.tooling.preview.android)
 }
 

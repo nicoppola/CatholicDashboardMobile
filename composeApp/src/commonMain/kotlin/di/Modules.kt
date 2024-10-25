@@ -2,7 +2,8 @@ package di
 
 import data.DefaultMainRepository
 import data.MainRepository
-import ui.MainViewModel
+import ui.main.MainViewModel
+import ui.settings.SettingsViewModel
 import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -15,4 +16,5 @@ expect val platformModule: Module
 val sharedModule = module {
     singleOf(::DefaultMainRepository).bind<MainRepository>()
     viewModelOf(::MainViewModel)
+    viewModelOf(::SettingsViewModel)
 }

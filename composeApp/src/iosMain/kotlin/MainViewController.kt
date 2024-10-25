@@ -1,6 +1,6 @@
 import androidx.compose.ui.window.ComposeUIViewController
 import di.initKoin
-import ui.App
+import ui.main.App
 
 fun MainViewController() = ComposeUIViewController(
     configure = {

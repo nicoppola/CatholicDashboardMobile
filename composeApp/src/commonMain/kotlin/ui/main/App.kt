@@ -1,4 +1,4 @@
-package ui
+package ui.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,28 +11,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
@@ -42,22 +42,44 @@ import ui.theme.CatholicDashboardTheme
 import ui.theme.LiturgicalColor
 import ui.theme.primaryWhite
 import ui.theme.secondaryWhite
+import ui.theme.tertiaryWhite
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
+fun App(navToSettings: () -> Unit) {
     //val dbClient = koinInject<DbClient>()
-
     CatholicDashboardTheme {
         KoinContext {
             val viewModel = koinViewModel<MainViewModel>()
             val uiState by viewModel.uiState.collectAsState()
+            val uiStatus by viewModel.uiStatus.collectAsState()
+
+            when(uiStatus){
+                MainUiStatus.NavToSettings -> navToSettings()
+                else -> {}
+            }
+
             Scaffold(
                 topBar = {
                     CenterAlignedTopAppBar(
                         title = { Text("Catholic Dashboard") },
                         colors = TopAppBarDefaults.topAppBarColors()
-                            .copy(containerColor = uiState.color.color, titleContentColor = primaryWhite)
+                            .copy(
+                                containerColor = uiState.color.color,
+                                titleContentColor = primaryWhite
+                            ),
+                        actions = {
+                            IconButton(onClick = viewModel::onSettingsClicked){
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color.LightGray)
+                                        .size(24.dp)
+                                )
+//                                Icon(
+//                                    painter = painterResource()
+//                                )
+                            }
+                        }
                     )
                 },
                 containerColor = LiturgicalColor.GREEN.color,
@@ -90,7 +112,7 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
             .fillMaxWidth()
             .fillMaxHeight()
             .background(
-                LiturgicalColor.GREEN.color
+                uiState.color.color
             ),
         horizontalAlignment = Alignment.Start
     ) {
@@ -98,14 +120,14 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
             Column(
                 Modifier
                     .background(
-                        LiturgicalColor.GREEN.color
+                        uiState.color.color
                     )
                     .padding(16.dp)
             ) {
                 // Date
                 Text(
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
                     color = primaryWhite,
                     text = uiState.date,
                 )
@@ -113,23 +135,27 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
                 Text(
                     modifier = Modifier.padding(bottom = 12.dp),
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 20.sp,
+                    ),
                     color = secondaryWhite,
-                    text = uiState.season
+                    text = uiState.title
                 )
+
                 // Feasts
-
-                Row(Modifier.padding(bottom = 24.dp)) {
-                    uiState.feasts.forEach {
-                        Text(
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Start,
-                            color = secondaryWhite,
-                            text = it.feast
-                        )
-                    }
-
+                uiState.feasts.forEach {
+                    Text(
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+                        textAlign = TextAlign.Start,
+                        color = tertiaryWhite,
+                        text = it.title
+                    )
                 }
+
+                Spacer(Modifier.padding(bottom = 16.dp))
+
                 LinkCard(
                     modifier = Modifier.padding(bottom = 8.dp),
                     text = "Daily Readings",
@@ -145,6 +171,7 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
     }
 }
 
+//TODO on click animation
 @Composable
 fun LinkCard(
     modifier: Modifier = Modifier,
@@ -156,10 +183,7 @@ fun LinkCard(
 
     Column {
         Text(
-            modifier = Modifier.padding(vertical = 8.dp)
-                .clickable {
-                    uriHandler.openUri(link)
-                },
+            modifier = Modifier.padding(vertical = 8.dp),
             color = primaryWhite,
             style = MaterialTheme.typography.titleSmall,
             text = text
@@ -170,13 +194,17 @@ fun LinkCard(
                 .then(modifier)
         ) {
             Row(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .clickable {
+                        uriHandler.openUri(link)
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = subText
                 )
-                Spacer(modifier = Modifier.weight(1F))
+//                Spacer(modifier = Modifier.weight(1F))
 //                Icon(
 //                    painter = painterResource(
 //                        id = R.drawable.baseline_keyboard_arrow_right_24
@@ -192,5 +220,26 @@ fun LinkCard(
 @Composable
 private fun PreviewMain() {
     MaterialTheme {
+        MainContent(
+            MainUiState(
+                date = "October 5, 2024",
+                title = "Twenty Sixth Week of Ordinary Time",
+                color = LiturgicalColor.GREEN,
+                feasts = listOf(
+                    FeastUiState("Saint Faustina Kowalska, virgin"),
+                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
+                ),
+                upcoming = emptyList(),
+                listObjects = listOf(
+                    ListObject(
+                        title = "Daily Readings",
+                        text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                    ),
+                    ListObject(title = "Divine Office", text = "Evening Prayer 4:00p - 6:00p")
+                ),
+                isLoading = false
+            ),
+            onRefresh = {}
+        )
     }
 }

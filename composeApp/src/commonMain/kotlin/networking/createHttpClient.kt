@@ -20,11 +20,5 @@ fun createHttpClient(engine: HttpClientEngine): HttpClient {
                 }
             )
         }
-//        install(Auth) {
-//            bearer {
-//                loadTokens {  }
-//                refreshTokens {  }
-//            }
-//        }
     }
 }

@@ -12,6 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val primaryWhite = Color.White
 val secondaryWhite = Color(0xFFEFEFEF)
+val tertiaryWhite = Color(0xBFFFFFFF)
 
 enum class LiturgicalColor(val color: Color, val title: String) {
     GREEN(color = Color(0xFF00662F), title = "green"),

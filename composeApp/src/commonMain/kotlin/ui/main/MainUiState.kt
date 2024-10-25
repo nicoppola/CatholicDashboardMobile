@@ -1,11 +1,10 @@
-package ui
+package ui.main
 
-import org.jetbrains.compose.resources.DrawableResource
 import ui.theme.LiturgicalColor
 
 data class MainUiState(
     val date: String = "",
-    val season: String = "",
+    val title: String = "",
     val color: LiturgicalColor = LiturgicalColor.GREEN,
     val feasts: List<FeastUiState> = emptyList(),
     val upcoming: List<FeastUiState> = emptyList(),
@@ -19,8 +18,8 @@ data class FeastUiState(
     )
 
 data class ListObject(
-    val icon: DrawableResource? = null,
-    val headline: String = "",
-    val subText: String? = null,
+//    val icon: DrawableResource? = null,
+    val title: String = "",
+    val text: String? = null,
     val link: String = "",
 )
