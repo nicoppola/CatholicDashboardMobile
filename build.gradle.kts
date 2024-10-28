@@ -7,4 +7,6 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    //alias(libs.plugins.wire)
+    id("com.squareup.wire") version "5.0.0" apply false
 }

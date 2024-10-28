@@ -28,12 +28,15 @@ class DefaultMyClient(
         val response = try{
             httpClient.get(
                 //ie date = "2015/6/27"
-                urlString = "http://10.0.2.2:8080/novus/$date"
+                urlString = "https://catholicdashboardapi.onrender.com/novus/$date"//"http://10.0.2.2:8080/novus/$date"
             )
         } catch (e: UnresolvedAddressException){
             return Result.Error(NetworkError.NO_INTERNET)
         } catch(e: SerializationException) {
             return Result.Error(NetworkError.SERIALIZATION)
+        } catch(e: Exception){
+            //java.net.ConnectException: Failed to connect to /10.0.2.2:8080
+            return Result.Error(NetworkError.UNKNOWN)
         }
 
         return when(response.status.value) {

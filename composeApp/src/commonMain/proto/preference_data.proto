@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package org.coppola.catholic;
+
+message PreferenceData {
+  ReadingsSettings readings = 1;
+  OfficeSettings office = 2;
+  OfficeOfReadingsSettings officeOfReadings = 3;
+//  AngelusSettings angelus = 4;
+}
+
+message Time {
+  int32 hour = 1;
+  int32 minute = 2;
+}
+
+message TimeSettings {
+  Time startTime = 1;
+  Time endTime = 2;
+}
+
+message ReadingsSettings {
+  bool enabled = 1;
+}
+
+message OfficeSettings {
+  bool enabled = 1;
+  TimeSettings lauds = 2; // morning
+  TimeSettings prime = 3; // suppressed
+  TimeSettings terce = 4; // mid morning
+  TimeSettings sext = 5; // midday
+  TimeSettings none = 6; // mid afternoon
+  TimeSettings vespers = 7; // evening
+  TimeSettings compline = 8; // night
+  TimeSettings matins = 9; // mid night
+}
+
+message OfficeOfReadingsSettings {
+  bool enabled = 1;
+}
+
+//message AngelusSettings {
+//  bool enabled = 1;
+//  TimeSettings time = 2;
+//}

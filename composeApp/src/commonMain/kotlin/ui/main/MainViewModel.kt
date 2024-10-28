@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import data.CalendarData
 import data.MainRepository
+import datastore.PreferencesRepository
 import domain.GetOfficeListItemUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,9 +17,10 @@ import util.onSuccess
 
 class MainViewModel(
     private val repo: MainRepository,
+    private val getOfficeListItemUseCase: GetOfficeListItemUseCase,
 ) : ViewModel() {
 
-    private val getOfficeListItemUseCase = GetOfficeListItemUseCase()
+    //private val getOfficeListItemUseCase = GetOfficeListItemUseCase()
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -49,11 +51,11 @@ class MainViewModel(
             }
             repo.myRetrieveData()
                 .onSuccess { data ->
+                    println("***** SUCCESS $data")
                     _uiState.update { _ ->
                         uiState.value.copy(
                             date = data.date,
                             title = data.title,
-//                            feasts = getFeasts(data),
                             color = LiturgicalColor.fromName(data.color.name) ?: LiturgicalColor.GREEN,
                             feasts = data.proper.map { FeastUiState(it.title ?: "") },
                             listObjects = getListItems(data.readings, data.office)
@@ -61,6 +63,8 @@ class MainViewModel(
                     }
                 }
                 .onError { data ->
+                    println("***** ERROR $data")
+                    println("ERROR!!!!!!!")
                     _uiState.update { _ ->
                         uiState.value.copy(
                             date = "ERROR!!! AHHHHHHHH",
@@ -75,15 +79,18 @@ class MainViewModel(
         }
     }
 
-    private fun getListItems(
+    private suspend fun getListItems(
         readings: CalendarData.Readings,
         office: CalendarData.Office
     ): List<ListObject> {
         val listItems = mutableListOf<ListObject>()
         listItems.add(
             ListObject(
-                title = "Readings",
-                text = readings.readingOne + "\n" + readings.psalm + "\n" + readings.readingTwo + "\n" + readings.gospel,
+                title = "Daily Readings",
+                text =  "Reading 1: ${readings.readingOne}\n" +
+                        (if(readings.readingTwo != null) "Reading 2: $readings.readingTwo \n" else "") +
+                        "Psalm: ${readings.psalm}\n" +
+                        "Gospel: ${readings.gospel}",
                 link = readings.link,
             )
         )
@@ -91,11 +98,10 @@ class MainViewModel(
         listItems.add(
             ListObject(
                 title = "Office of Readings",
-                text = "Office? idk put something here",//TODO,
-                link = office.link
+                text = "Office? idk put something here", //todo
+                link = office.officeOfReadings
             )
         )
         return listItems
     }
-
 }

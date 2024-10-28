@@ -7,6 +7,15 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+   // alias(libs.plugins.wire)
+    id("com.squareup.wire") version "5.0.0"
+}
+
+wire {
+    kotlin {}
+    sourcePath {
+        srcDir("src/commonMain/proto")
+    }
 }
 
 kotlin {
@@ -57,6 +66,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.navigation.compose)
+            implementation(libs.androidx.datastore)
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -100,6 +110,7 @@ android {
         debugImplementation(compose.uiTooling)
     }
 }
+
 dependencies {
     implementation(libs.androidx.core.i18n)
     implementation(libs.androidx.material3.android)

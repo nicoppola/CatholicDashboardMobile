@@ -15,7 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -32,13 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import ui.theme.CatholicDashboardTheme
 import ui.theme.LiturgicalColor
 import ui.theme.primaryWhite
 import ui.theme.secondaryWhite
@@ -57,6 +52,7 @@ fun App(navToSettings: () -> Unit) {
             navToSettings()
             viewModel.clearUiStatus()
         }
+
         else -> {}
     }
 
@@ -155,16 +151,12 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
 
                 Spacer(Modifier.padding(bottom = 16.dp))
 
-                LinkCard(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    text = "Daily Readings",
-                    subText = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14"
-                )
-                LinkCard(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    text = "Divine Office",
-                    subText = "Evening Prayer 4:00p - 6:00p"
-                )
+                uiState.listObjects.forEach {
+                    LinkCard(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        uiState = it
+                    )
+                }
             }
         }
     }
@@ -174,9 +166,7 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
 @Composable
 fun LinkCard(
     modifier: Modifier = Modifier,
-    text: String,
-    subText: String,
-    link: String = "",
+    uiState: ListObject,
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -185,23 +175,21 @@ fun LinkCard(
             modifier = Modifier.padding(vertical = 8.dp),
             color = primaryWhite,
             style = MaterialTheme.typography.titleSmall,
-            text = text
+            text = uiState.title
         )
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(modifier)
+                .then(modifier),
+            onClick = { uriHandler.openUri(uiState.link) }
         ) {
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .clickable {
-                        uriHandler.openUri(link)
-                    },
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = subText
+                    text = uiState.text ?: "ahhhhh put text here"
                 )
 //                Spacer(modifier = Modifier.weight(1F))
 //                Icon(
