@@ -18,12 +18,13 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerDialog(time: Time, onConfirm: (Time) -> Unit, onDismiss: () -> Unit) {
+fun TimePickerDialog(time: TimeUiState, onConfirm: (TimeUiState) -> Unit, onDismiss: () -> Unit) {
     val timePickerState = rememberTimePickerState(
         initialHour = time.hour,
         initialMinute = time.minute,
@@ -39,43 +40,32 @@ fun TimePickerDialog(time: Time, onConfirm: (Time) -> Unit, onDismiss: () -> Uni
             ),
         onDismissRequest = onDismiss,
     ) {
-//    Surface(
-//        shape = MaterialTheme.shapes.extraLarge,
-//        tonalElevation = 6.dp,
-//        modifier =
-//        Modifier
-//            .width(IntrinsicSize.Min)
-//            .height(IntrinsicSize.Min)
-//            .background(
-//                shape = MaterialTheme.shapes.extraLarge,
-//                color = MaterialTheme.colorScheme.surface
-//            ),
-//    ) {
         Column(
             modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         )
         {
             Text(
                 modifier = Modifier.padding(bottom = 8.dp),
                 text = "Enter Time",
-                style = MaterialTheme.typography.bodySmall,
-                color = TimePickerDefaults.colors().timeSelectorUnselectedContentColor
+                style = MaterialTheme.typography.bodyMedium,
+                color = TimePickerDefaults.colors().timeSelectorUnselectedContentColor,
             )
             TimeInput(
-                state = timePickerState
+                state = timePickerState,
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(onClick = onDismiss) {
                     Text("Cancel")
                 }
                 TextButton(onClick = {
                     onConfirm(
-                        Time(
+                        TimeUiState(
                             timePickerState.hour,
-                            timePickerState.minute
+                            timePickerState.minute,
                         )
                     )
                 }) {

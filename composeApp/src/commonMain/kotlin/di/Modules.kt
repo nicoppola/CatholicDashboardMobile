@@ -2,16 +2,16 @@ package di
 
 import data.DefaultMainRepository
 import data.MainRepository
-import datastore.PreferencesRepository
 import domain.GetOfficeListItemUseCase
+import domain.GetOfficeOfReadingsListItemUseCase
+import domain.GetReadingsListItemUseCase
 import org.koin.compose.viewmodel.dsl.viewModel
-import ui.main.MainViewModel
-import ui.settings.SettingsViewModel
-import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import ui.main.MainViewModel
+import ui.settings.SettingsViewModel
 
 
 expect val platformModule: Module
@@ -19,6 +19,8 @@ expect val platformModule: Module
 val sharedModule = module {
     singleOf(::DefaultMainRepository).bind<MainRepository>()
     single { GetOfficeListItemUseCase(get()) }
-    viewModel { MainViewModel(get(), get())}
-    viewModelOf(::SettingsViewModel)
+    single { GetReadingsListItemUseCase(get()) }
+    single { GetOfficeOfReadingsListItemUseCase(get()) }
+    viewModel { MainViewModel(get(), get(), get(), get())}
+    viewModel { SettingsViewModel(get())}
 }

@@ -11,7 +11,7 @@ import androidx.compose.ui.text.TextStyle
 fun Time(
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
-    time: Time
+    time: TimeUiState
 ) {
     val displayTime = time.hour.toString().padStart(2, '0') +
             time.minute.toString().padStart(2, '0')

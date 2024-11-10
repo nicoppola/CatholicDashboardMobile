@@ -6,18 +6,23 @@ import data.CalendarData
 import data.MainRepository
 import datastore.PreferencesRepository
 import domain.GetOfficeListItemUseCase
+import domain.GetOfficeOfReadingsListItemUseCase
+import domain.GetReadingsListItemUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ui.theme.LiturgicalColor
+import util.addNotNull
 import util.onError
 import util.onSuccess
 
 class MainViewModel(
     private val repo: MainRepository,
     private val getOfficeListItemUseCase: GetOfficeListItemUseCase,
+    private val getReadingsListItemUseCase: GetReadingsListItemUseCase,
+    private val getOfficeOfReadingsListItemUseCase: GetOfficeOfReadingsListItemUseCase,
 ) : ViewModel() {
 
     //private val getOfficeListItemUseCase = GetOfficeListItemUseCase()
@@ -82,26 +87,12 @@ class MainViewModel(
     private suspend fun getListItems(
         readings: CalendarData.Readings,
         office: CalendarData.Office
-    ): List<ListObject> {
-        val listItems = mutableListOf<ListObject>()
-        listItems.add(
-            ListObject(
-                title = "Daily Readings",
-                text =  "Reading 1: ${readings.readingOne}\n" +
-                        (if(readings.readingTwo != null) "Reading 2: $readings.readingTwo \n" else "") +
-                        "Psalm: ${readings.psalm}\n" +
-                        "Gospel: ${readings.gospel}",
-                link = readings.link,
-            )
-        )
+    ): List<ListItemUiState> {
+        val listItems = mutableListOf<ListItemUiState>()
+        listItems.addNotNull(getReadingsListItemUseCase(readings))
         listItems.addAll(getOfficeListItemUseCase(office))
-        listItems.add(
-            ListObject(
-                title = "Office of Readings",
-                text = "Office? idk put something here", //todo
-                link = office.officeOfReadings
-            )
-        )
+        listItems.addNotNull(getOfficeOfReadingsListItemUseCase(office))
+
         return listItems
     }
 }

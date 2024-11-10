@@ -2,32 +2,29 @@ package domain
 
 import data.CalendarData
 import datastore.PreferencesRepository
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.single
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.coppola.catholic.OfficeSettings
-import org.coppola.catholic.TimeSettings
-import org.koin.compose.koinInject
-import ui.main.ListObject
+import org.coppola.catholic.OfficePrefs
+import org.coppola.catholic.TimeRangePrefs
+import ui.main.ListItemUiState
 
 class GetOfficeListItemUseCase(
-    private val preferences: PreferencesRepository
+    private val preferences: PreferencesRepository,
 ) {
-    suspend operator fun invoke(office: CalendarData.Office): List<ListObject> {
+    suspend operator fun invoke(office: CalendarData.Office): List<ListItemUiState> {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
         val prefs = preferences.getOffice().first()
 
-        var hours = emptyList<ListObject>()
+        var hours = emptyList<ListItemUiState>()
         if (prefs.enabled) {
             hours = LiturgyHours.entries.mapNotNull {
                 it.contains(it.getTimeSetting(prefs), now)
             }.map {
-                ListObject(
+                ListItemUiState(
                     title = "Divine Office",
                     text = it.getText(it.getTimeSetting(prefs)),
                     link = it.getLink(office)
@@ -38,7 +35,7 @@ class GetOfficeListItemUseCase(
     }
 }
 
-private fun LiturgyHours.contains(prefs: TimeSettings?, now: LocalDateTime): LiturgyHours? {
+private fun LiturgyHours.contains(prefs: TimeRangePrefs?, now: LocalDateTime): LiturgyHours? {
     return if (prefs?.contains(now.hour, now.minute) == true) {
         this
     } else {
@@ -47,7 +44,7 @@ private fun LiturgyHours.contains(prefs: TimeSettings?, now: LocalDateTime): Lit
 }
 
 //todo put this in a use case or something; figure out time somewhere
-private fun LiturgyHours.getText(prefs: TimeSettings?): String {
+private fun LiturgyHours.getText(prefs: TimeRangePrefs?): String {
     val startTimeDisplay = prefs?.startTime?.hour.toString().padStart(2, '0') +
             prefs?.startTime?.minute.toString().padStart(2, '0')
 
@@ -57,7 +54,7 @@ private fun LiturgyHours.getText(prefs: TimeSettings?): String {
     return "${this.novusLabel}, $startTimeDisplay - $endTimeDisplay"
 }
 
-private fun LiturgyHours.getTimeSetting(prefs: OfficeSettings): TimeSettings? {
+private fun LiturgyHours.getTimeSetting(prefs: OfficePrefs): TimeRangePrefs? {
     return when (this) {
         LiturgyHours.LAUDS -> prefs.lauds
         LiturgyHours.TERCE -> prefs.terce
@@ -88,7 +85,7 @@ private enum class LiturgyHours(val novusLabel: String, val latinLabel: String) 
     COMPLINE("Night", "Compline");
 }
 
-private fun TimeSettings.contains(hour: Int, minute: Int): Boolean {
+private fun TimeRangePrefs.contains(hour: Int, minute: Int): Boolean {
     if (startTime == null || endTime == null) {
         return false
     }

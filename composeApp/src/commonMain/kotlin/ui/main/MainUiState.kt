@@ -8,7 +8,7 @@ data class MainUiState(
     val color: LiturgicalColor = LiturgicalColor.GREEN,
     val feasts: List<FeastUiState> = emptyList(),
     val upcoming: List<FeastUiState> = emptyList(),
-    val listObjects: List<ListObject> = emptyList(),
+    val listObjects: List<ListItemUiState> = emptyList(),
     val isLoading: Boolean = false,
 )
 
@@ -17,7 +17,7 @@ data class FeastUiState(
     val feast: String = "",
     )
 
-data class ListObject(
+data class ListItemUiState(
     val title: String = "",
     val text: String? = null,
     val link: String = "",

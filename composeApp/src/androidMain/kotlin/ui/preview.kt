@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ui.main.FeastUiState
-import ui.main.ListObject
+import ui.main.ListItemUiState
 import ui.main.MainContent
 import ui.main.MainUiState
 import ui.theme.LiturgicalColor
@@ -107,11 +107,11 @@ private fun PreviewMain() {
                 ),
                 upcoming = emptyList(),
                 listObjects = listOf(
-                    ListObject(
+                    ListItemUiState(
                         title = "Daily Readings",
                         text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
                     ),
-                    ListObject(title = "Divine Office", text = "Evening Prayer 4:00p - 6:00p")
+                    ListItemUiState(title = "Divine Office", text = "Evening Prayer 4:00p - 6:00p")
                 ),
                 isLoading = false
             ),

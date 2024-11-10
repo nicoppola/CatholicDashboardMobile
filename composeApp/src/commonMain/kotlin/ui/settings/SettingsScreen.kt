@@ -18,6 +18,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,8 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import catholicdashboard.composeapp.generated.resources.Res
+import catholicdashboard.composeapp.generated.resources.arrow_back_24
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import ui.settings.SettingsScreenUiState.SettingUiState
 import ui.theme.LiturgicalColor
 import ui.theme.primaryWhite
 
@@ -44,7 +49,6 @@ fun SettingsScreen(
     onBack: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
-//    val viewModel = koinViewModel<SettingsViewModel>()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
@@ -52,15 +56,12 @@ fun SettingsScreen(
             CenterAlignedTopAppBar(
                 title = { Text("Settings") },
                 navigationIcon = {
-                    IconButton(onClick = onBack){
-                        Box(
-                            modifier = Modifier
-                                .background(Color.Magenta)
-                                .size(24.dp)
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            tint = Color.White,
+                            painter = painterResource(Res.drawable.arrow_back_24),
+                            contentDescription = null,
                         )
-//                                Icon(
-//                                    painter = painterResource()
-//                                )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors()
@@ -74,7 +75,7 @@ fun SettingsScreen(
         content = { innerPadding ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.padding(innerPadding)) {
-                    SettingsContent(uiState)
+                    SettingsContent(uiState, viewModel::onCheckChanged, viewModel::onTimeChanged)
                 }
 
             }
@@ -85,20 +86,22 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsContent(
-    uiState: SettingsUiState
+    uiState: SettingsScreenUiState,
+    onCheckChanged: (SettingUiState) -> Unit,
+    onTimeChanged: (SettingUiState) -> Unit,
 ) {
     LazyColumn {
         items(uiState.settings) {
-            Item(it, { _ -> }, { _ -> })
+            Item(it, onCheckChanged, onTimeChanged)
         }
     }
 }
 
 @Composable
 fun Item(
-    uiState: SettingsUiState.Setting,
-    onCheckChanged: (String) -> Unit,
-    onTimeChanged: (SettingsUiState.TimeSetting) -> Unit,
+    uiState: SettingUiState,
+    onCheckChanged: (SettingUiState) -> Unit,
+    onTimeChanged: (SettingUiState) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -122,62 +125,103 @@ fun Item(
                 Spacer(Modifier.weight(1F))
                 Checkbox(
                     checked = uiState.isChecked,
-                    onCheckedChange = { onCheckChanged(uiState.title) })
+                    onCheckedChange = { onCheckChanged(uiState) })
             }
             if (uiState.isChecked) {
-                HorizontalDivider(Modifier.padding(top = 8.dp, bottom = 12.dp))
-                uiState.times.forEach {
-
-                    val showStartDialog = remember { mutableStateOf(false) }
-                    val showEndDialog = remember { mutableStateOf(false) }
-
-                    if (showStartDialog.value) {
-                        TimePickerDialog(
-                            time = it.start,
-                            onConfirm = { newTime -> onTimeChanged(it.copy(start = newTime)) },
-                            onDismiss = { showStartDialog.value = false },
-                        )
-                    }
-
-                    if (showEndDialog.value) {
-                        TimePickerDialog(
-                            time = it.start,
-                            onConfirm = { newTime -> onTimeChanged(it.copy(end = newTime)) },
-                            onDismiss = { showEndDialog.value = false },
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = it.label,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Spacer(Modifier.weight(1F))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            TextButton(onClick = { /*TODO*/ }) {
-                                Time(
-                                    time = it.start,
-                                    style = MaterialTheme.typography.bodyLarge
+                when (uiState) {
+                    is SettingsScreenUiState.DivineOfficeSettingUiState -> {
+                        HorizontalDivider(Modifier.padding(top = 8.dp, bottom = 12.dp))
+                        uiState.lauds?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(lauds = time)) } }
+                        uiState.prime?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(prime = time)) } }
+                        uiState.terce?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(terce = time)) } }
+                        uiState.terce?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(terce = time)) } }
+                        uiState.sext?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(sext = time)) } }
+                        uiState.vespers?.let {
+                            TimeRow(it) { time ->
+                                onTimeChanged(
+                                    uiState.copy(
+                                        vespers = time
+                                    )
                                 )
                             }
-
-                            Text(
-                                " - ",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            TextButton(onClick = { /*TODO*/ }) {
-                                Time(
-                                    time = it.end,
-                                    style = MaterialTheme.typography.bodyLarge
+                        }
+                        uiState.compline?.let {
+                            TimeRow(it) { time ->
+                                onTimeChanged(
+                                    uiState.copy(
+                                        compline = time
+                                    )
                                 )
                             }
                         }
                     }
+
+                    else -> { /* do nothing */
+                    }
                 }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun TimeRow(
+    time: SettingsScreenUiState.TimeSettingUiState,
+    onTimeChanged: (SettingsScreenUiState.TimeSettingUiState) -> Unit
+) {
+    val showStartDialog = remember { mutableStateOf(false) }
+    val showEndDialog = remember { mutableStateOf(false) }
+
+    if (showStartDialog.value) {
+        TimePickerDialog(
+            time = time.start,
+            onConfirm = { newTime ->
+                onTimeChanged(time.copy(start = newTime))
+                showStartDialog.value = false
+            },
+            onDismiss = { showStartDialog.value = false },
+        )
+    }
+
+    if (showEndDialog.value) {
+        TimePickerDialog(
+            time = time.end,
+            onConfirm = { newTime ->
+                onTimeChanged(time.copy(end = newTime))
+                showEndDialog.value = false
+            },
+            onDismiss = { showEndDialog.value = false },
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = time.label,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.weight(1F))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextButton(onClick = { showStartDialog.value = true }) {
+                Time(
+                    time = time.start,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            Text(
+                " - ",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            TextButton(onClick = { showEndDialog.value = true }) {
+                Time(
+                    time = time.end,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }

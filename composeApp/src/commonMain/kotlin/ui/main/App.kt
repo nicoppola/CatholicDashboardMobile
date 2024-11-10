@@ -1,7 +1,6 @@
 package ui.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,6 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import catholicdashboard.composeapp.generated.resources.Res
+import catholicdashboard.composeapp.generated.resources.baseline_keyboard_arrow_right_24
+import catholicdashboard.composeapp.generated.resources.settings_24
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -67,14 +71,11 @@ fun App(navToSettings: () -> Unit) {
                     ),
                 actions = {
                     IconButton(onClick = viewModel::onSettingsClicked) {
-                        Box(
-                            modifier = Modifier
-                                .background(Color.LightGray)
-                                .size(24.dp)
+                        Icon(
+                            tint = Color.White,
+                            painter = painterResource(Res.drawable.settings_24),
+                            contentDescription = null,
                         )
-//                                Icon(
-//                                    painter = painterResource()
-//                                )
                     }
                 }
             )
@@ -166,7 +167,7 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
 @Composable
 fun LinkCard(
     modifier: Modifier = Modifier,
-    uiState: ListObject,
+    uiState: ListItemUiState,
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -191,12 +192,14 @@ fun LinkCard(
                 Text(
                     text = uiState.text ?: "ahhhhh put text here"
                 )
-//                Spacer(modifier = Modifier.weight(1F))
-//                Icon(
-//                    painter = painterResource(
-//                        id = R.drawable.baseline_keyboard_arrow_right_24
-//                    ), contentDescription = null
-//                )
+                Spacer(modifier = Modifier.weight(1F))
+                Icon(
+                    painter = painterResource(
+                        resource = Res.drawable.baseline_keyboard_arrow_right_24
+                    ),
+                    contentDescription = null,
+                )
+
 
             }
         }
@@ -218,11 +221,11 @@ private fun PreviewMain() {
                 ),
                 upcoming = emptyList(),
                 listObjects = listOf(
-                    ListObject(
+                    ListItemUiState(
                         title = "Daily Readings",
                         text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
                     ),
-                    ListObject(title = "Divine Office", text = "Evening Prayer 4:00p - 6:00p")
+                    ListItemUiState(title = "Divine Office", text = "Evening Prayer 4:00p - 6:00p")
                 ),
                 isLoading = false
             ),

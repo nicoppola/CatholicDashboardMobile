@@ -3,39 +3,39 @@ syntax = "proto3";
 package org.coppola.catholic;
 
 message PreferenceData {
-  ReadingsSettings readings = 1;
-  OfficeSettings office = 2;
-  OfficeOfReadingsSettings officeOfReadings = 3;
+  ReadingsPrefs readings = 1;
+  OfficePrefs office = 2;
+  OfficeOfReadingsPrefs officeOfReadings = 3;
 //  AngelusSettings angelus = 4;
 }
 
-message Time {
+message TimePref {
   int32 hour = 1;
   int32 minute = 2;
 }
 
-message TimeSettings {
-  Time startTime = 1;
-  Time endTime = 2;
+message TimeRangePrefs {
+  TimePref startTime = 1;
+  TimePref endTime = 2;
 }
 
-message ReadingsSettings {
+message ReadingsPrefs {
   bool enabled = 1;
 }
 
-message OfficeSettings {
+message OfficePrefs {
   bool enabled = 1;
-  TimeSettings lauds = 2; // morning
-  TimeSettings prime = 3; // suppressed
-  TimeSettings terce = 4; // mid morning
-  TimeSettings sext = 5; // midday
-  TimeSettings none = 6; // mid afternoon
-  TimeSettings vespers = 7; // evening
-  TimeSettings compline = 8; // night
-  TimeSettings matins = 9; // mid night
+  TimeRangePrefs lauds = 2; // morning
+  TimeRangePrefs prime = 3; // suppressed
+  TimeRangePrefs terce = 4; // mid morning
+  TimeRangePrefs sext = 5; // midday
+  TimeRangePrefs none = 6; // mid afternoon
+  TimeRangePrefs vespers = 7; // evening
+  TimeRangePrefs compline = 8; // night
+  TimeRangePrefs matins = 9; // mid night
 }
 
-message OfficeOfReadingsSettings {
+message OfficeOfReadingsPrefs{
   bool enabled = 1;
 }
 
