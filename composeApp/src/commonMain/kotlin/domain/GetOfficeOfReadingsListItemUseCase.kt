@@ -1,24 +1,29 @@
 package domain
 
-import data.CalendarData
+import data.MainRepository
 import datastore.PreferencesRepository
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import ui.main.ListItemType
 import ui.main.ListItemUiState
 
 class GetOfficeOfReadingsListItemUseCase(
+    private val mainRepository: MainRepository,
     private val preferencesRepository: PreferencesRepository,
 ) {
 
-    suspend operator fun invoke(office: CalendarData.Office?): ListItemUiState? {
-        return if (office != null && preferencesRepository.getOfficeOfReadings().first().enabled) {
-            ListItemUiState(
-                title = "Office of Readings",
-                text = "Office of Readings",
-                link = office.officeOfReadings,
-            )
-        } else {
-            null
+    private val baseItem = ListItemUiState(
+        type = ListItemType.OFFICE_OF_READINGS,
+        isEnabled = false,
+        title = "Office of Readings",
+        text = "Office of Readings",
+        link = "",
+    )
+
+    operator fun invoke(): Flow<ListItemUiState> {
+        return preferencesRepository.getOfficeOfReadings().map{ prefs ->
+            val office = mainRepository.retrieveCachedData()?.office
+            baseItem.copy(isEnabled = prefs.enabled, link = office?.officeOfReadings ?: "")
         }
     }
-
 }

@@ -5,16 +5,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.util.network.UnresolvedAddressException
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
-import kotlinx.datetime.todayIn
 import kotlinx.serialization.SerializationException
-import util.Result
 import util.NetworkError
+import util.Result
 
 interface MyClient {
     suspend fun getDate(date: String): Result<CalendarData.Day, NetworkError>

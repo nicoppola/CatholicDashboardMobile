@@ -18,9 +18,9 @@ expect val platformModule: Module
 
 val sharedModule = module {
     singleOf(::DefaultMainRepository).bind<MainRepository>()
-    single { GetOfficeListItemUseCase(get()) }
-    single { GetReadingsListItemUseCase(get()) }
-    single { GetOfficeOfReadingsListItemUseCase(get()) }
+    single { GetOfficeListItemUseCase(get(), get()) }
+    single { GetReadingsListItemUseCase(get(), get()) }
+    single { GetOfficeOfReadingsListItemUseCase(get(), get()) }
     viewModel { MainViewModel(get(), get(), get(), get())}
     viewModel { SettingsViewModel(get())}
 }

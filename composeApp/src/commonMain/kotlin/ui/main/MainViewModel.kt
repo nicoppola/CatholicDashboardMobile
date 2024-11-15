@@ -25,7 +25,8 @@ class MainViewModel(
     private val getOfficeOfReadingsListItemUseCase: GetOfficeOfReadingsListItemUseCase,
 ) : ViewModel() {
 
-    //private val getOfficeListItemUseCase = GetOfficeListItemUseCase()
+    // todo cache this in the backend and get it from there
+    private var currData: CalendarData.Day? = null
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -33,38 +34,62 @@ class MainViewModel(
     private val _uiStatus = MutableStateFlow<MainUiStatus?>(null)
     val uiStatus: StateFlow<MainUiStatus?> = _uiStatus.asStateFlow()
 
+
     init {
-        updateFromMyApi()
+        retrieveData()
     }
 
-    fun onSettingsClicked(){
+    fun onSettingsClicked() {
         _uiStatus.update {
             MainUiStatus.NavToSettings
         }
     }
 
-    fun clearUiStatus(){
+    fun clearUiStatus() {
         _uiStatus.update {
             null
         }
     }
 
-    fun updateFromMyApi() {
+    fun retrieveData() {
         viewModelScope.launch {
             _uiState.update {
-                uiState.value.copy(isLoading = true)
+                it.copy(isLoading = true)
             }
-            repo.myRetrieveData()
+            repo.retrieveData()
                 .onSuccess { data ->
+                    currData = data
                     println("***** SUCCESS $data")
-                    _uiState.update { _ ->
-                        uiState.value.copy(
+                    _uiState.update { curr ->
+                        curr.copy(
+                            isLoading = false,
                             date = data.date,
                             title = data.title,
-                            color = LiturgicalColor.fromName(data.color.name) ?: LiturgicalColor.GREEN,
+                            color = LiturgicalColor.fromName(data.color.name)
+                                ?: LiturgicalColor.GREEN,
                             feasts = data.proper.map { FeastUiState(it.title ?: "") },
-                            listObjects = getListItems(data.readings, data.office)
                         )
+                    }
+                    viewModelScope.launch {
+                        getOfficeOfReadingsListItemUseCase().collect { newItem ->
+                            _uiState.update {
+                                it.copy(officeOfReadings = newItem)
+                            }
+                        }
+                    }
+                    viewModelScope.launch {
+                        getReadingsListItemUseCase().collect { newItem ->
+                            _uiState.update {
+                                it.copy(readings = newItem)
+                            }
+                        }
+                    }
+                    viewModelScope.launch {
+                        getOfficeListItemUseCase().collect { newItem ->
+                            _uiState.update {
+                                uiState.value.copy(office = newItem)
+                            }
+                        }
                     }
                 }
                 .onError { data ->
@@ -78,21 +103,9 @@ class MainViewModel(
                     }
                 }
             _uiState.update {
-                //todo add shimmer loading
+                //todo add shimmer loading?
                 uiState.value.copy(isLoading = false)
             }
         }
-    }
-
-    private suspend fun getListItems(
-        readings: CalendarData.Readings,
-        office: CalendarData.Office
-    ): List<ListItemUiState> {
-        val listItems = mutableListOf<ListItemUiState>()
-        listItems.addNotNull(getReadingsListItemUseCase(readings))
-        listItems.addAll(getOfficeListItemUseCase(office))
-        listItems.addNotNull(getOfficeOfReadingsListItemUseCase(office))
-
-        return listItems
     }
 }

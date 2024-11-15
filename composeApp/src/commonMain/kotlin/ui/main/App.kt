@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -93,7 +94,7 @@ fun App(navToSettings: () -> Unit) {
                     Box(modifier = Modifier.padding(innerPadding)) {
                         MainContent(
                             uiState = uiState,
-                            onRefresh = { viewModel.updateFromMyApi() })
+                            onRefresh = { viewModel.retrieveData() })
                     }
                 }
             }
@@ -103,105 +104,127 @@ fun App(navToSettings: () -> Unit) {
 
 @Composable
 fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .background(
                 uiState.color.color
-            ),
-        horizontalAlignment = Alignment.Start
+            )
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.Start,
     ) {
-        item {
-            Column(
-                Modifier
-                    .background(
-                        uiState.color.color
-                    )
-                    .padding(16.dp)
-            ) {
-                // Date
-                Text(
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
-                    color = primaryWhite,
-                    text = uiState.date,
+        Column(
+            Modifier
+                .background(
+                    uiState.color.color
                 )
-                // Season
+                .padding(16.dp)
+        ) {
+            // Date
+            Text(
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
+                color = primaryWhite,
+                text = uiState.date,
+            )
+            // Season
+            Text(
+                modifier = Modifier.padding(bottom = 12.dp),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 20.sp,
+                ),
+                color = secondaryWhite,
+                text = uiState.title
+            )
+
+            // Feasts
+            uiState.feasts.forEach {
                 Text(
-                    modifier = Modifier.padding(bottom = 12.dp),
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp,
-                    ),
-                    color = secondaryWhite,
-                    text = uiState.title
+                    color = tertiaryWhite,
+                    text = it.title
                 )
+            }
 
-                // Feasts
-                uiState.feasts.forEach {
-                    Text(
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                        textAlign = TextAlign.Start,
-                        color = tertiaryWhite,
-                        text = it.title
-                    )
-                }
+            Spacer(Modifier.padding(bottom = 16.dp))
 
-                Spacer(Modifier.padding(bottom = 16.dp))
-
-                uiState.listObjects.forEach {
-                    LinkCard(
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        uiState = it
-                    )
-                }
+            uiState.readings?.let {
+                LinkSection(
+                    uiStates = listOf(it)
+                )
+            }
+            if(uiState.office.isNotEmpty()){
+                LinkSection(
+                    uiStates = uiState.office
+                )
+            }
+            uiState.officeOfReadings?.let {
+                LinkSection(
+                    uiStates = listOf(it)
+                )
             }
         }
     }
 }
 
-//TODO on click animation
 @Composable
-fun LinkCard(
+fun LinkSection(
     modifier: Modifier = Modifier,
+    uiStates: List<ListItemUiState>,
+) {
+    Column(modifier) {
+        LinkCardHeader(uiStates.first())
+        uiStates.forEach { LinkCard(it) }
+    }
+}
+
+@Composable
+fun LinkCardHeader(
     uiState: ListItemUiState,
 ) {
+    Text(
+        modifier = Modifier.padding(vertical = 8.dp),
+        color = primaryWhite,
+        style = MaterialTheme.typography.titleSmall,
+        text = uiState.title
+    )
+}
+
+@Composable
+fun LinkCard(
+    uiState: ListItemUiState,
+) {
+    if (!uiState.isEnabled) {
+        return
+    }
+
     val uriHandler = LocalUriHandler.current
-
-    Column {
-        Text(
-            modifier = Modifier.padding(vertical = 8.dp),
-            color = primaryWhite,
-            style = MaterialTheme.typography.titleSmall,
-            text = uiState.title
-        )
-        Card(
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        onClick = { uriHandler.openUri(uiState.link) }
+    ) {
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .then(modifier),
-            onClick = { uriHandler.openUri(uiState.link) }
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = uiState.text ?: "ahhhhh put text here"
-                )
-                Spacer(modifier = Modifier.weight(1F))
-                Icon(
-                    painter = painterResource(
-                        resource = Res.drawable.baseline_keyboard_arrow_right_24
-                    ),
-                    contentDescription = null,
-                )
-
-
-            }
+            Text(
+                text = uiState.text ?: "ahhhhh put text here"
+            )
+            Spacer(modifier = Modifier.weight(1F))
+            Icon(
+                painter = painterResource(
+                    resource = Res.drawable.baseline_keyboard_arrow_right_24
+                ),
+                contentDescription = null,
+            )
         }
     }
 }
@@ -220,12 +243,19 @@ private fun PreviewMain() {
                     FeastUiState("Blessed Francis Xavier Seelos, Priest")
                 ),
                 upcoming = emptyList(),
-                listObjects = listOf(
+                readings =
+                ListItemUiState(
+                    type = ListItemType.READINGS,
+                    title = "Daily Readings",
+                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                ),
+                office =
+                listOf(
                     ListItemUiState(
-                        title = "Daily Readings",
-                        text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
-                    ),
-                    ListItemUiState(title = "Divine Office", text = "Evening Prayer 4:00p - 6:00p")
+                        type = ListItemType.OFFICE,
+                        title = "Divine Office",
+                        text = "Evening Prayer 4:00p - 6:00p"
+                    )
                 ),
                 isLoading = false
             ),

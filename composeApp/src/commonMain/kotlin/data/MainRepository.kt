@@ -14,21 +14,39 @@ import util.NetworkError
 import util.Result
 
 interface MainRepository {
-    suspend fun myRetrieveData(): Result<CalendarData.Day, NetworkError>
+    suspend fun retrieveData(): Result<CalendarData.Day, NetworkError>
+    suspend fun retrieveCachedData(): CalendarData.Day?
+}
+
+private val lru = mutableMapOf<String, CalendarData.Day>()
+@OptIn(FormatStringsInDatetimeFormats::class)
+private fun getToday(): String {
+    return Clock.System.todayIn(TimeZone.currentSystemDefault())
+        .format(
+            LocalDate.Format {
+                byUnicodePattern("dd-MM-yyyy")
+            })
 }
 
 class DefaultMainRepository(
     private val myRemoteData: MyClient,
 ) : MainRepository {
-    @OptIn(FormatStringsInDatetimeFormats::class)
-    override suspend fun myRetrieveData(): Result<CalendarData.Day, NetworkError> =
+    override suspend fun retrieveData(): Result<CalendarData.Day, NetworkError> =
         with(Dispatchers.IO) {
-            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                .format(
-                    LocalDate.Format {
-                        byUnicodePattern("dd-MM-yyyy")
-                    })
-
-            return myRemoteData.getDate(today)
+            val today = getToday()
+            val cache = lru[today]
+            return if (cache != null) {
+                return Result.Success(cache)
+            } else {
+                val result = myRemoteData.getDate(today)
+                if (result is Result.Success) {
+                    lru[today] = result.data
+                }
+                result
+            }
         }
+
+    override suspend fun retrieveCachedData(): CalendarData.Day? {
+        return lru[getToday()]
+    }
 }

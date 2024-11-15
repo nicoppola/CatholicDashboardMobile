@@ -1,37 +1,45 @@
 package domain
 
 import data.CalendarData
+import data.MainRepository
 import datastore.PreferencesRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.coppola.catholic.OfficePrefs
 import org.coppola.catholic.TimeRangePrefs
+import ui.main.ListItemType
 import ui.main.ListItemUiState
 
+private val baseItem = ListItemUiState(
+    type = ListItemType.OFFICE,
+    isEnabled = false,
+    title = "Divine Office",
+)
+
 class GetOfficeListItemUseCase(
-    private val preferences: PreferencesRepository,
+    private val mainRepository: MainRepository,
+    private val preferencesRepository: PreferencesRepository,
 ) {
-    suspend operator fun invoke(office: CalendarData.Office): List<ListItemUiState> {
+    suspend operator fun invoke(): Flow<List<ListItemUiState>> {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
-        val prefs = preferences.getOffice().first()
-
-        var hours = emptyList<ListItemUiState>()
-        if (prefs.enabled) {
-            hours = LiturgyHours.entries.mapNotNull {
+        return preferencesRepository.getOffice().map { prefs ->
+            val office = mainRepository.retrieveCachedData()?.office
+            LiturgyHours.entries.mapNotNull {
                 it.contains(it.getTimeSetting(prefs), now)
             }.map {
-                ListItemUiState(
-                    title = "Divine Office",
+                baseItem.copy(
+                    isEnabled = prefs.enabled,
                     text = it.getText(it.getTimeSetting(prefs)),
                     link = it.getLink(office)
                 )
             }
         }
-        return hours
     }
 }
 
@@ -65,7 +73,10 @@ private fun LiturgyHours.getTimeSetting(prefs: OfficePrefs): TimeRangePrefs? {
     }
 }
 
-private fun LiturgyHours.getLink(data: CalendarData.Office): String {
+private fun LiturgyHours.getLink(data: CalendarData.Office?): String {
+    if (data == null) {
+        return ""
+    }
     return when (this) {
         LiturgyHours.LAUDS -> data.morning
         LiturgyHours.TERCE -> data.midMorning

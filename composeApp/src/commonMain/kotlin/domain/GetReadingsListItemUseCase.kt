@@ -1,27 +1,34 @@
 package domain
 
-import data.CalendarData
+import data.MainRepository
 import datastore.PreferencesRepository
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import ui.main.ListItemType
 import ui.main.ListItemUiState
 
 class GetReadingsListItemUseCase(
+    private val repository: MainRepository,
     private val preferencesRepository: PreferencesRepository,
 ) {
 
-    suspend operator fun invoke(readings: CalendarData.Readings?): ListItemUiState? {
-        return if (readings != null && preferencesRepository.getReadings().first().enabled) {
-            ListItemUiState(
-                title = "Daily Readings",
-                text = "Reading 1: ${readings.readingOne}\n" +
-                        (if (readings.readingTwo != null) "Reading 2: $readings.readingTwo \n" else "") +
-                        "Psalm: ${readings.psalm}\n" +
-                        "Gospel: ${readings.gospel}",
-                link = readings.link,
+    private val baseItem = ListItemUiState(
+        type = ListItemType.READINGS,
+        isEnabled = false,
+        title = "Daily Readings",
+    )
+
+    suspend operator fun invoke(): Flow<ListItemUiState> {
+        return preferencesRepository.getReadings().map {
+            val readings = repository.retrieveCachedData()?.readings
+            baseItem.copy(
+                isEnabled = it.enabled,
+                text = "Reading 1: ${readings?.readingOne}\n" +
+                        (if (readings?.readingTwo != null) "Reading 2: $readings?.readingTwo \n" else "") +
+                        "Psalm: ${readings?.psalm}\n" +
+                        "Gospel: ${readings?.gospel}",
+                link = readings?.link ?: ""
             )
-        } else {
-            null
         }
     }
-
 }
