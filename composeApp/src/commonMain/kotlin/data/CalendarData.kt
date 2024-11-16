@@ -26,6 +26,7 @@ data class CalendarData(
         val evening: String,
         val night: String,
         val officeOfReadings: String,
+        val officeOfReadingsSubtitle: String,
     )
 
     @Serializable

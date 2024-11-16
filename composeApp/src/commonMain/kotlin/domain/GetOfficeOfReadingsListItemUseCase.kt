@@ -16,14 +16,18 @@ class GetOfficeOfReadingsListItemUseCase(
         type = ListItemType.OFFICE_OF_READINGS,
         isEnabled = false,
         title = "Office of Readings",
-        text = "Office of Readings",
+        text = "",
         link = "",
     )
 
     operator fun invoke(): Flow<ListItemUiState> {
-        return preferencesRepository.getOfficeOfReadings().map{ prefs ->
+        return preferencesRepository.getOfficeOfReadings().map { prefs ->
             val office = mainRepository.retrieveCachedData()?.office
-            baseItem.copy(isEnabled = prefs.enabled, link = office?.officeOfReadings ?: "")
+            baseItem.copy(
+                isEnabled = prefs.enabled,
+                link = office?.officeOfReadings ?: "",
+                text = office?.officeOfReadingsSubtitle
+            )
         }
     }
 }
