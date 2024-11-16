@@ -48,6 +48,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            implementation(libs.decompose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -61,6 +63,9 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(compose.components.resources)
             implementation(compose.materialIconsExtended)
+            implementation(libs.decompose)
+            implementation(libs.decompose.jetbrains)
+            implementation(libs.kotlinx.serialization.json)
 
             api(libs.koin.core)
             implementation(libs.koin.compose)

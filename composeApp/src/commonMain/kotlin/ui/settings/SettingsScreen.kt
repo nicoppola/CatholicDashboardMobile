@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import catholicdashboard.composeapp.generated.resources.Res
 import catholicdashboard.composeapp.generated.resources.arrow_back_24
+import navigation.SettingsComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -46,7 +47,7 @@ import ui.theme.primaryWhite
 @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onBack: () -> Unit,
+    navComponent: SettingsComponent,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -56,7 +57,7 @@ fun SettingsScreen(
             CenterAlignedTopAppBar(
                 title = { Text("Settings") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = navComponent::onBack) {
                         Icon(
                             tint = Color.White,
                             painter = painterResource(Res.drawable.arrow_back_24),
