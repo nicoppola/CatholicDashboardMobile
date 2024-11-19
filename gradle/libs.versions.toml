@@ -11,6 +11,8 @@ androidx-espresso-core = "3.6.1"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
+composeWebview = "0.33.6"
+composeWebviewMultiplatform = "1.9.20"
 junit = "4.13.2"
 kotlin = "2.0.21"
 kotlinxDatetime = "0.6.0-RC.2"
@@ -33,6 +35,7 @@ core-splashscreen = "1.0.1"
 
 [libraries]
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

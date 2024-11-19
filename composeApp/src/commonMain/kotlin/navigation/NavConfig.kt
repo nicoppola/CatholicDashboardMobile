@@ -9,7 +9,7 @@ sealed class NavConfig(val route: String) {
     @Serializable
     data object Settings: NavConfig("settings_screen")
     @Serializable
-    data class WebView(val url: String) : NavConfig("webview")
+    data class WebView(val url: String, val title: String) : NavConfig("webview")
 }
 
 sealed class NavDestination {

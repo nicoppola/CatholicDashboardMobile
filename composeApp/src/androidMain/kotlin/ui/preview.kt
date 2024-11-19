@@ -125,7 +125,8 @@ private fun PreviewMain() {
                 ),
                 isLoading = false
             ),
-            onRefresh = {}
+            onRefresh = {},
+            onNavUrl = { _, _ -> },
         )
     }
 }

@@ -12,6 +12,7 @@ import navigation.NavDestination
 import navigation.RootComponent
 import org.koin.core.annotation.KoinExperimentalAPI
 import ui.settings.SettingsScreen
+import ui.webview.WebViewScreen
 
 @Composable
 fun App(root: RootComponent) {
@@ -23,7 +24,7 @@ fun App(root: RootComponent) {
         when (val instance = child.instance) {
             is NavDestination.Main -> MainScreen(instance.component)
             is NavDestination.Settings -> SettingsScreen(instance.component)
-            is NavDestination.WebView -> TODO()
+            is NavDestination.WebView -> WebViewScreen(instance.component)
         }
     }
 }

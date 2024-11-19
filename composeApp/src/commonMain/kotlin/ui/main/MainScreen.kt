@@ -38,12 +38,13 @@ import catholicdashboard.composeapp.generated.resources.settings_24
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 import ui.theme.LiturgicalColor
 import ui.theme.primaryWhite
 import ui.theme.secondaryWhite
 import ui.theme.tertiaryWhite
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
 @Composable
 fun MainScreen(navComponent: MainComponent) {
     val viewModel = koinViewModel<MainViewModel>()
@@ -92,7 +93,8 @@ fun MainScreen(navComponent: MainComponent) {
                     Box(modifier = Modifier.padding(innerPadding)) {
                         MainContent(
                             uiState = uiState,
-                            onRefresh = { viewModel.retrieveData() })
+                            onRefresh = { viewModel.retrieveData() },
+                            onNavUrl = { url, title -> navComponent.onNavWebView(url, title) })
                     }
                 }
             }
@@ -101,7 +103,7 @@ fun MainScreen(navComponent: MainComponent) {
 }
 
 @Composable
-fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
+fun MainContent(uiState: MainUiState, onRefresh: () -> Unit, onNavUrl: (String, String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -152,19 +154,28 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
             Spacer(Modifier.padding(bottom = 16.dp))
 
             uiState.readings?.let {
-                LinkSection(
-                    uiStates = listOf(it)
-                )
+                if (it.isEnabled) {
+                    LinkSection(
+                        uiStates = listOf(it),
+                        onNavUrl = onNavUrl
+                    )
+                }
             }
             if (uiState.office.isNotEmpty()) {
-                LinkSection(
-                    uiStates = uiState.office
-                )
+                if (uiState.office.find { it.isEnabled } != null) {
+                    LinkSection(
+                        uiStates = uiState.office,
+                        onNavUrl = onNavUrl
+                    )
+                }
             }
             uiState.officeOfReadings?.let {
-                LinkSection(
-                    uiStates = listOf(it)
-                )
+                if (it.isEnabled) {
+                    LinkSection(
+                        uiStates = listOf(it),
+                        onNavUrl = onNavUrl
+                    )
+                }
             }
         }
     }
@@ -174,10 +185,11 @@ fun MainContent(uiState: MainUiState, onRefresh: () -> Unit) {
 fun LinkSection(
     modifier: Modifier = Modifier,
     uiStates: List<ListItemUiState>,
+    onNavUrl: (String, String) -> Unit,
 ) {
     Column(modifier) {
         LinkCardHeader(uiStates.first())
-        uiStates.forEach { LinkCard(it) }
+        uiStates.forEach { LinkCard(it, onNavUrl) }
     }
 }
 
@@ -196,6 +208,7 @@ fun LinkCardHeader(
 @Composable
 fun LinkCard(
     uiState: ListItemUiState,
+    onNavUrl: (String, String) -> Unit,
 ) {
     if (!uiState.isEnabled) {
         return
@@ -206,7 +219,8 @@ fun LinkCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
-        onClick = { uriHandler.openUri(uiState.link) }
+        onClick = { onNavUrl(uiState.link, uiState.title) }
+        //onClick = { uriHandler.openUri(uiState.link) }
     ) {
         Row(
             modifier = Modifier

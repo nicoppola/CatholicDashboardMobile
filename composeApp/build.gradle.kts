@@ -66,6 +66,8 @@ kotlin {
             implementation(libs.decompose)
             implementation(libs.decompose.jetbrains)
             implementation(libs.kotlinx.serialization.json)
+            api(libs.compose.webview.multiplatform)
+
 
             api(libs.koin.core)
             implementation(libs.koin.compose)

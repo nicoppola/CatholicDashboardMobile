@@ -36,8 +36,8 @@ class RootComponent(
                         onNavigateToSettings = {
                             navigation.pushNew(NavConfig.Settings)
                         },
-                        onNavigateToWebView = {url ->
-                            navigation.pushNew(NavConfig.WebView(url))
+                        onNavigateToWebView = {url, title ->
+                            navigation.pushNew(NavConfig.WebView(url, title))
                         }
                     )
                 )
@@ -56,6 +56,7 @@ class RootComponent(
                 NavDestination.WebView(
                     WebViewComponent(
                         config.url,
+                        config.title,
                         context,
                         onNavBack = {
                             navigation.pop()
