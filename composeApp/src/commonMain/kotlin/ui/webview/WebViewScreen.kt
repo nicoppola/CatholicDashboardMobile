@@ -11,13 +11,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import catholicdashboard.composeapp.generated.resources.Res
 import catholicdashboard.composeapp.generated.resources.arrow_back_24
 import com.multiplatform.webview.web.WebView
+import com.multiplatform.webview.web.WebViewState
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
 import navigation.WebViewComponent
@@ -31,10 +34,13 @@ fun WebViewScreen(
     navComponent: WebViewComponent,
 ) {
     //todo loading screen
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(navComponent.title) },
+                scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = navComponent::onBack) {
                         Icon(
@@ -51,14 +57,13 @@ fun WebViewScreen(
                     ),
             )
         },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = LiturgicalColor.GREEN.color,
         content = { innerPadding ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.padding(innerPadding)) {
                     WebViewContent(navComponent.url)
                 }
 
-            }
         }
     )
 }
@@ -66,7 +71,7 @@ fun WebViewScreen(
 @Composable
 fun WebViewContent(url: String) {
 
-    val state = rememberWebViewState(url = url)
+    val state: WebViewState = rememberWebViewState(url = url)
     val navigator = rememberWebViewNavigator()
 
     WebView(

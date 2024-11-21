@@ -5,10 +5,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -59,14 +66,19 @@ fun MainScreen(navComponent: MainComponent) {
 
         else -> {}
     }
+    val backgroundColor = uiState.color.color
 
     Scaffold(
+        modifier = Modifier.fillMaxSize()
+            .background(backgroundColor)
+//            .consumeWindowInsets(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.safeDrawing),
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Catholic Dashboard") },
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
-                        containerColor = uiState.color.color,
+                        containerColor = backgroundColor,
                         titleContentColor = primaryWhite
                     ),
                 actions = {
@@ -80,12 +92,14 @@ fun MainScreen(navComponent: MainComponent) {
                 }
             )
         },
-        containerColor = LiturgicalColor.GREEN.color,
+//        containerColor = LiturgicalColor.GREEN.color,
         content = { innerPadding ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(15.dp),
+                        modifier = Modifier.size(15.dp).padding(innerPadding),
                         strokeWidth = 1.dp,
                         color = Color.Magenta
                     )
