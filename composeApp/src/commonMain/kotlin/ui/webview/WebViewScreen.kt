@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import catholicdashboard.composeapp.generated.resources.Res
 import catholicdashboard.composeapp.generated.resources.arrow_back_24
@@ -34,7 +37,7 @@ fun WebViewScreen(
     navComponent: WebViewComponent,
 ) {
     //todo loading screen
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         topBar = {
@@ -60,10 +63,14 @@ fun WebViewScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = LiturgicalColor.GREEN.color,
         content = { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    WebViewContent(navComponent.url)
-                }
-
+            Box(
+                modifier = Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                WebViewContent(navComponent.url)
+            }
         }
     )
 }
@@ -72,11 +79,11 @@ fun WebViewScreen(
 fun WebViewContent(url: String) {
 
     val state: WebViewState = rememberWebViewState(url = url)
-    val navigator = rememberWebViewNavigator()
 
+    //todo add "back" for to preious screen?
+    //todo make status bar and bottom bar transparent here
     WebView(
         state = state,
         modifier = Modifier.fillMaxSize(),
-        navigator = navigator
     )
 }
