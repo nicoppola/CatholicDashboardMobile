@@ -242,9 +242,9 @@ fun LinkCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                modifier = Modifier.weight(1F),
                 text = uiState.text ?: "ahhhhh put text here"
             )
-            Spacer(modifier = Modifier.weight(1F))
             Icon(
                 painter = painterResource(
                     resource = Res.drawable.baseline_keyboard_arrow_right_24

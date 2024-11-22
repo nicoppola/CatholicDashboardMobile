@@ -82,6 +82,7 @@ fun WebViewContent(url: String) {
 
     //todo add "back" for to preious screen?
     //todo make status bar and bottom bar transparent here
+    //todo add "open in browser" action
     WebView(
         state = state,
         modifier = Modifier.fillMaxSize(),

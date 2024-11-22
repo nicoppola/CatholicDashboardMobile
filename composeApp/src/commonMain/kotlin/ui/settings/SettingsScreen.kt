@@ -135,8 +135,8 @@ fun Item(
                         uiState.lauds?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(lauds = time)) } }
                         uiState.prime?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(prime = time)) } }
                         uiState.terce?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(terce = time)) } }
-                        uiState.terce?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(terce = time)) } }
-                        uiState.sext?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(sext = time)) } }
+                        uiState.sext?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(terce = time)) } }
+                        uiState.none?.let { TimeRow(it) { time -> onTimeChanged(uiState.copy(sext = time)) } }
                         uiState.vespers?.let {
                             TimeRow(it) { time ->
                                 onTimeChanged(
