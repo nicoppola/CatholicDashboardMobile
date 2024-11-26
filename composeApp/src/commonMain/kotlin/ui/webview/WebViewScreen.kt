@@ -20,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalUriHandler
 import catholicdashboard.composeapp.generated.resources.Res
 import catholicdashboard.composeapp.generated.resources.arrow_back_24
+import catholicdashboard.composeapp.generated.resources.settings_24
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.WebViewState
 import com.multiplatform.webview.web.rememberWebViewNavigator
@@ -38,6 +40,7 @@ fun WebViewScreen(
 ) {
     //todo loading screen
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val uriHandler = LocalUriHandler.current
 
     Scaffold(
         topBar = {
@@ -46,6 +49,15 @@ fun WebViewScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = navComponent::onBack) {
+                        Icon(
+                            tint = Color.White,
+                            painter = painterResource(Res.drawable.arrow_back_24),
+                            contentDescription = null,
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { uriHandler.openUri(navComponent.url) }) {
                         Icon(
                             tint = Color.White,
                             painter = painterResource(Res.drawable.arrow_back_24),
@@ -88,3 +100,4 @@ fun WebViewContent(url: String) {
         modifier = Modifier.fillMaxSize(),
     )
 }
+

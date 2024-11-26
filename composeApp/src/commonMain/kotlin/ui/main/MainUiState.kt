@@ -11,7 +11,6 @@ data class MainUiState(
     val readings: ListItemUiState? = null,
     val office: List<ListItemUiState> = emptyList(),
     val officeOfReadings: ListItemUiState? = null,
-    val isLoading: Boolean = false,
 )
 
 data class FeastUiState(

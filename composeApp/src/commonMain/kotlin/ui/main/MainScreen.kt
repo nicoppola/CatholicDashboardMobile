@@ -6,21 +6,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,13 +23,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,7 +44,6 @@ import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import ui.theme.LiturgicalColor
 import ui.theme.primaryWhite
 import ui.theme.secondaryWhite
 import ui.theme.tertiaryWhite
@@ -58,10 +55,24 @@ fun MainScreen(navComponent: MainComponent) {
     val uiState by viewModel.uiState.collectAsState()
     val uiStatus by viewModel.uiStatus.collectAsState()
 
+    val pullRefreshState =
+        rememberPullToRefreshState()
+
+    if (pullRefreshState.isRefreshing) {
+        LaunchedEffect(Unit) {
+            viewModel.retrieveData()
+//            pullRefreshState.startRefresh()
+        }
+    }
+
     when (uiStatus) {
         MainUiStatus.NavToSettings -> {
             viewModel.clearUiStatus()
             navComponent.onNavSettings()
+        }
+        MainUiStatus.LoadingComplete -> {
+            viewModel.clearUiStatus()
+            pullRefreshState.endRefresh()
         }
 
         else -> {}
@@ -71,8 +82,8 @@ fun MainScreen(navComponent: MainComponent) {
     Scaffold(
         modifier = Modifier.fillMaxSize()
             .background(backgroundColor)
-//            .consumeWindowInsets(WindowInsets.statusBars)
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .nestedScroll(pullRefreshState.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Catholic Dashboard") },
@@ -92,104 +103,99 @@ fun MainScreen(navComponent: MainComponent) {
                 }
             )
         },
-//        containerColor = LiturgicalColor.GREEN.color,
+        containerColor = backgroundColor,
         content = { innerPadding ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 18.dp)
+//                    .verticalScroll(rememberScrollState()),
             ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(15.dp).padding(innerPadding),
-                        strokeWidth = 1.dp,
-                        color = Color.Magenta
-                    )
-                } else {
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        MainContent(
-                            uiState = uiState,
-                            onRefresh = { viewModel.retrieveData() },
-                            onNavUrl = { url, title -> navComponent.onNavWebView(url, title) })
-                    }
-                }
+                PullToRefreshContainer(
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                )
+                MainContent(
+                    uiState = uiState,
+                    onNavUrl = { url, title -> navComponent.onNavWebView(url, title) })
             }
+
         }
     )
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainContent(uiState: MainUiState, onRefresh: () -> Unit, onNavUrl: (String, String) -> Unit) {
+fun MainContent(
+    uiState: MainUiState,
+    onNavUrl: (String, String) -> Unit
+) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
             .background(
-                uiState.color.color
+                //uiState.color.color
+                Color.Transparent
             )
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
     ) {
-        Column(
-            Modifier
-                .background(
-                    uiState.color.color
-                )
-                .padding(16.dp)
-        ) {
-            // Date
+        // Date
+        Text(
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
+            color = primaryWhite,
+            text = uiState.date,
+        )
+        // Season
+        Text(
+            modifier = Modifier.padding(bottom = 12.dp),
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Normal,
+                fontSize = 20.sp,
+            ),
+            color = secondaryWhite,
+            text = uiState.title
+        )
+
+        // Feasts
+        uiState.feasts.forEach {
             Text(
+                modifier = Modifier.padding(bottom = 4.dp),
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                 textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
-                color = primaryWhite,
-                text = uiState.date,
+                color = tertiaryWhite,
+                text = it.title
             )
-            // Season
-            Text(
-                modifier = Modifier.padding(bottom = 12.dp),
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 20.sp,
-                ),
-                color = secondaryWhite,
-                text = uiState.title
-            )
+        }
 
-            // Feasts
-            uiState.feasts.forEach {
-                Text(
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                    textAlign = TextAlign.Start,
-                    color = tertiaryWhite,
-                    text = it.title
+        Spacer(Modifier.padding(bottom = 16.dp))
+
+        uiState.readings?.let {
+            if (it.isEnabled) {
+                LinkSection(
+                    uiStates = listOf(it),
+                    onNavUrl = onNavUrl
                 )
             }
-
-            Spacer(Modifier.padding(bottom = 16.dp))
-
-            uiState.readings?.let {
-                if (it.isEnabled) {
-                    LinkSection(
-                        uiStates = listOf(it),
-                        onNavUrl = onNavUrl
-                    )
-                }
+        }
+        if (uiState.office.isNotEmpty()) {
+            if (uiState.office.find { it.isEnabled } != null) {
+                LinkSection(
+                    uiStates = uiState.office,
+                    onNavUrl = onNavUrl
+                )
             }
-            if (uiState.office.isNotEmpty()) {
-                if (uiState.office.find { it.isEnabled } != null) {
-                    LinkSection(
-                        uiStates = uiState.office,
-                        onNavUrl = onNavUrl
-                    )
-                }
-            }
-            uiState.officeOfReadings?.let {
-                if (it.isEnabled) {
-                    LinkSection(
-                        uiStates = listOf(it),
-                        onNavUrl = onNavUrl
-                    )
-                }
+        }
+        uiState.officeOfReadings?.let {
+            if (it.isEnabled) {
+                LinkSection(
+                    uiStates = listOf(it),
+                    onNavUrl = onNavUrl
+                )
             }
         }
     }
@@ -228,7 +234,7 @@ fun LinkCard(
         return
     }
 
-    val uriHandler = LocalUriHandler.current
+//    val uriHandler = LocalUriHandler.current
     Card(
         modifier = Modifier
             .fillMaxWidth()

@@ -123,9 +123,7 @@ private fun PreviewMain() {
                         text = "Evening Prayer 4:00p - 6:00p"
                     )
                 ),
-                isLoading = false
             ),
-            onRefresh = {},
             onNavUrl = { _, _ -> },
         )
     }

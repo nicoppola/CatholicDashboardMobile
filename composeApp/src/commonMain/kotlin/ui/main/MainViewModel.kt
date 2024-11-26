@@ -8,6 +8,7 @@ import datastore.PreferencesRepository
 import domain.GetOfficeListItemUseCase
 import domain.GetOfficeOfReadingsListItemUseCase
 import domain.GetReadingsListItemUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +25,6 @@ class MainViewModel(
     private val getReadingsListItemUseCase: GetReadingsListItemUseCase,
     private val getOfficeOfReadingsListItemUseCase: GetOfficeOfReadingsListItemUseCase,
 ) : ViewModel() {
-
-    // todo cache this in the backend and get it from there
-    private var currData: CalendarData.Day? = null
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -53,16 +51,12 @@ class MainViewModel(
 
     fun retrieveData() {
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(isLoading = true)
-            }
             repo.retrieveData()
                 .onSuccess { data ->
-                    currData = data
+                    val startData = _uiState.value
                     println("***** SUCCESS $data")
                     _uiState.update { curr ->
                         curr.copy(
-                            isLoading = false,
                             date = data.date,
                             title = data.title,
                             color = LiturgicalColor.fromName(data.color.name)
@@ -91,6 +85,13 @@ class MainViewModel(
                             }
                         }
                     }
+
+                    if (startData == _uiState.value) {
+                        delay(2000)
+                    }
+                    _uiStatus.update {
+                        MainUiStatus.LoadingComplete
+                    }
                 }
                 .onError { data ->
                     println("***** ERROR $data")
@@ -101,11 +102,10 @@ class MainViewModel(
                             title = data.name,
                         )
                     }
+                    _uiStatus.update {
+                        MainUiStatus.LoadingComplete
+                    }
                 }
-            _uiState.update {
-                //todo add shimmer loading?
-                uiState.value.copy(isLoading = false)
-            }
         }
     }
 }
