@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,11 +42,9 @@ import catholicdashboard.composeapp.generated.resources.settings_24
 import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
 import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.AndroidWebViewModifier
-import com.final_class.webview_multiplatform_mobile.webview.settings.android.showTitle
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.urlBarHidingEnabled
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.IosWebViewModifier
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.barCollapsingEnabled
-import com.final_class.webview_multiplatform_mobile.webview.settings.ios.entersReaderIfAvailable
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel

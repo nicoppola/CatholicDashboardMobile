@@ -61,7 +61,13 @@ class MainViewModel(
                             title = data.title,
                             color = LiturgicalColor.fromName(data.color.name)
                                 ?: LiturgicalColor.GREEN,
-                            feasts = data.proper.map { FeastUiState(it.title ?: "") },
+                            feasts = data.proper.mapNotNull {
+                                if (it.title != null && !(data.title.contains(it.title))) {
+                                    FeastUiState(it.title)
+                                } else {
+                                    null
+                                }
+                            },
                         )
                     }
                     viewModelScope.launch {

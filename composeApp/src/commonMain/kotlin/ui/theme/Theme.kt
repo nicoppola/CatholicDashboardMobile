@@ -32,6 +32,46 @@ private val LightColorScheme = lightColorScheme(
     //  */
 )
 
+private val OrdinaryColorScheme = lightColorScheme(
+    primary = Color(0xFF006630),
+    secondary = Color(0xFFFFFBFE),
+
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+)
+
+private val PennetentialColorScheme = lightColorScheme(
+    primary = Color(0xFF350066),
+    secondary = Color(0xFFFFFBFE),
+
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+)
+
+private val MartyrColorScheme = lightColorScheme(
+    primary = Color(0xFF700000),
+    secondary = Color(0xFFFFFBFE),
+
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+)
+
+private val RoseColorScheme = lightColorScheme(
+    primary = Color(0xFF9C168A),
+    secondary = Color(0xFFFFFBFE),
+
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+)
+
+private val SolemnityColorScheme = lightColorScheme(
+    primary = Color(0xFFF0F0F0),
+    secondary = Color(0xFFFFFBFE),
+
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+)
+
 @Composable
 fun CatholicDashboardTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
