@@ -24,7 +24,7 @@ class GetReadingsListItemUseCase(
             baseItem.copy(
                 isEnabled = it.enabled,
                 text = "Reading 1: ${readings?.readingOne}\n" +
-                        (if (readings?.readingTwo != null) "Reading 2: $readings?.readingTwo \n" else "") +
+                        (if (readings?.readingTwo != null) "Reading 2: ${readings.readingTwo} \n" else "") +
                         "Psalm: ${readings?.psalm}\n" +
                         "Gospel: ${readings?.gospel}",
                 link = readings?.link ?: ""

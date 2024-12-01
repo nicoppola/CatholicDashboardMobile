@@ -18,7 +18,7 @@ val tertiaryWhite = Color(0xBFFFFFFF)
 
 enum class LiturgicalColor(val color: Color, val title: String) {
     GREEN(color = Color(0xFF00662F), title = "green"),
-    VIOLET(color = Color(0XFF350066), title = "violet"),
+    VIOLET(color = Color(0XFF350066), title = "purple"),
     RED(color = Color(0xff660000), title = "red"),
     ROSE(color = Color(0xffab1897), title = "rose"),
     WHITE(color = Color.White, title = "white");
