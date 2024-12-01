@@ -1,6 +1,5 @@
 package ui.webview
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,18 +14,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import catholicdashboard.composeapp.generated.resources.Res
 import catholicdashboard.composeapp.generated.resources.arrow_back_24
-import catholicdashboard.composeapp.generated.resources.settings_24
+import catholicdashboard.composeapp.generated.resources.baseline_open_in_new_24
+import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
+import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.WebViewState
-import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
 import navigation.WebViewComponent
 import org.jetbrains.compose.resources.painterResource
@@ -39,9 +37,10 @@ fun WebViewScreen(
     navComponent: WebViewComponent,
 ) {
     //todo loading screen
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val uriHandler = LocalUriHandler.current
 
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -60,7 +59,7 @@ fun WebViewScreen(
                     IconButton(onClick = { uriHandler.openUri(navComponent.url) }) {
                         Icon(
                             tint = Color.White,
-                            painter = painterResource(Res.drawable.arrow_back_24),
+                            painter = painterResource(Res.drawable.baseline_open_in_new_24),
                             contentDescription = null,
                         )
                     }
@@ -75,29 +74,23 @@ fun WebViewScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = LiturgicalColor.GREEN.color,
         content = { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .fillMaxSize()
                     .padding(innerPadding)
-                    .verticalScroll(rememberScrollState())
+//                    .verticalScroll(rememberScrollState())
+                // scroll away doesn't work with iOS :((((((
             ) {
-                WebViewContent(navComponent.url)
+                val state: WebViewState = rememberWebViewState(url = navComponent.url)
+                //todo add "back" for to previous screen?
+                //todo make status bar and bottom bar transparent here
+                //todo add "open in browser" action
+                WebView(
+                    state = state,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         }
-    )
-}
-
-@Composable
-fun WebViewContent(url: String) {
-
-    val state: WebViewState = rememberWebViewState(url = url)
-
-    //todo add "back" for to preious screen?
-    //todo make status bar and bottom bar transparent here
-    //todo add "open in browser" action
-    WebView(
-        state = state,
-        modifier = Modifier.fillMaxSize(),
     )
 }
 

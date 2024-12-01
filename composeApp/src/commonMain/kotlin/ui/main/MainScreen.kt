@@ -40,6 +40,14 @@ import androidx.compose.ui.unit.sp
 import catholicdashboard.composeapp.generated.resources.Res
 import catholicdashboard.composeapp.generated.resources.baseline_keyboard_arrow_right_24
 import catholicdashboard.composeapp.generated.resources.settings_24
+import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
+import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
+import com.final_class.webview_multiplatform_mobile.webview.settings.android.AndroidWebViewModifier
+import com.final_class.webview_multiplatform_mobile.webview.settings.android.showTitle
+import com.final_class.webview_multiplatform_mobile.webview.settings.android.urlBarHidingEnabled
+import com.final_class.webview_multiplatform_mobile.webview.settings.ios.IosWebViewModifier
+import com.final_class.webview_multiplatform_mobile.webview.settings.ios.barCollapsingEnabled
+import com.final_class.webview_multiplatform_mobile.webview.settings.ios.entersReaderIfAvailable
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,15 +69,25 @@ fun MainScreen(navComponent: MainComponent) {
     if (pullRefreshState.isRefreshing) {
         LaunchedEffect(Unit) {
             viewModel.retrieveData()
-//            pullRefreshState.startRefresh()
         }
     }
+
+    val webViewController by rememberWebViewController()
+    WebViewPlatform(
+        webViewController = webViewController,
+        androidSettings = AndroidWebViewModifier
+            .urlBarHidingEnabled(true),
+        iosSettings = IosWebViewModifier
+            .barCollapsingEnabled(true)
+//            .entersReaderIfAvailable(true)
+    )
 
     when (uiStatus) {
         MainUiStatus.NavToSettings -> {
             viewModel.clearUiStatus()
             navComponent.onNavSettings()
         }
+
         MainUiStatus.LoadingComplete -> {
             viewModel.clearUiStatus()
             pullRefreshState.endRefresh()
@@ -118,7 +136,11 @@ fun MainScreen(navComponent: MainComponent) {
                 )
                 MainContent(
                     uiState = uiState,
-                    onNavUrl = { url, title -> navComponent.onNavWebView(url, title) })
+                    onNavUrl = { url, title ->
+                        webViewController.open(url = url)
+                        //navComponent.onNavWebView(url, title)
+                    }
+                )
             }
 
         }

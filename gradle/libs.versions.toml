@@ -30,6 +30,7 @@ coreI18n = "1.0.0-alpha01"
 material3Android = "1.2.1"
 uiToolingPreviewAndroid = "1.7.3"
 datastore-core = "1.1.1"
+webviewMultiplatformMobile = "1.1.0"
 wire = "5.0.0"
 core-splashscreen = "1.0.1"
 
@@ -71,6 +72,7 @@ androidx-material3-android = { group = "androidx.compose.material3", name = "mat
 androidx-ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+webview-multiplatform-mobile = { module = "io.github.final-class:webview-multiplatform-mobile", version.ref = "webviewMultiplatformMobile" }
 
 
 [plugins]

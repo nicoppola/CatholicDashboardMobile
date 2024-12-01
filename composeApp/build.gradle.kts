@@ -68,6 +68,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             api(libs.compose.webview.multiplatform)
 
+            implementation(libs.webview.multiplatform.mobile)
 
             api(libs.koin.core)
             implementation(libs.koin.compose)
