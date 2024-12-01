@@ -49,13 +49,19 @@ import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import ui.theme.primaryWhite
-import ui.theme.secondaryWhite
-import ui.theme.tertiaryWhite
+import ui.theme.LiturgicalColor
+import ui.theme.MartyrColorScheme
+import ui.theme.OrdinaryColorScheme
+import ui.theme.PenitentialColorScheme
+import ui.theme.RoseColorScheme
+import ui.theme.SolemnityColorScheme
 
 @OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
 @Composable
-fun MainScreen(navComponent: MainComponent) {
+fun MainScreen(
+    navComponent: MainComponent,
+    setStatusBarColor: @Composable (androidx.compose.ui.graphics.Color) -> Unit
+) {
     val viewModel = koinViewModel<MainViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val uiStatus by viewModel.uiStatus.collectAsState()
@@ -92,60 +98,72 @@ fun MainScreen(navComponent: MainComponent) {
 
         else -> {}
     }
-    val backgroundColor = uiState.color.color
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-            .background(backgroundColor)
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .nestedScroll(pullRefreshState.nestedScrollConnection),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Catholic Dashboard") },
-                colors = TopAppBarDefaults.topAppBarColors()
-                    .copy(
-                        containerColor = backgroundColor,
-                        titleContentColor = primaryWhite
-                    ),
-                actions = {
-                    IconButton(onClick = viewModel::onSettingsClicked) {
-                        Icon(
-                            tint = Color.White,
-                            painter = painterResource(Res.drawable.settings_24),
-                            contentDescription = null,
-                        )
+    //todo get a provider or something for this
+    val colorScheme = when (uiState.color) {
+        LiturgicalColor.GREEN -> OrdinaryColorScheme
+        LiturgicalColor.VIOLET -> PenitentialColorScheme
+        LiturgicalColor.RED -> MartyrColorScheme
+        LiturgicalColor.ROSE -> RoseColorScheme
+        LiturgicalColor.WHITE -> SolemnityColorScheme
+    }
+
+    setStatusBarColor(colorScheme.primary)
+
+    MaterialTheme(colorScheme = colorScheme) {
+
+        Scaffold(
+            modifier = Modifier.fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .nestedScroll(pullRefreshState.nestedScrollConnection),
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text("Catholic Dashboard") },
+                    colors = TopAppBarDefaults.topAppBarColors()
+                        .copy(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
+                    actions = {
+                        IconButton(onClick = viewModel::onSettingsClicked) {
+                            Icon(
+                                tint = Color.White,
+                                painter = painterResource(Res.drawable.settings_24),
+                                contentDescription = null,
+                            )
+                        }
                     }
-                }
-            )
-        },
-        containerColor = backgroundColor,
-        content = { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 18.dp)
+                )
+            },
+            containerColor = MaterialTheme.colorScheme.primary,
+            content = { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = 18.dp)
 //                    .verticalScroll(rememberScrollState()),
-            ) {
-                PullToRefreshContainer(
-                    state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter),
-                )
-                MainContent(
-                    uiState = uiState,
-                    onNavUrl = { url, title ->
-                        webViewController.open(url = url)
-                        //navComponent.onNavWebView(url, title)
-                    }
-                )
-            }
+                ) {
+                    PullToRefreshContainer(
+                        state = pullRefreshState,
+                        modifier = Modifier.align(Alignment.TopCenter),
+                    )
+                    MainContent(
+                        uiState = uiState,
+                        onNavUrl = { url, title ->
+                            webViewController.open(url = url)
+                            //navComponent.onNavWebView(url, title)
+                        }
+                    )
+                }
 
-        }
-    )
+            }
+        )
+    }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(
     uiState: MainUiState,
@@ -165,7 +183,7 @@ fun MainContent(
         Text(
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
-            color = primaryWhite,
+            color = MaterialTheme.colorScheme.onPrimary,
             text = uiState.date,
         )
         // Season
@@ -176,7 +194,7 @@ fun MainContent(
                 fontWeight = FontWeight.Normal,
                 fontSize = 20.sp,
             ),
-            color = secondaryWhite,
+            color = MaterialTheme.colorScheme.onPrimary,
             text = uiState.title
         )
 
@@ -186,7 +204,7 @@ fun MainContent(
                 modifier = Modifier.padding(bottom = 4.dp),
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                 textAlign = TextAlign.Start,
-                color = tertiaryWhite,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 text = it.title
             )
         }
@@ -238,7 +256,7 @@ fun LinkCardHeader(
 ) {
     Text(
         modifier = Modifier.padding(vertical = 8.dp),
-        color = primaryWhite,
+        color = MaterialTheme.colorScheme.onPrimary,
         style = MaterialTheme.typography.titleSmall,
         text = uiState.title
     )
@@ -253,13 +271,12 @@ fun LinkCard(
         return
     }
 
-//    val uriHandler = LocalUriHandler.current
+    // set colors? not sure yet
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         onClick = { onNavUrl(uiState.link, uiState.title) }
-        //onClick = { uriHandler.openUri(uiState.link) }
     ) {
         Row(
             modifier = Modifier

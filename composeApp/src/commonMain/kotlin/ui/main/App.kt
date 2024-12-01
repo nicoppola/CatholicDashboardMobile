@@ -1,7 +1,5 @@
 package ui.main
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
@@ -10,19 +8,18 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import navigation.NavDestination
 import navigation.RootComponent
-import org.koin.core.annotation.KoinExperimentalAPI
 import ui.settings.SettingsScreen
 import ui.webview.WebViewScreen
 
 @Composable
-fun App(root: RootComponent) {
+fun App(root: RootComponent, setStatusBarColor: @Composable (androidx.compose.ui.graphics.Color) -> Unit) {
     val childStack by root.navDestinationStack.subscribeAsState()
     Children(
         stack = childStack,
         animation = stackAnimation(slide())
     ) { child ->
         when (val instance = child.instance) {
-            is NavDestination.Main -> MainScreen(instance.component)
+            is NavDestination.Main -> MainScreen(instance.component) { color -> setStatusBarColor(color) }
             is NavDestination.Settings -> SettingsScreen(instance.component)
             is NavDestination.WebView -> WebViewScreen(instance.component)
         }

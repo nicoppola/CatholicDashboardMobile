@@ -18,7 +18,6 @@ import navigation.RootComponent
 import org.koin.compose.KoinContext
 import ui.main.App
 import ui.theme.CatholicDashboardTheme
-import ui.theme.LiturgicalColor
 
 
 class MainActivity : ComponentActivity() {
@@ -42,9 +41,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CatholicDashboardTheme {
-                setStatusBarColor(LiturgicalColor.GREEN.color)
+                //setStatusBarColor(LiturgicalColor.GREEN.color)
                 KoinContext {
-                    App(root)
+                    App(root) { color -> setStatusBarColor(color) }
                 }
             }
         }

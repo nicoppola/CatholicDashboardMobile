@@ -14,5 +14,5 @@ fun MainViewController() = ComposeUIViewController(
     val root = remember {
         RootComponent(DefaultComponentContext(LifecycleRegistry()))
     }
-    App(root)
+    App(root) {}
 }

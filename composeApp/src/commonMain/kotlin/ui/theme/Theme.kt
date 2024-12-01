@@ -5,9 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalViewConfiguration
 
 
 private val DarkColorScheme = darkColorScheme(
@@ -32,7 +30,7 @@ private val LightColorScheme = lightColorScheme(
     //  */
 )
 
-private val OrdinaryColorScheme = lightColorScheme(
+val OrdinaryColorScheme = lightColorScheme(
     primary = Color(0xFF006630),
     secondary = Color(0xFFFFFBFE),
 
@@ -40,7 +38,7 @@ private val OrdinaryColorScheme = lightColorScheme(
     onSecondary = Color.Black,
 )
 
-private val PennetentialColorScheme = lightColorScheme(
+val PenitentialColorScheme = lightColorScheme(
     primary = Color(0xFF350066),
     secondary = Color(0xFFFFFBFE),
 
@@ -48,27 +46,30 @@ private val PennetentialColorScheme = lightColorScheme(
     onSecondary = Color.Black,
 )
 
-private val MartyrColorScheme = lightColorScheme(
-    primary = Color(0xFF700000),
+val MartyrColorScheme = lightColorScheme(
+    primary = Color(0xFF5C0000),
     secondary = Color(0xFFFFFBFE),
 
     onPrimary = Color.White,
+    onPrimaryContainer = Color(0xBFFFFFFF),
     onSecondary = Color.Black,
 )
 
-private val RoseColorScheme = lightColorScheme(
+val RoseColorScheme = lightColorScheme(
     primary = Color(0xFF9C168A),
     secondary = Color(0xFFFFFBFE),
 
     onPrimary = Color.White,
+    onPrimaryContainer = Color(0xBFFFFFFF),
     onSecondary = Color.Black,
 )
 
-private val SolemnityColorScheme = lightColorScheme(
+val SolemnityColorScheme = lightColorScheme(
     primary = Color(0xFFF0F0F0),
     secondary = Color(0xFFFFFBFE),
 
-    onPrimary = Color.White,
+    onPrimary = Color.Black,
+    onPrimaryContainer = Color(0xBF000000),
     onSecondary = Color.Black,
 )
 
@@ -84,7 +85,7 @@ fun CatholicDashboardTheme(
 
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = OrdinaryColorScheme, //colorScheme,
         typography = Typography,
         content = content
     )

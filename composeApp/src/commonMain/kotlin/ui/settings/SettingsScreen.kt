@@ -3,14 +3,12 @@ package ui.settings
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -41,8 +39,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import ui.settings.SettingsScreenUiState.SettingUiState
-import ui.theme.LiturgicalColor
-import ui.theme.primaryWhite
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -67,12 +63,12 @@ fun SettingsScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
-                        containerColor = LiturgicalColor.GREEN.color,
-                        titleContentColor = primaryWhite
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary
                     ),
             )
         },
-        containerColor = LiturgicalColor.GREEN.color,
+        containerColor = MaterialTheme.colorScheme.primary,
         content = { innerPadding ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.padding(innerPadding)) {

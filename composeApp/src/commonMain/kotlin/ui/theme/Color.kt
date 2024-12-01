@@ -1,6 +1,8 @@
 package ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -23,7 +25,7 @@ enum class LiturgicalColor(val color: Color, val title: String) {
 
     companion object{
         fun fromName(inName: String): LiturgicalColor? {
-            return entries.find { inName == it.title }
+            return entries.find { inName.toLowerCase(Locale.current) == it.title }
         }
     }
 }
