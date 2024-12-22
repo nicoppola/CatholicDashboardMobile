@@ -126,3 +126,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview.android)
 }
 
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "com.coppola.catholic"
+    generateResClass = auto
+}

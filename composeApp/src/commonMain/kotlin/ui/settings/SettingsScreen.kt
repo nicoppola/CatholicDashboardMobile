@@ -32,8 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import catholicdashboard.composeapp.generated.resources.Res
-import catholicdashboard.composeapp.generated.resources.arrow_back_24
+import com.coppola.catholic.Res
+import com.coppola.catholic.arrow_back_24
 import navigation.SettingsComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel

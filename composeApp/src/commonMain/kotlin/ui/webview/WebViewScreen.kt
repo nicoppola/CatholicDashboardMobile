@@ -18,11 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
-import catholicdashboard.composeapp.generated.resources.Res
-import catholicdashboard.composeapp.generated.resources.arrow_back_24
-import catholicdashboard.composeapp.generated.resources.baseline_open_in_new_24
-import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
-import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
+import com.coppola.catholic.Res
+import com.coppola.catholic.arrow_back_24
+import com.coppola.catholic.baseline_open_in_new_24
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.WebViewState
 import com.multiplatform.webview.web.rememberWebViewState

@@ -22,7 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,9 +36,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import catholicdashboard.composeapp.generated.resources.Res
-import catholicdashboard.composeapp.generated.resources.baseline_keyboard_arrow_right_24
-import catholicdashboard.composeapp.generated.resources.settings_24
+import androidx.compose.ui.zIndex
+import com.coppola.catholic.Res
+import com.coppola.catholic.keyboard_arrow_right
+import com.coppola.catholic.settings_24
 import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
 import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.AndroidWebViewModifier
@@ -60,20 +61,39 @@ import ui.theme.SolemnityColorScheme
 @Composable
 fun MainScreen(
     navComponent: MainComponent,
-    setStatusBarColor: @Composable (androidx.compose.ui.graphics.Color) -> Unit
+    setStatusBarColor: @Composable (Color) -> Unit
 ) {
     val viewModel = koinViewModel<MainViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val uiStatus by viewModel.uiStatus.collectAsState()
 
-    val pullRefreshState =
-        rememberPullToRefreshState()
-
-    if (pullRefreshState.isRefreshing) {
-        LaunchedEffect(Unit) {
-            viewModel.retrieveData()
+    when (uiStatus) {
+        MainUiStatus.NavToSettings -> {
+            viewModel.clearUiStatus()
+            navComponent.onNavSettings()
         }
+        else -> {}
     }
+
+    MainScaffold(
+        uiState = uiState,
+        setStatusBarColor = setStatusBarColor,
+        onSettingsClicked = viewModel::onSettingsClicked,
+        onRefresh = viewModel::retrieveData,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScaffold(uiState: MainUiState,
+                 setStatusBarColor: @Composable (Color) -> Unit,
+                 onSettingsClicked: () -> Unit,
+                 onRefresh:() -> Unit,
+                 ){
+
+    val pullRefreshState =
+        rememberPullToRefreshState(
+        )
 
     val webViewController by rememberWebViewController()
     WebViewPlatform(
@@ -82,22 +102,7 @@ fun MainScreen(
             .urlBarHidingEnabled(true),
         iosSettings = IosWebViewModifier
             .barCollapsingEnabled(true)
-//            .entersReaderIfAvailable(true)
     )
-
-    when (uiStatus) {
-        MainUiStatus.NavToSettings -> {
-            viewModel.clearUiStatus()
-            navComponent.onNavSettings()
-        }
-
-        MainUiStatus.LoadingComplete -> {
-            viewModel.clearUiStatus()
-            pullRefreshState.endRefresh()
-        }
-
-        else -> {}
-    }
 
     //todo get a provider or something for this
     val colorScheme = when (uiState.color) {
@@ -115,8 +120,7 @@ fun MainScreen(
         Scaffold(
             modifier = Modifier.fillMaxSize()
                 .background(MaterialTheme.colorScheme.primary)
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-                .nestedScroll(pullRefreshState.nestedScrollConnection),
+                .windowInsetsPadding(WindowInsets.safeDrawing),
             topBar = {
                 CenterAlignedTopAppBar(
                     title = { Text("Catholic Dashboard") },
@@ -126,7 +130,7 @@ fun MainScreen(
                             titleContentColor = MaterialTheme.colorScheme.onPrimary,
                         ),
                     actions = {
-                        IconButton(onClick = viewModel::onSettingsClicked) {
+                        IconButton(onClick = onSettingsClicked) {
                             Icon(
                                 tint = Color.White,
                                 painter = painterResource(Res.drawable.settings_24),
@@ -145,17 +149,20 @@ fun MainScreen(
                         .padding(horizontal = 18.dp)
 //                    .verticalScroll(rememberScrollState()),
                 ) {
-                    PullToRefreshContainer(
+                    PullToRefreshBox(
                         state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter),
-                    )
-                    MainContent(
-                        uiState = uiState,
-                        onNavUrl = { url, title ->
-                            webViewController.open(url = url)
-                            //navComponent.onNavWebView(url, title)
-                        }
-                    )
+                        isRefreshing = uiState.isRefreshing,
+                        onRefresh =  onRefresh,
+                        modifier = Modifier.align(Alignment.TopCenter).zIndex(1F),
+                    ) {
+                        MainContent(
+                            uiState = uiState,
+                            onNavUrl = { url, title ->
+                                webViewController.open(url = url)
+                                //navComponent.onNavWebView(url, title)
+                            }
+                        )
+                    }
                 }
 
             }
@@ -204,7 +211,7 @@ fun MainContent(
                 modifier = Modifier.padding(bottom = 4.dp),
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                 textAlign = TextAlign.Start,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.onPrimary,
                 text = it.title
             )
         }
@@ -289,7 +296,7 @@ fun LinkCard(
             )
             Icon(
                 painter = painterResource(
-                    resource = Res.drawable.baseline_keyboard_arrow_right_24
+                    resource = Res.drawable.keyboard_arrow_right
                 ),
                 contentDescription = null,
             )

@@ -1,5 +1,5 @@
 [versions]
-agp = "8.3.0"
+agp = "8.5.2"
 android-compileSdk = "34"
 android-minSdk = "26"
 android-targetSdk = "34"
@@ -10,7 +10,7 @@ androidx-core-ktx = "1.15.0"
 androidx-espresso-core = "3.6.1"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose-plugin = "1.6.11"
+compose-plugin = "1.7.3"
 composeWebview = "0.33.6"
 composeWebviewMultiplatform = "1.9.20"
 junit = "4.13.2"
@@ -28,13 +28,14 @@ navigationCompose = "2.8.0-alpha02"
 lifecycleViewModel = "2.8.6"
 coreI18n = "1.0.0-alpha01"
 material3Android = "1.2.1"
-uiToolingPreviewAndroid = "1.7.3"
+uiToolingPreviewAndroid = "1.7.6"
 datastore-core = "1.1.1"
 webviewMultiplatformMobile = "1.1.0"
 wire = "5.0.0"
 core-splashscreen = "1.0.1"
 
 [libraries]
+androidx-ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "composeWebviewMultiplatform" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -69,7 +70,6 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 androidx-core-i18n = { group = "androidx.core", name = "core-i18n", version.ref = "coreI18n" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
-androidx-ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 webview-multiplatform-mobile = { module = "io.github.final-class:webview-multiplatform-mobile", version.ref = "webviewMultiplatformMobile" }

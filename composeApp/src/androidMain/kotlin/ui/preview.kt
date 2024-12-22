@@ -1,22 +1,31 @@
 package ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.coppola.catholic.Res
+import com.coppola.catholic.arrow_back_24
+import com.coppola.catholic.settings_24
+import org.jetbrains.compose.resources.painterResource
 import ui.main.FeastUiState
 import ui.main.ListItemType
 import ui.main.ListItemUiState
 import ui.main.MainContent
+import ui.main.MainScaffold
 import ui.main.MainUiState
 import ui.theme.LiturgicalColor
+import ui.theme.OrdinaryColorScheme
 
 @Preview(showBackground = true)
 @Composable
@@ -95,10 +104,27 @@ private fun TestTypography() {
 
 @Preview
 @Composable
+private fun Test() {
+    Row {
+        Icon(
+            tint = Color.White,
+            painter = painterResource(Res.drawable.arrow_back_24),
+            contentDescription = null,
+        )
+        Icon(
+            tint = Color.White,
+            painter = painterResource(Res.drawable.settings_24),
+            contentDescription = null,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 private fun PreviewMain() {
     MaterialTheme {
-        MainContent(
-            MainUiState(
+        MainScaffold(
+            uiState = MainUiState(
                 date = "October 5, 2024",
                 title = "Twenty Sixth Week of Ordinary Time",
                 color = LiturgicalColor.GREEN,
@@ -124,7 +150,162 @@ private fun PreviewMain() {
                     )
                 ),
             ),
-            onNavUrl = { _, _ -> },
+            setStatusBarColor = { _ -> },
+            onSettingsClicked = {},
+            onRefresh = { },
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewPurple() {
+    MaterialTheme {
+        MainScaffold(
+            uiState = MainUiState(
+                date = "December 22, 2024",
+                title = "Fourth Sunday of Advent",
+                color = LiturgicalColor.VIOLET,
+                feasts = listOf(
+                    FeastUiState("Saint Faustina Kowalska, virgin"),
+                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
+                ),
+                upcoming = emptyList(),
+                readings =
+                ListItemUiState(
+                    isEnabled = true,
+                    type = ListItemType.READINGS,
+                    title = "Daily Readings",
+                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                ),
+                office =
+                listOf(
+                    ListItemUiState(
+                        isEnabled = true,
+                        type = ListItemType.OFFICE,
+                        title = "Divine Office",
+                        text = "Evening Prayer 4:00p - 6:00p"
+                    )
+                ),
+            ),
+            setStatusBarColor = { _ -> },
+            onSettingsClicked = {},
+            onRefresh = { },
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewRose() {
+    MaterialTheme {
+        MainScaffold(
+            uiState = MainUiState(
+                date = "December 15, 2024",
+                title = "Third Sunday of Advent",
+                color = LiturgicalColor.ROSE,
+                feasts = listOf(
+                    FeastUiState("Saint Faustina Kowalska, virgin"),
+                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
+                ),
+                upcoming = emptyList(),
+                readings =
+                ListItemUiState(
+                    isEnabled = true,
+                    type = ListItemType.READINGS,
+                    title = "Daily Readings",
+                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                ),
+                office =
+                listOf(
+                    ListItemUiState(
+                        isEnabled = true,
+                        type = ListItemType.OFFICE,
+                        title = "Divine Office",
+                        text = "Evening Prayer 4:00p - 6:00p"
+                    )
+                ),
+            ),
+            setStatusBarColor = { _ -> },
+            onSettingsClicked = {},
+            onRefresh = { },
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewRed() {
+    MaterialTheme {
+        MainScaffold(
+            uiState = MainUiState(
+                date = "December 15, 2024",
+                title = "Feast of Martyr",
+                color = LiturgicalColor.RED,
+                feasts = listOf(
+                    FeastUiState("Saint Faustina Kowalska, virgin"),
+                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
+                ),
+                upcoming = emptyList(),
+                readings =
+                ListItemUiState(
+                    isEnabled = true,
+                    type = ListItemType.READINGS,
+                    title = "Daily Readings",
+                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                ),
+                office =
+                listOf(
+                    ListItemUiState(
+                        isEnabled = true,
+                        type = ListItemType.OFFICE,
+                        title = "Divine Office",
+                        text = "Evening Prayer 4:00p - 6:00p"
+                    )
+                ),
+            ),
+            setStatusBarColor = { _ -> },
+            onSettingsClicked = {},
+            onRefresh = { },
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewWhite() {
+    MaterialTheme {
+        MainScaffold(
+            uiState = MainUiState(
+                date = "December 15, 2024",
+                title = "Holy Holy Day",
+                color = LiturgicalColor.WHITE,
+                feasts = listOf(
+                    FeastUiState("Saint Faustina Kowalska, virgin"),
+                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
+                ),
+                upcoming = emptyList(),
+                readings =
+                ListItemUiState(
+                    isEnabled = true,
+                    type = ListItemType.READINGS,
+                    title = "Daily Readings",
+                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                ),
+                office =
+                listOf(
+                    ListItemUiState(
+                        isEnabled = true,
+                        type = ListItemType.OFFICE,
+                        title = "Divine Office",
+                        text = "Evening Prayer 4:00p - 6:00p"
+                    )
+                ),
+            ),
+            setStatusBarColor = { _ -> },
+            onSettingsClicked = {},
+            onRefresh = { },
+        )
+    }
+}
+

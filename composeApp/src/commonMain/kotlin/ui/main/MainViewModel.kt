@@ -51,6 +51,9 @@ class MainViewModel(
 
     fun retrieveData() {
         viewModelScope.launch {
+            _uiState.update {
+                _uiState.value.copy(isRefreshing = true)
+            }
             repo.retrieveData()
                 .onSuccess { data ->
                     val startData = _uiState.value
@@ -95,8 +98,8 @@ class MainViewModel(
                     if (startData == _uiState.value) {
                         delay(2000)
                     }
-                    _uiStatus.update {
-                        MainUiStatus.LoadingComplete
+                    _uiState.update {
+                        _uiState.value.copy(isRefreshing = false)
                     }
                 }
                 .onError { data ->
@@ -108,8 +111,8 @@ class MainViewModel(
                             title = data.name,
                         )
                     }
-                    _uiStatus.update {
-                        MainUiStatus.LoadingComplete
+                    _uiState.update {
+                        _uiState.value.copy(isRefreshing = false)
                     }
                 }
         }
