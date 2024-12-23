@@ -153,6 +153,8 @@ private fun PreviewMain() {
             setStatusBarColor = { _ -> },
             onSettingsClicked = {},
             onRefresh = { },
+            onNextDate = { },
+            onPreviousDate = { },
         )
     }
 }
@@ -191,6 +193,8 @@ private fun PreviewPurple() {
             setStatusBarColor = { _ -> },
             onSettingsClicked = {},
             onRefresh = { },
+            onNextDate = { },
+            onPreviousDate = { },
         )
     }
 }
@@ -229,6 +233,8 @@ private fun PreviewRose() {
             setStatusBarColor = { _ -> },
             onSettingsClicked = {},
             onRefresh = { },
+            onNextDate = { },
+            onPreviousDate = { },
         )
     }
 }
@@ -267,6 +273,8 @@ private fun PreviewRed() {
             setStatusBarColor = { _ -> },
             onSettingsClicked = {},
             onRefresh = { },
+            onNextDate = { },
+            onPreviousDate = { },
         )
     }
 }
@@ -305,6 +313,8 @@ private fun PreviewWhite() {
             setStatusBarColor = { _ -> },
             onSettingsClicked = {},
             onRefresh = { },
+            onNextDate = { },
+            onPreviousDate = { },
         )
     }
 }

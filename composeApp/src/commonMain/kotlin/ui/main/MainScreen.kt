@@ -25,19 +25,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.coppola.catholic.Res
+import com.coppola.catholic.keyboard_arrow_left
 import com.coppola.catholic.keyboard_arrow_right
 import com.coppola.catholic.settings_24
 import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
@@ -72,6 +71,7 @@ fun MainScreen(
             viewModel.clearUiStatus()
             navComponent.onNavSettings()
         }
+
         else -> {}
     }
 
@@ -80,16 +80,21 @@ fun MainScreen(
         setStatusBarColor = setStatusBarColor,
         onSettingsClicked = viewModel::onSettingsClicked,
         onRefresh = viewModel::retrieveData,
+        onNextDate = viewModel::onNextDateButton,
+        onPreviousDate = viewModel::onPreviousDateButton,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold(uiState: MainUiState,
-                 setStatusBarColor: @Composable (Color) -> Unit,
-                 onSettingsClicked: () -> Unit,
-                 onRefresh:() -> Unit,
-                 ){
+fun MainScaffold(
+    uiState: MainUiState,
+    setStatusBarColor: @Composable (Color) -> Unit,
+    onSettingsClicked: () -> Unit,
+    onRefresh: () -> Unit,
+    onNextDate: () -> Unit,
+    onPreviousDate: () -> Unit
+) {
 
     val pullRefreshState =
         rememberPullToRefreshState(
@@ -152,7 +157,7 @@ fun MainScaffold(uiState: MainUiState,
                     PullToRefreshBox(
                         state = pullRefreshState,
                         isRefreshing = uiState.isRefreshing,
-                        onRefresh =  onRefresh,
+                        onRefresh = onRefresh,
                         modifier = Modifier.align(Alignment.TopCenter).zIndex(1F),
                     ) {
                         MainContent(
@@ -160,7 +165,9 @@ fun MainScaffold(uiState: MainUiState,
                             onNavUrl = { url, title ->
                                 webViewController.open(url = url)
                                 //navComponent.onNavWebView(url, title)
-                            }
+                            },
+                            onNextDateButton = onNextDate,
+                            onPreviousDateButton = onPreviousDate,
                         )
                     }
                 }
@@ -174,29 +181,59 @@ fun MainScaffold(uiState: MainUiState,
 @Composable
 fun MainContent(
     uiState: MainUiState,
-    onNavUrl: (String, String) -> Unit
+    onNavUrl: (String, String) -> Unit,
+    onPreviousDateButton: () -> Unit,
+    onNextDateButton: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                //uiState.color.color
                 Color.Transparent
             )
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
     ) {
         // Date
-        Text(
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
-            color = MaterialTheme.colorScheme.onPrimary,
-            text = uiState.date,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+//                modifier = Modifier.weight(1F),
+                onClick = onPreviousDateButton
+            ) {
+                Icon(
+                    tint = Color.White,
+                    painter = painterResource(Res.drawable.keyboard_arrow_left),
+                    contentDescription = null,
+                )
+            }
+            Text(
+                modifier = Modifier.weight(1F).fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onPrimary,
+                text = uiState.date,
+            )
+            IconButton(
+//                modifier = Modifier.weight(1F),
+                onClick = onNextDateButton
+            ) {
+                Icon(
+                    tint = Color.White,
+                    painter = painterResource(Res.drawable.keyboard_arrow_right),
+                    contentDescription = null,
+                )
+            }
+        }
+
         // Season
         Text(
-            modifier = Modifier.padding(bottom = 12.dp),
-            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Normal,
                 fontSize = 20.sp,

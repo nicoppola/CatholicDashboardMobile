@@ -14,6 +14,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import ui.theme.LiturgicalColor
 import util.addNotNull
 import util.onError
@@ -25,6 +32,8 @@ class MainViewModel(
     private val getReadingsListItemUseCase: GetReadingsListItemUseCase,
     private val getOfficeOfReadingsListItemUseCase: GetOfficeOfReadingsListItemUseCase,
 ) : ViewModel() {
+
+    private var currDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -49,12 +58,22 @@ class MainViewModel(
         }
     }
 
+    fun onPreviousDateButton(){
+        currDate = currDate.minus(DatePeriod(days = 1))
+        retrieveData()
+    }
+
+    fun onNextDateButton(){
+        currDate = currDate.plus(DatePeriod(days = 1))
+        retrieveData()
+    }
+
     fun retrieveData() {
         viewModelScope.launch {
             _uiState.update {
                 _uiState.value.copy(isRefreshing = true)
             }
-            repo.retrieveData()
+            repo.retrieveData(currDate)
                 .onSuccess { data ->
                     val startData = _uiState.value
                     println("***** SUCCESS $data")
@@ -74,21 +93,21 @@ class MainViewModel(
                         )
                     }
                     viewModelScope.launch {
-                        getOfficeOfReadingsListItemUseCase().collect { newItem ->
+                        getOfficeOfReadingsListItemUseCase(currDate).collect { newItem ->
                             _uiState.update {
                                 it.copy(officeOfReadings = newItem)
                             }
                         }
                     }
                     viewModelScope.launch {
-                        getReadingsListItemUseCase().collect { newItem ->
+                        getReadingsListItemUseCase(currDate).collect { newItem ->
                             _uiState.update {
                                 it.copy(readings = newItem)
                             }
                         }
                     }
                     viewModelScope.launch {
-                        getOfficeListItemUseCase().collect { newItem ->
+                        getOfficeListItemUseCase(currDate).collect { newItem ->
                             _uiState.update {
                                 uiState.value.copy(office = newItem)
                             }

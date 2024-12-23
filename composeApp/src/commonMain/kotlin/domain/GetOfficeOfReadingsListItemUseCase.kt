@@ -4,6 +4,7 @@ import data.MainRepository
 import datastore.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
 import ui.main.ListItemType
 import ui.main.ListItemUiState
 
@@ -20,9 +21,9 @@ class GetOfficeOfReadingsListItemUseCase(
         link = "",
     )
 
-    operator fun invoke(): Flow<ListItemUiState> {
+    operator fun invoke(date: LocalDate): Flow<ListItemUiState> {
         return preferencesRepository.getOfficeOfReadings().map { prefs ->
-            val office = mainRepository.retrieveCachedData()?.office
+            val office = mainRepository.retrieveCachedData(date)?.office
             baseItem.copy(
                 isEnabled = prefs.enabled,
                 link = office?.officeOfReadings ?: "",

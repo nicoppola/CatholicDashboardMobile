@@ -4,6 +4,7 @@ import data.MainRepository
 import datastore.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDate
 import ui.main.ListItemType
 import ui.main.ListItemUiState
 
@@ -18,9 +19,9 @@ class GetReadingsListItemUseCase(
         title = "Daily Readings",
     )
 
-    suspend operator fun invoke(): Flow<ListItemUiState> {
+    suspend operator fun invoke(date: LocalDate): Flow<ListItemUiState> {
         return preferencesRepository.getReadings().map {
-            val readings = repository.retrieveCachedData()?.readings
+            val readings = repository.retrieveCachedData(date)?.readings
             baseItem.copy(
                 isEnabled = it.enabled,
                 text = "Reading 1: ${readings?.readingOne}\n" +

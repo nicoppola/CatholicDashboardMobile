@@ -4,9 +4,9 @@ import data.CalendarData
 import data.MainRepository
 import datastore.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -25,11 +25,11 @@ class GetOfficeListItemUseCase(
     private val mainRepository: MainRepository,
     private val preferencesRepository: PreferencesRepository,
 ) {
-    suspend operator fun invoke(): Flow<List<ListItemUiState>> {
+    suspend operator fun invoke(date: LocalDate): Flow<List<ListItemUiState>> {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
         return preferencesRepository.getOffice().map { prefs ->
-            val office = mainRepository.retrieveCachedData()?.office
+            val office = mainRepository.retrieveCachedData(date)?.office
             LiturgyHours.entries.mapNotNull {
                 it.contains(it.getTimeSetting(prefs), now)
             }.map {
