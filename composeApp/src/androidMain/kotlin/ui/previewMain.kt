@@ -21,11 +21,9 @@ import org.jetbrains.compose.resources.painterResource
 import ui.main.FeastUiState
 import ui.main.ListItemType
 import ui.main.ListItemUiState
-import ui.main.MainContent
 import ui.main.MainScaffold
 import ui.main.MainUiState
 import ui.theme.LiturgicalColor
-import ui.theme.OrdinaryColorScheme
 
 @Preview(showBackground = true)
 @Composable
