@@ -58,13 +58,27 @@ class MainViewModel(
         }
     }
 
+    fun onTodayClicked(){
+        currDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        _uiState.update {
+            _uiState.value.copy(isToday = true)
+        }
+        retrieveData()
+    }
+
     fun onPreviousDateButton(){
         currDate = currDate.minus(DatePeriod(days = 1))
+        _uiState.update {
+            _uiState.value.copy(isToday = false)
+        }
         retrieveData()
     }
 
     fun onNextDateButton(){
         currDate = currDate.plus(DatePeriod(days = 1))
+        _uiState.update {
+            _uiState.value.copy(isToday = false)
+        }
         retrieveData()
     }
 

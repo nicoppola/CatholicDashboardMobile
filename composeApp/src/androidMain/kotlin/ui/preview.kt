@@ -125,6 +125,7 @@ private fun PreviewMain() {
     MaterialTheme {
         MainScaffold(
             uiState = MainUiState(
+                isToday = false,
                 date = "October 5, 2024",
                 title = "Twenty Sixth Week of Ordinary Time",
                 color = LiturgicalColor.GREEN,
@@ -155,6 +156,7 @@ private fun PreviewMain() {
             onRefresh = { },
             onNextDate = { },
             onPreviousDate = { },
+            onToday = {},
         )
     }
 }
@@ -195,6 +197,7 @@ private fun PreviewPurple() {
             onRefresh = { },
             onNextDate = { },
             onPreviousDate = { },
+            onToday = {},
         )
     }
 }
@@ -235,6 +238,7 @@ private fun PreviewRose() {
             onRefresh = { },
             onNextDate = { },
             onPreviousDate = { },
+            onToday = {},
         )
     }
 }
@@ -275,6 +279,7 @@ private fun PreviewRed() {
             onRefresh = { },
             onNextDate = { },
             onPreviousDate = { },
+            onToday = {},
         )
     }
 }
@@ -311,6 +316,7 @@ private fun PreviewWhite() {
                 ),
             ),
             setStatusBarColor = { _ -> },
+            onToday = {},
             onSettingsClicked = {},
             onRefresh = { },
             onNextDate = { },

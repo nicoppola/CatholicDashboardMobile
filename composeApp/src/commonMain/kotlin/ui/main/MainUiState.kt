@@ -3,6 +3,7 @@ package ui.main
 import ui.theme.LiturgicalColor
 
 data class MainUiState(
+    val isToday: Boolean = true,
     val date: String = "",
     val title: String = "",
     val color: LiturgicalColor = LiturgicalColor.GREEN,

@@ -1,6 +1,7 @@
 package ui.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,14 +14,17 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -56,7 +60,7 @@ import ui.theme.PenitentialColorScheme
 import ui.theme.RoseColorScheme
 import ui.theme.SolemnityColorScheme
 
-@OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun MainScreen(
     navComponent: MainComponent,
@@ -79,6 +83,7 @@ fun MainScreen(
         uiState = uiState,
         setStatusBarColor = setStatusBarColor,
         onSettingsClicked = viewModel::onSettingsClicked,
+        onToday = viewModel::onTodayClicked,
         onRefresh = viewModel::retrieveData,
         onNextDate = viewModel::onNextDateButton,
         onPreviousDate = viewModel::onPreviousDateButton,
@@ -91,6 +96,7 @@ fun MainScaffold(
     uiState: MainUiState,
     setStatusBarColor: @Composable (Color) -> Unit,
     onSettingsClicked: () -> Unit,
+    onToday: () -> Unit,
     onRefresh: () -> Unit,
     onNextDate: () -> Unit,
     onPreviousDate: () -> Unit
@@ -152,7 +158,6 @@ fun MainScaffold(
                         .fillMaxSize()
                         .padding(innerPadding)
                         .padding(horizontal = 18.dp)
-//                    .verticalScroll(rememberScrollState()),
                 ) {
                     PullToRefreshBox(
                         state = pullRefreshState,
@@ -164,8 +169,8 @@ fun MainScaffold(
                             uiState = uiState,
                             onNavUrl = { url, title ->
                                 webViewController.open(url = url)
-                                //navComponent.onNavWebView(url, title)
                             },
+                            onToday = onToday,
                             onNextDateButton = onNextDate,
                             onPreviousDateButton = onPreviousDate,
                         )
@@ -182,6 +187,7 @@ fun MainScaffold(
 fun MainContent(
     uiState: MainUiState,
     onNavUrl: (String, String) -> Unit,
+    onToday: () -> Unit,
     onPreviousDateButton: () -> Unit,
     onNextDateButton: () -> Unit,
 ) {
@@ -200,7 +206,6 @@ fun MainContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-//                modifier = Modifier.weight(1F),
                 onClick = onPreviousDateButton
             ) {
                 Icon(
@@ -216,8 +221,8 @@ fun MainContent(
                 color = MaterialTheme.colorScheme.onPrimary,
                 text = uiState.date,
             )
+
             IconButton(
-//                modifier = Modifier.weight(1F),
                 onClick = onNextDateButton
             ) {
                 Icon(
@@ -225,6 +230,21 @@ fun MainContent(
                     painter = painterResource(Res.drawable.keyboard_arrow_right),
                     contentDescription = null,
                 )
+            }
+        }
+
+        if (uiState.isToday.not()) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                OutlinedButton(
+                    onClick = onToday) {
+                    Text(
+                        text = "Go to today",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
             }
         }
 
@@ -245,9 +265,11 @@ fun MainContent(
         // Feasts
         uiState.feasts.forEach {
             Text(
-                modifier = Modifier.padding(bottom = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                textAlign = TextAlign.Start,
+                textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onPrimary,
                 text = it.title
             )
