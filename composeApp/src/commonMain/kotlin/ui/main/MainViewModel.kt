@@ -94,7 +94,7 @@ class MainViewModel(
                     _uiState.update { curr ->
                         curr.copy(
                             date = data.date,
-                            title = data.title,
+                            title = data.readings.title ?: "", // RIP my calendar data.title,
                             color = LiturgicalColor.fromName(data.color.name)
                                 ?: LiturgicalColor.GREEN,
                             feasts = data.proper.mapNotNull {

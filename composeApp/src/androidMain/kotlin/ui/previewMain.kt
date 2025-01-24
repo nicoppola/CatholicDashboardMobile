@@ -189,6 +189,12 @@ private fun PreviewPurple() {
                         text = "Evening Prayer 4:00p - 6:00p"
                     )
                 ),
+                officeOfReadings =  ListItemUiState(
+                    isEnabled = true,
+                    type = ListItemType.OFFICE_OF_READINGS,
+                    title = "Office of Readings",
+                    text = "Fourth sunday of Advent",
+                )
             ),
             setStatusBarColor = { _ -> },
             onSettingsClicked = {},

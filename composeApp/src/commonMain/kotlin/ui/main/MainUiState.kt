@@ -18,7 +18,7 @@ data class MainUiState(
 data class FeastUiState(
     val title: String = "",
     val feast: String = "",
-    )
+)
 
 data class ListItemUiState(
     val type: ListItemType,
