@@ -39,7 +39,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coppola.catholic.Res
+import com.coppola.catholic.arrow_back_24
+import com.coppola.catholic.baseline_calendar_today_24
 import com.coppola.catholic.keyboard_arrow_left
 import com.coppola.catholic.keyboard_arrow_right
 import com.coppola.catholic.settings_24
@@ -134,6 +137,17 @@ fun MainScaffold(
                 .windowInsetsPadding(WindowInsets.safeDrawing),
             topBar = {
                 CenterAlignedTopAppBar(
+                    navigationIcon = {
+                        if (!uiState.isToday) {
+                            IconButton(onClick = onToday) {
+                                Icon(
+                                    tint = Color.White,
+                                    painter = painterResource(uiState.todayIcon),
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                    },
                     title = { Text("Catholic Dashboard") },
                     colors = TopAppBarDefaults.topAppBarColors()
                         .copy(
@@ -170,7 +184,6 @@ fun MainScaffold(
                             onNavUrl = { url, title ->
                                 webViewController.open(url = url)
                             },
-                            onToday = onToday,
                             onNextDateButton = onNextDate,
                             onPreviousDateButton = onPreviousDate,
                         )
@@ -187,7 +200,6 @@ fun MainScaffold(
 fun MainContent(
     uiState: MainUiState,
     onNavUrl: (String, String) -> Unit,
-    onToday: () -> Unit,
     onPreviousDateButton: () -> Unit,
     onNextDateButton: () -> Unit,
 ) {
@@ -230,21 +242,6 @@ fun MainContent(
                     painter = painterResource(Res.drawable.keyboard_arrow_right),
                     contentDescription = null,
                 )
-            }
-        }
-
-        if (uiState.isToday.not()) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                OutlinedButton(
-                    onClick = onToday) {
-                    Text(
-                        text = "Go to today",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
             }
         }
 
