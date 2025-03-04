@@ -12,10 +12,7 @@ import kotlinx.coroutines.launch
 import org.coppola.catholic.OfficeOfReadingsPrefs
 import org.coppola.catholic.OfficePrefs
 import org.coppola.catholic.ReadingsPrefs
-import org.coppola.catholic.TimePref
-import org.coppola.catholic.TimeRangePrefs
-import ui.settings.SettingsScreenUiState.SettingUiState
-import kotlin.reflect.KClass
+import ui.settings.SettingsScreenUiStateOld.SettingUiStateOld
 
 class SettingsViewModel(private val preferencesRepository: PreferencesRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsScreenUiState())
@@ -29,105 +26,21 @@ class SettingsViewModel(private val preferencesRepository: PreferencesRepository
     }
 
     ///// Click Handlers /////
-    fun onCheckChanged(settingUiState: SettingUiState) {
-
+    fun onReadingsChanged(newPrefs: ReadingsPrefs?) {
         viewModelScope.launch {
-            when (settingUiState) {
-                is SettingsScreenUiState.ReadingsSettingUiState -> {
-                    preferencesRepository.updateReadings(
-                        ReadingsPrefs(!settingUiState.isChecked)
-                    )
-                    updateSettingUiState(settingUiState.copy(isChecked = !settingUiState.isChecked))
-                }
-
-                is SettingsScreenUiState.DivineOfficeSettingUiState -> {
-                    preferencesRepository.updateOffice(
-                        settingUiState.toOfficePrefs
-                            ().copy(!settingUiState.isChecked)
-                    )
-
-                    updateSettingUiState(settingUiState.copy(isChecked = !settingUiState.isChecked))
-                }
-
-                is SettingsScreenUiState.OfficeOfReadingsSettingUiState -> {
-                    preferencesRepository.updateOfficeOfReadings(
-                        OfficeOfReadingsPrefs(!settingUiState.isChecked)
-                    )
-                    updateSettingUiState(settingUiState.copy(isChecked = !settingUiState.isChecked))
-                }
-            }
+            newPrefs?.let { preferencesRepository.updateReadings(it) }
         }
     }
 
-    fun onTimeChanged(
-        newUiState: SettingUiState
-    ) {
+    fun onLiturgyHoursChanged(newPrefs: OfficePrefs?) {
         viewModelScope.launch {
-            when (newUiState) {
-                is SettingsScreenUiState.DivineOfficeSettingUiState -> {
-                    preferencesRepository.updateOffice(
-                        newUiState.toOfficePrefs()
-                    )
-                    updateSettingUiState(newUiState)
-                }
-
-                else -> {/* do nothing */
-                }
-            }
+            newPrefs?.let { preferencesRepository.updateOffice(it) }
         }
     }
 
-    ///// UI State Setup /////
-
-    private fun updateSettingUiState(newUiState: SettingUiState) {
-        val newScreenUiState =
-            uiState.value.settings.replace(newUiState)
-        _uiState.update {
-            uiState.value.copy(
-                settings = newScreenUiState
-            )
-        }
-    }
-
-    private fun SettingsScreenUiState.DivineOfficeSettingUiState.toOfficePrefs(): OfficePrefs {
-        return OfficePrefs(
-            enabled = this.isChecked,
-            lauds = lauds?.toTimeRangePrefs(),
-            prime = prime?.toTimeRangePrefs(),
-            terce = terce?.toTimeRangePrefs(),
-            sext = sext?.toTimeRangePrefs(),
-            none = none?.toTimeRangePrefs(),
-            vespers = vespers?.toTimeRangePrefs(),
-            compline = compline?.toTimeRangePrefs(),
-            matins = matins?.toTimeRangePrefs(),
-        )
-    }
-
-    private fun SettingsScreenUiState.TimeSettingUiState.toTimeRangePrefs(): TimeRangePrefs {
-        return TimeRangePrefs(
-            startTime = TimePref(this.start.hour, this.start.minute),
-            endTime = TimePref(this.end.hour, this.end.minute),
-        )
-    }
-
-    private fun getTimeSettingUiState(
-        time: TimeRangePrefs?,
-        label: String
-    ): SettingsScreenUiState.TimeSettingUiState? {
-        return if (time != null) {
-            SettingsScreenUiState.TimeSettingUiState(
-                label = label,
-                start = TimeUiState(
-                    hour = time.startTime?.hour ?: 0,
-                    minute = time.startTime?.minute ?: 0,
-                ),
-                end = TimeUiState(
-                    hour = time.endTime?.hour ?: 0,
-                    minute = time.endTime?.minute ?: 0
-                )
-            )
-        } else {
-            null
+    fun onOfficeOfReadingsUpdated(newPrefs: OfficeOfReadingsPrefs?) {
+        viewModelScope.launch {
+            newPrefs?.let { preferencesRepository.updateOfficeOfReadings(it) }
         }
     }
 
@@ -135,49 +48,41 @@ class SettingsViewModel(private val preferencesRepository: PreferencesRepository
         viewModelScope.launch {
             _uiState.update {
                 uiState.value.copy(
-                    settings = listOf(
-                        getReadingsUiState(), getOfficeUiState(), getOfficeOfReadingsUiState()
-                    )
+                    readingsSettings = getReadingsUiState(),
+                    liturgyOfHours = getOfficeUiState(),
+                    officeOfReadings = getOfficeOfReadingsUiState()
                 )
             }
         }
     }
 
-    private suspend fun getReadingsUiState(): SettingsScreenUiState.ReadingsSettingUiState {
-        val prefs = preferencesRepository.getReadings().first()
-        return SettingsScreenUiState.ReadingsSettingUiState(
-            title = "Daily Readings",
-            isChecked = prefs.enabled,
-        )
+    private suspend fun getReadingsUiState(): ReadingsPrefs {
+        return preferencesRepository.getReadings().first()
     }
 
-    private suspend fun getOfficeUiState(): SettingsScreenUiState.DivineOfficeSettingUiState {
-        val prefs = preferencesRepository.getOffice().first()
-        return SettingsScreenUiState.DivineOfficeSettingUiState(
-            title = "Divine Office",
-            isChecked = prefs.enabled,
-            lauds = getTimeSettingUiState(prefs.lauds, "Morning Prayer"),
-            prime = null,
-            terce = getTimeSettingUiState(prefs.terce, "Mid-morning Prayer"),
-            sext = getTimeSettingUiState(prefs.sext, "Midday Prayer"),
-            none = getTimeSettingUiState(prefs.none, "Mid-afternoon Prayer"),
-            vespers = getTimeSettingUiState(prefs.vespers, "Evening Prayer"),
-            compline = getTimeSettingUiState(prefs.compline, "Night Prayer"),
-            matins = null,
-        )
+    private suspend fun getOfficeUiState(): OfficePrefs {
+        return preferencesRepository.getOffice().first()
+//        return SettingsScreenUiStateOld.DivineOfficeSettingUiState(
+//            title = "Divine Office",
+//            isOn = prefs.enabled,
+//            lauds = getTimeSettingUiState(prefs.lauds, "Morning Prayer"),
+//            prime = null,
+//            terce = getTimeSettingUiState(prefs.terce, "Mid-morning Prayer"),
+//            sext = getTimeSettingUiState(prefs.sext, "Midday Prayer"),
+//            none = getTimeSettingUiState(prefs.none, "Mid-afternoon Prayer"),
+//            vespers = getTimeSettingUiState(prefs.vespers, "Evening Prayer"),
+//            compline = getTimeSettingUiState(prefs.compline, "Night Prayer"),
+//            matins = null,
+//        )
     }
 
-    private suspend fun getOfficeOfReadingsUiState(): SettingsScreenUiState.OfficeOfReadingsSettingUiState {
-        val prefs = preferencesRepository.getOfficeOfReadings().first()
-        return SettingsScreenUiState.OfficeOfReadingsSettingUiState(
-            title = "Office of Readings",
-            isChecked = prefs.enabled,
-        )
+    private suspend fun getOfficeOfReadingsUiState(): OfficeOfReadingsPrefs {
+        return preferencesRepository.getOfficeOfReadings().first()
     }
 
 }
 
-private fun List<SettingUiState>.replace(copy: SettingUiState): List<SettingUiState> {
+private fun List<SettingUiStateOld>.replace(copy: SettingUiStateOld): List<SettingUiStateOld> {
     val test = this.toMutableList()
     val curr = this.find { it.title == copy.title }
     val index = this.indexOf(curr)

@@ -1,12 +1,13 @@
 package ui.settings
 
-data class SettingsScreenUiState(
-    val settings: List<SettingUiState> = emptyList()
+data class SettingsScreenUiStateOld(
+    val settings: List<SettingUiStateOld> = emptyList()
 ) {
-    sealed class SettingUiState(
+    sealed class SettingUiStateOld(
         val type: SettingType,
         open val title: String = "",
-        open val isChecked: Boolean = true,
+        open val isOn: Boolean = true,
+        open val isEditMode: Boolean = false,
         //val times: List<TimeSetting> = emptyList(),
     )
 
@@ -18,19 +19,18 @@ data class SettingsScreenUiState(
 
     data class ReadingsSettingUiState(
         override val title: String,
-        override val isChecked: Boolean,
-    ) : SettingUiState(type = SettingType.READINGS)
+        override val isOn: Boolean,
+    ) : SettingUiStateOld(type = SettingType.READINGS)
 
     data class OfficeOfReadingsSettingUiState(
         override val title: String,
-        override val isChecked: Boolean,
+        override val isOn: Boolean,
     ) :
-        SettingUiState(type = SettingType.OFFICE_OF_READINGS)
+        SettingUiStateOld(type = SettingType.OFFICE_OF_READINGS)
 
     data class DivineOfficeSettingUiState(
         override val title: String,
-        override val isChecked: Boolean,
-        val isEditMode: Boolean = false,
+        override val isOn: Boolean,
         val lauds: TimeSettingUiState?,
         val prime: TimeSettingUiState?,
         val terce: TimeSettingUiState?,
@@ -39,7 +39,7 @@ data class SettingsScreenUiState(
         val vespers: TimeSettingUiState?,
         val compline: TimeSettingUiState?,
         val matins: TimeSettingUiState?,
-    ) : SettingUiState(type = SettingType.DIVINE_OFFICE)
+    ) : SettingUiStateOld(type = SettingType.DIVINE_OFFICE)
 
 
 }
