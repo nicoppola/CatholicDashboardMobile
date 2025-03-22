@@ -118,7 +118,7 @@ fun MainScaffold(
                     if (!uiState.isToday) {
                         IconButton(onClick = onToday) {
                             Icon(
-                                tint = MaterialTheme.colorScheme.onPrimary,
+//                                tint = MaterialTheme.colorScheme.onPrimary,
                                 painter = painterResource(uiState.todayIcon),
                                 contentDescription = null,
                             )
