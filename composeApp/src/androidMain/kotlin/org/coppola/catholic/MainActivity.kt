@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
@@ -41,9 +42,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CatholicDashboardTheme {
-                //setStatusBarColor(LiturgicalColor.GREEN.color)
                 KoinContext {
-                    App(root) { color -> setStatusBarColor(color) }
+                        App(root) { color -> setStatusBarColor(color) }
                 }
             }
         }
@@ -53,11 +53,11 @@ class MainActivity : ComponentActivity() {
 //todo call this inside the main screen or do by themes
 @SuppressLint("ComposableNaming")
 @Composable
-fun setStatusBarColor(color: androidx.compose.ui.graphics.Color){
+fun setStatusBarColor(color: androidx.compose.ui.graphics.Color) {
     val view = LocalView.current
     SideEffect {
         val barStyle =
-             SystemBarStyle.light(color.toArgb(), color.toArgb())
+            SystemBarStyle.light(color.toArgb(), color.toArgb())
         (view.context as ComponentActivity).enableEdgeToEdge(barStyle, barStyle)
     }
 //    if(!view.isInEditMode) {

@@ -5,6 +5,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import di.initKoin
 import navigation.RootComponent
 import ui.main.App
+import ui.theme.CatholicDashboardTheme
 
 fun MainViewController() = ComposeUIViewController(
     configure = {
@@ -14,5 +15,7 @@ fun MainViewController() = ComposeUIViewController(
     val root = remember {
         RootComponent(DefaultComponentContext(LifecycleRegistry()))
     }
-    App(root) {}
+    CatholicDashboardTheme {
+        App(root) {}
+    }
 }

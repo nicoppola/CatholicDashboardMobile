@@ -8,69 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+val DarkColorScheme = darkColorScheme(
+    primary = primaryDark,
+    onPrimary = onPrimaryDark,
+    primaryContainer = primaryContainerDark,
+    onPrimaryContainer = onPrimaryContainerDark,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-
-    ///* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    //  */
-)
-
-val OrdinaryColorScheme = lightColorScheme(
-    primary = Color(0xFF006630),
-    secondary = Color(0xFFFFFBFE),
-
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-)
-
-val PenitentialColorScheme = lightColorScheme(
-    primary = Color(0xFF350066),
-    secondary = Color(0xFFFFFBFE),
-
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-)
-
-val MartyrColorScheme = lightColorScheme(
-    primary = Color(0xFF5C0000),
-    secondary = Color(0xFFFFFBFE),
-
-    onPrimary = Color.White,
-    onPrimaryContainer = Color(0xBFFFFFFF),
-    onSecondary = Color.Black,
-)
-
-val RoseColorScheme = lightColorScheme(
-    primary = Color(0xFF9C168A),
-    secondary = Color(0xFFFFFBFE),
-
-    onPrimary = Color.White,
-    onPrimaryContainer = Color(0xBFFFFFFF),
-    onSecondary = Color.Black,
-)
-
-val SolemnityColorScheme = lightColorScheme(
-    primary = Color(0xFFF0F0F0),
-    secondary = Color(0xFFFFFBFE),
-
-    onPrimary = Color.Black,
-    onPrimaryContainer = Color(0xBF000000),
-    onSecondary = Color.Black,
+val LightColorScheme = lightColorScheme(
+    primary = primaryLight,
+    onPrimary = onPrimaryLight,
+    primaryContainer = primaryContainerLight,
+    onPrimaryContainer = onPrimaryContainerLight,
 )
 
 @Composable
@@ -83,9 +32,8 @@ fun CatholicDashboardTheme(
     val colorScheme =
             if (darkTheme) DarkColorScheme else LightColorScheme
 
-
     MaterialTheme(
-        colorScheme = OrdinaryColorScheme, //colorScheme,
+        colorScheme = colorScheme,
         typography = Typography,
         content = content
     )

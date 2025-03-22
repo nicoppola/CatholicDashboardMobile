@@ -1,7 +1,6 @@
 package ui.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,17 +13,16 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -39,10 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coppola.catholic.Res
-import com.coppola.catholic.arrow_back_24
-import com.coppola.catholic.baseline_calendar_today_24
 import com.coppola.catholic.keyboard_arrow_left
 import com.coppola.catholic.keyboard_arrow_right
 import com.coppola.catholic.settings_24
@@ -56,12 +51,6 @@ import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import ui.theme.LiturgicalColor
-import ui.theme.MartyrColorScheme
-import ui.theme.OrdinaryColorScheme
-import ui.theme.PenitentialColorScheme
-import ui.theme.RoseColorScheme
-import ui.theme.SolemnityColorScheme
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
@@ -117,82 +106,69 @@ fun MainScaffold(
         iosSettings = IosWebViewModifier
             .barCollapsingEnabled(true)
     )
+    setStatusBarColor(MaterialTheme.colorScheme.primary)
 
-    //todo get a provider or something for this
-    val colorScheme = when (uiState.color) {
-        LiturgicalColor.GREEN -> OrdinaryColorScheme
-        LiturgicalColor.VIOLET -> PenitentialColorScheme
-        LiturgicalColor.RED -> MartyrColorScheme
-        LiturgicalColor.ROSE -> RoseColorScheme
-        LiturgicalColor.WHITE -> SolemnityColorScheme
-    }
-
-    setStatusBarColor(colorScheme.primary)
-
-    MaterialTheme(colorScheme = colorScheme) {
-
-        Scaffold(
-            modifier = Modifier.fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary)
-                .windowInsetsPadding(WindowInsets.safeDrawing),
-            topBar = {
-                CenterAlignedTopAppBar(
-                    navigationIcon = {
-                        if (!uiState.isToday) {
-                            IconButton(onClick = onToday) {
-                                Icon(
-                                    tint = Color.White,
-                                    painter = painterResource(uiState.todayIcon),
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-                    },
-                    title = { Text("Catholic Dashboard") },
-                    colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                    actions = {
-                        IconButton(onClick = onSettingsClicked) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
+            .windowInsetsPadding(WindowInsets.safeDrawing),
+        topBar = {
+            CenterAlignedTopAppBar(
+                navigationIcon = {
+                    if (!uiState.isToday) {
+                        IconButton(onClick = onToday) {
                             Icon(
-                                tint = Color.White,
-                                painter = painterResource(Res.drawable.settings_24),
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                painter = painterResource(uiState.todayIcon),
                                 contentDescription = null,
                             )
                         }
                     }
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.primary,
-            content = { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(horizontal = 18.dp)
-                ) {
-                    PullToRefreshBox(
-                        state = pullRefreshState,
-                        isRefreshing = uiState.isRefreshing,
-                        onRefresh = onRefresh,
-                        modifier = Modifier.align(Alignment.TopCenter).zIndex(1F),
-                    ) {
-                        MainContent(
-                            uiState = uiState,
-                            onNavUrl = { url, title ->
-                                webViewController.open(url = url)
-                            },
-                            onNextDateButton = onNextDate,
-                            onPreviousDateButton = onPreviousDate,
+                },
+                title = { Text("Catholic Dashboard") },
+                colors = TopAppBarDefaults.topAppBarColors()
+                    .copy(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                actions = {
+                    IconButton(onClick = onSettingsClicked) {
+                        Icon(
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            painter = painterResource(Res.drawable.settings_24),
+                            contentDescription = null,
                         )
                     }
                 }
-
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.primary,
+        content = { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 18.dp)
+            ) {
+                PullToRefreshBox(
+                    state = pullRefreshState,
+                    isRefreshing = uiState.isRefreshing,
+                    onRefresh = onRefresh,
+                    modifier = Modifier.align(Alignment.TopCenter).zIndex(1F),
+                ) {
+                    MainContent(
+                        uiState = uiState,
+                        onNavUrl = { url, title ->
+                            webViewController.open(url = url)
+                        },
+                        onNextDateButton = onNextDate,
+                        onPreviousDateButton = onPreviousDate,
+                    )
+                }
             }
-        )
-    }
+
+        }
+    )
 }
 
 
@@ -221,7 +197,7 @@ fun MainContent(
                 onClick = onPreviousDateButton
             ) {
                 Icon(
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     painter = painterResource(Res.drawable.keyboard_arrow_left),
                     contentDescription = null,
                 )
@@ -238,7 +214,7 @@ fun MainContent(
                 onClick = onNextDateButton
             ) {
                 Icon(
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     painter = painterResource(Res.drawable.keyboard_arrow_right),
                     contentDescription = null,
                 )
@@ -260,16 +236,19 @@ fun MainContent(
         )
 
         // Feasts
-        uiState.feasts.forEach {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onPrimary,
-                text = it.title
-            )
+        if(uiState.feasts.isNotEmpty()){
+            LinkCardHeader("Optional Memorials")
+            uiState.feasts.forEach {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+                    textAlign = TextAlign.Start,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    text = it.title
+                )
+            }
         }
 
         Spacer(Modifier.padding(bottom = 16.dp))
@@ -308,20 +287,20 @@ fun LinkSection(
     onNavUrl: (String, String) -> Unit,
 ) {
     Column(modifier) {
-        LinkCardHeader(uiStates.first())
+        LinkCardHeader(uiStates.first().title)
         uiStates.forEach { LinkCard(it, onNavUrl) }
     }
 }
 
 @Composable
 fun LinkCardHeader(
-    uiState: ListItemUiState,
+    title: String,
 ) {
     Text(
         modifier = Modifier.padding(vertical = 8.dp),
         color = MaterialTheme.colorScheme.onPrimary,
         style = MaterialTheme.typography.titleSmall,
-        text = uiState.title
+        text = title
     )
 }
 
@@ -333,12 +312,13 @@ fun LinkCard(
     if (!uiState.isEnabled) {
         return
     }
-
-    // set colors? not sure yet
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
+        colors = CardDefaults.cardColors().copy(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
         onClick = { onNavUrl(uiState.link, uiState.title) }
     ) {
         Row(

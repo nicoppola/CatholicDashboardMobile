@@ -4,6 +4,7 @@ import data.CalendarData
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.serialization.JsonConvertException
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.SerializationException
 import util.NetworkError
@@ -28,7 +29,10 @@ class DefaultMyClient(
             return Result.Error(NetworkError.NO_INTERNET)
         } catch (e: SerializationException) {
             return Result.Error(NetworkError.SERIALIZATION)
-        } catch (e: Exception) {
+        } catch (e: JsonConvertException) {
+            return Result.Error(NetworkError.SERIALIZATION)
+        }
+        catch (e: Exception) {
             //java.net.ConnectException: Failed to connect to /10.0.2.2:8080
             return Result.Error(NetworkError.UNKNOWN)
         }
