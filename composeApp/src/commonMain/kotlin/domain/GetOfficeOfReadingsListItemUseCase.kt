@@ -5,6 +5,7 @@ import datastore.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
+import ui.main.ListItemHeaderUiState
 import ui.main.ListItemType
 import ui.main.ListItemUiState
 
@@ -14,9 +15,11 @@ class GetOfficeOfReadingsListItemUseCase(
 ) {
 
     private val baseItem = ListItemUiState(
+        header = ListItemHeaderUiState(
+            title = "Office of Readings",
+        ),
         type = ListItemType.OFFICE_OF_READINGS,
         isEnabled = false,
-        title = "Office of Readings",
         text = "",
         link = "",
     )

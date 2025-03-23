@@ -98,6 +98,10 @@ class MainViewModel(
         retrieveData()
     }
 
+    fun onLitHoursButton(isExpanded: Boolean){
+        updateLiturgyOfHours(isExpanded)
+    }
+
     fun onPreviousDateButton() {
         currDate = currDate.minus(DatePeriod(days = 1))
         retrieveData()
@@ -148,13 +152,8 @@ class MainViewModel(
                             }
                         }
                     }
-                    viewModelScope.launch {
-                        getOfficeListItemUseCase(currDate).collect { newItem ->
-                            _uiState.update {
-                                uiState.value.copy(office = newItem)
-                            }
-                        }
-                    }
+
+                    updateLiturgyOfHours(isExpanded = uiState.value.officeOfReadings?.header?.isExpanded == true)
 
                     if (startData == _uiState.value) {
                         delay(2000)
@@ -176,6 +175,16 @@ class MainViewModel(
                         _uiState.value.copy(isRefreshing = false)
                     }
                 }
+        }
+    }
+
+    private fun updateLiturgyOfHours(isExpanded: Boolean){
+        viewModelScope.launch {
+            getOfficeListItemUseCase(currDate, isExpanded).collect { newItem ->
+                _uiState.update {
+                    uiState.value.copy(office = newItem)
+                }
+            }
         }
     }
 

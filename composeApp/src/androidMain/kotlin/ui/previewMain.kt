@@ -19,6 +19,7 @@ import com.coppola.catholic.arrow_back_24
 import com.coppola.catholic.settings_24
 import org.jetbrains.compose.resources.painterResource
 import ui.main.FeastUiState
+import ui.main.ListItemHeaderUiState
 import ui.main.ListItemType
 import ui.main.ListItemUiState
 import ui.main.MainScaffold
@@ -138,7 +139,7 @@ private fun PreviewMainLight() {
                 ListItemUiState(
                     isEnabled = true,
                     type = ListItemType.READINGS,
-                    title = "Daily Readings",
+                    header = ListItemHeaderUiState("Daily Readings"),
                     text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
                 ),
                 office =
@@ -146,7 +147,7 @@ private fun PreviewMainLight() {
                     ListItemUiState(
                         isEnabled = true,
                         type = ListItemType.OFFICE,
-                        title = "Divine Office",
+                        header = ListItemHeaderUiState("Liturgy of the Hours"),
                         text = "Evening Prayer 4:00p - 6:00p"
                     )
                 ),
@@ -157,6 +158,7 @@ private fun PreviewMainLight() {
             onNextDate = { },
             onPreviousDate = { },
             onToday = {},
+            onLitHoursButton = {},
         )
     }
 }
@@ -179,7 +181,7 @@ private fun PreviewMainDark() {
                 ListItemUiState(
                     isEnabled = true,
                     type = ListItemType.READINGS,
-                    title = "Daily Readings",
+                    header = ListItemHeaderUiState("Daily Readings"),
                     text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
                 ),
                 office =
@@ -187,14 +189,14 @@ private fun PreviewMainDark() {
                     ListItemUiState(
                         isEnabled = true,
                         type = ListItemType.OFFICE,
-                        title = "Divine Office",
+                        header = ListItemHeaderUiState("Liturgy of the Hours", false, "Show all"),
                         text = "Evening Prayer 4:00p - 6:00p"
                     )
                 ),
                 officeOfReadings =  ListItemUiState(
                     isEnabled = true,
                     type = ListItemType.OFFICE_OF_READINGS,
-                    title = "Office of Readings",
+                    header = ListItemHeaderUiState("Office of Readings"),
                     text = "Fourth sunday of Advent",
                 )
             ),
@@ -204,6 +206,7 @@ private fun PreviewMainDark() {
             onNextDate = { },
             onPreviousDate = { },
             onToday = {},
+            onLitHoursButton = {},
         )
     }
 }

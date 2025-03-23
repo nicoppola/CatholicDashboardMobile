@@ -12,31 +12,41 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.coppola.catholic.OfficePrefs
 import org.coppola.catholic.TimeRangePrefs
+import ui.main.ListItemHeaderUiState
 import ui.main.ListItemType
 import ui.main.ListItemUiState
 
 private val baseItem = ListItemUiState(
     type = ListItemType.OFFICE,
     isEnabled = false,
-    title = "Divine Office",
+    header = ListItemHeaderUiState("Liturgy of the Hours"),
 )
 
 class GetOfficeListItemUseCase(
     private val mainRepository: MainRepository,
     private val preferencesRepository: PreferencesRepository,
 ) {
-    suspend operator fun invoke(date: LocalDate): Flow<List<ListItemUiState>> {
+    suspend operator fun invoke(
+        date: LocalDate,
+        isExpanded: Boolean = false
+    ): Flow<List<ListItemUiState>> {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
         return preferencesRepository.getOffice().map { prefs ->
             val office = mainRepository.retrieveCachedData(date)?.office
-            LiturgyHours.entries.mapNotNull {
-                it.contains(it.getTimeSetting(prefs), now)
-            }.map {
+            val hours = if (isExpanded) {
+                LiturgyHours.entries
+            } else {
+                LiturgyHours.entries.mapNotNull {
+                    it.contains(it.getTimeSetting(prefs), now)
+                }
+            }
+            hours.map {
                 baseItem.copy(
                     isEnabled = prefs.enabled,
                     text = it.getText(it.getTimeSetting(prefs)),
-                    link = it.getLink(office)
+                    link = it.getLink(office),
+                    header = baseItem.header.copy(isExpanded = isExpanded)
                 )
             }
         }

@@ -25,15 +25,22 @@ data class FeastUiState(
 )
 
 data class ListItemUiState(
+    val header: ListItemHeaderUiState,
     val type: ListItemType,
     val isEnabled: Boolean = true,
-    val title: String = "",
     val text: String? = null,
     val link: String = "",
+)
+
+data class ListItemHeaderUiState(
+    val title: String,
+    val isExpanded: Boolean? = null,
+    val ctaText: String? = null,
 )
 
 enum class ListItemType {
     READINGS,
     OFFICE,
     OFFICE_OF_READINGS,
+    FEEDBACK,
 }

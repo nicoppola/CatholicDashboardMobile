@@ -5,8 +5,10 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,6 +45,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import ui.settings.SettingsScreenUiStateOld.SettingUiStateOld
+import ui.theme.CatholicDashboardTheme
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +62,7 @@ fun SettingsScreen(
                 navigationIcon = {
                     IconButton(onClick = navComponent::onBack) {
                         Icon(
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             painter = painterResource(Res.drawable.arrow_back_24),
                             contentDescription = null,
                         )
@@ -74,62 +77,73 @@ fun SettingsScreen(
         },
         containerColor = MaterialTheme.colorScheme.primary,
         content = { innerPadding ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    LazyColumn {
-                        item {
-                            Text(
-                                text = "Choose which items show on your home screen",
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.titleLarge,
-                            )
-                        }
-                        item {
-                            uiState.readingsSettings?.enabled?.let {
-                                SettingsItem(
-                                    title = "Daily Readings",
-                                    isEnabled = it,
-                                    onCheckChanged = { switchState ->
-                                        viewModel.onReadingsChanged(
-                                            uiState.readingsSettings?.copy(
-                                                enabled = switchState
-                                            )
-                                        )
-                                    },
+//            SettingsContentOld(innerPadding, uiState, viewModel)
+
+            //todo - radio buttons for dark/light/system; save in system prefs
+        }
+    )
+}
+
+@Composable
+private fun SettingsContentOld(
+    innerPadding: PaddingValues,
+    uiState: SettingsScreenUiState,
+    viewModel: SettingsViewModel
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(modifier = Modifier.padding(innerPadding)) {
+            LazyColumn {
+                item {
+                    Text(
+                        text = "Choose which items show on your home screen",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+                item {
+                    uiState.readingsSettings?.enabled?.let {
+                        SettingsItem(
+                            title = "Daily Readings",
+                            isEnabled = it,
+                            onCheckChanged = { switchState ->
+                                viewModel.onReadingsChanged(
+                                    uiState.readingsSettings?.copy(
+                                        enabled = switchState
+                                    )
                                 )
-                            }
-                            uiState.liturgyOfHours?.enabled?.let {
-                                SettingsItem(
-                                    title = "Divine Office",
-                                    isEnabled = it,
-                                    onCheckChanged = { switchState ->
-                                        viewModel.onLiturgyHoursChanged(
-                                            uiState.liturgyOfHours?.copy(
-                                                enabled = switchState
-                                            )
-                                        )
-                                    },
+                            },
+                        )
+                    }
+                    uiState.liturgyOfHours?.enabled?.let {
+                        SettingsItem(
+                            title = "Divine Office",
+                            isEnabled = it,
+                            onCheckChanged = { switchState ->
+                                viewModel.onLiturgyHoursChanged(
+                                    uiState.liturgyOfHours?.copy(
+                                        enabled = switchState
+                                    )
                                 )
-                            }
-                            uiState.officeOfReadings?.enabled?.let {
-                                SettingsItem(
-                                    title = "Office of Readings",
-                                    isEnabled = it,
-                                    onCheckChanged = { switchState ->
-                                        viewModel.onOfficeOfReadingsUpdated(
-                                            uiState.officeOfReadings?.copy(
-                                                enabled = switchState
-                                            )
-                                        )
-                                    },
+                            },
+                        )
+                    }
+                    uiState.officeOfReadings?.enabled?.let {
+                        SettingsItem(
+                            title = "Office of Readings",
+                            isEnabled = it,
+                            onCheckChanged = { switchState ->
+                                viewModel.onOfficeOfReadingsUpdated(
+                                    uiState.officeOfReadings?.copy(
+                                        enabled = switchState
+                                    )
                                 )
-                            }
-                        }
+                            },
+                        )
                     }
                 }
             }
         }
-    )
+    }
 }
 
 @Composable

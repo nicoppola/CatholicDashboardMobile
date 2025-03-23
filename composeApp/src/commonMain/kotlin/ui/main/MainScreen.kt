@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -23,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -32,12 +34,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coppola.catholic.Res
+import com.coppola.catholic.baseline_expand_less_24
+import com.coppola.catholic.baseline_expand_more_24
+import com.coppola.catholic.baseline_open_in_new_24
 import com.coppola.catholic.keyboard_arrow_left
 import com.coppola.catholic.keyboard_arrow_right
 import com.coppola.catholic.settings_24
@@ -79,6 +86,7 @@ fun MainScreen(
         onRefresh = viewModel::retrieveData,
         onNextDate = viewModel::onNextDateButton,
         onPreviousDate = viewModel::onPreviousDateButton,
+        onLitHoursButton = viewModel::onLitHoursButton,
     )
 }
 
@@ -91,7 +99,8 @@ fun MainScaffold(
     onToday: () -> Unit,
     onRefresh: () -> Unit,
     onNextDate: () -> Unit,
-    onPreviousDate: () -> Unit
+    onPreviousDate: () -> Unit,
+    onLitHoursButton: (Boolean) -> Unit,
 ) {
 
     val pullRefreshState =
@@ -114,11 +123,12 @@ fun MainScaffold(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.padding(horizontal = 8.dp),
                 navigationIcon = {
                     if (!uiState.isToday) {
                         IconButton(onClick = onToday) {
                             Icon(
-//                                tint = MaterialTheme.colorScheme.onPrimary,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 painter = painterResource(uiState.todayIcon),
                                 contentDescription = null,
                             )
@@ -131,15 +141,15 @@ fun MainScaffold(
                         containerColor = MaterialTheme.colorScheme.primary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
-                actions = {
-                    IconButton(onClick = onSettingsClicked) {
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                            painter = painterResource(Res.drawable.settings_24),
-                            contentDescription = null,
-                        )
-                    }
-                }
+//                actions = {
+//                    IconButton(onClick = onSettingsClicked) {
+//                        Icon(
+//                            tint = MaterialTheme.colorScheme.onPrimary,
+//                            painter = painterResource(Res.drawable.settings_24),
+//                            contentDescription = null,
+//                        )
+//                    }
+//                }
             )
         },
         containerColor = MaterialTheme.colorScheme.primary,
@@ -158,11 +168,12 @@ fun MainScaffold(
                 ) {
                     MainContent(
                         uiState = uiState,
-                        onNavUrl = { url, title ->
+                        onNavUrl = { url, _ ->
                             webViewController.open(url = url)
                         },
                         onNextDateButton = onNextDate,
                         onPreviousDateButton = onPreviousDate,
+                        onLitHoursButton = onLitHoursButton,
                     )
                 }
             }
@@ -178,6 +189,7 @@ fun MainContent(
     onNavUrl: (String, String) -> Unit,
     onPreviousDateButton: () -> Unit,
     onNextDateButton: () -> Unit,
+    onLitHoursButton: (Boolean) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -190,7 +202,7 @@ fun MainContent(
     ) {
         // Date
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
@@ -236,8 +248,8 @@ fun MainContent(
         )
 
         // Feasts
-        if(uiState.feasts.isNotEmpty()){
-            LinkCardHeader("Optional Memorials")
+        if (uiState.feasts.isNotEmpty()) {
+            LinkCardHeader(ListItemHeaderUiState(title = "Optional Memorials"))
             uiState.feasts.forEach {
                 Text(
                     modifier = Modifier
@@ -265,7 +277,8 @@ fun MainContent(
             if (uiState.office.find { it.isEnabled } != null) {
                 LinkSection(
                     uiStates = uiState.office,
-                    onNavUrl = onNavUrl
+                    onNavUrl = onNavUrl,
+                    onHeaderButton = onLitHoursButton
                 )
             }
         }
@@ -277,6 +290,21 @@ fun MainContent(
                 )
             }
         }
+        Spacer(Modifier.weight(1F))
+        LinkSection(
+            uiStates = listOf(
+                ListItemUiState(
+                    header = ListItemHeaderUiState(
+                        title = "Feedback"
+                    ),
+                    type = ListItemType.FEEDBACK,
+                    isEnabled = true,
+                    text = "Report a bug or send me suggestions!",
+                    link = "https://forms.gle/SWjRG7xEMgRv6Voq5",
+
+            )),
+            onNavUrl = onNavUrl
+        )
     }
 }
 
@@ -285,23 +313,55 @@ fun LinkSection(
     modifier: Modifier = Modifier,
     uiStates: List<ListItemUiState>,
     onNavUrl: (String, String) -> Unit,
+    onHeaderButton: (Boolean) -> Unit = {},
 ) {
     Column(modifier) {
-        LinkCardHeader(uiStates.first().title)
+        LinkCardHeader(uiStates.first().header, onHeaderButton)
         uiStates.forEach { LinkCard(it, onNavUrl) }
     }
 }
 
 @Composable
 fun LinkCardHeader(
-    title: String,
+    uiState: ListItemHeaderUiState,
+    onButton: (Boolean) -> Unit = {},
 ) {
-    Text(
-        modifier = Modifier.padding(vertical = 8.dp),
-        color = MaterialTheme.colorScheme.onPrimary,
-        style = MaterialTheme.typography.titleSmall,
-        text = title
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            modifier = Modifier.padding(vertical = 8.dp),
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.titleSmall,
+            text = uiState.title
+        )
+
+        if(uiState.isExpanded != null){
+            IconButton(onClick = { onButton(uiState.isExpanded.not()) }) {
+                val drawable =
+                    if (uiState.isExpanded) Res.drawable.baseline_expand_less_24 else Res.drawable.baseline_expand_more_24
+                Icon(
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    painter = painterResource(drawable),
+                    contentDescription = null,
+                )
+            }
+        } else {
+            Spacer(Modifier.height(40.dp)) // height of icon btn; want to make all spacing consistent
+        }
+        uiState.isExpanded?.let {
+
+//            TextButton(
+//                modifier = Modifier.padding(start = 4.dp),
+//                onClick = onButton
+//            ) {
+//                Text(
+//                    style = TextStyle.Default,
+//                    text = it,
+//                    color = MaterialTheme.colorScheme.onPrimary,
+//                )
+//            }
+        }
+    }
+
 }
 
 @Composable
@@ -319,7 +379,7 @@ fun LinkCard(
         colors = CardDefaults.cardColors().copy(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
-        onClick = { onNavUrl(uiState.link, uiState.title) }
+        onClick = { onNavUrl(uiState.link, "") }
     ) {
         Row(
             modifier = Modifier

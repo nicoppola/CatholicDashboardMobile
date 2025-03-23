@@ -5,6 +5,7 @@ import datastore.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
+import ui.main.ListItemHeaderUiState
 import ui.main.ListItemType
 import ui.main.ListItemUiState
 
@@ -16,7 +17,7 @@ class GetReadingsListItemUseCase(
     private val baseItem = ListItemUiState(
         type = ListItemType.READINGS,
         isEnabled = false,
-        title = "Daily Readings",
+        header = ListItemHeaderUiState("Daily Readings"),
     )
 
     suspend operator fun invoke(date: LocalDate): Flow<ListItemUiState> {
