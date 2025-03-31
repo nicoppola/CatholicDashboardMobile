@@ -12,6 +12,7 @@ val DarkColorScheme = darkColorScheme(
     onPrimary = onPrimaryDark,
     primaryContainer = primaryContainerDark,
     onPrimaryContainer = onPrimaryContainerDark,
+    tertiary = tertiaryDark,
 )
 
 val LightColorScheme = lightColorScheme(
@@ -19,6 +20,7 @@ val LightColorScheme = lightColorScheme(
     onPrimary = onPrimaryLight,
     primaryContainer = primaryContainerLight,
     onPrimaryContainer = onPrimaryContainerLight,
+    tertiary = tertiaryLight,
 )
 
 @Composable

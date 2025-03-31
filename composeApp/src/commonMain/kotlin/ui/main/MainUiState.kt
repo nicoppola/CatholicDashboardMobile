@@ -2,6 +2,10 @@ package ui.main
 
 import com.coppola.catholic.Res
 import com.coppola.catholic.baseline_calendar_today_24
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import ui.theme.LiturgicalColor
 
@@ -9,6 +13,7 @@ data class MainUiState(
     val isToday: Boolean = true,
     val todayIcon: DrawableResource = Res.drawable.baseline_calendar_today_24,
     val date: String = "",
+    val currLocalDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     val title: String = "",
     val color: LiturgicalColor = LiturgicalColor.GREEN,
     val feasts: List<FeastUiState> = emptyList(),

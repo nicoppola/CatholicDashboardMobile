@@ -14,52 +14,67 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coppola.catholic.Res
+import com.coppola.catholic.baseline_calendar_today_24
 import com.coppola.catholic.baseline_expand_less_24
 import com.coppola.catholic.baseline_expand_more_24
-import com.coppola.catholic.baseline_open_in_new_24
 import com.coppola.catholic.keyboard_arrow_left
 import com.coppola.catholic.keyboard_arrow_right
-import com.coppola.catholic.settings_24
 import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
 import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.AndroidWebViewModifier
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.urlBarHidingEnabled
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.IosWebViewModifier
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.barCollapsingEnabled
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import ui.theme.MyDatePickerColors
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
-@OptIn(KoinExperimentalAPI::class)
+@OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     navComponent: MainComponent,
@@ -68,6 +83,11 @@ fun MainScreen(
     val viewModel = koinViewModel<MainViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val uiStatus by viewModel.uiStatus.collectAsState()
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        yearRange = 2025..2025,
+    )
 
     when (uiStatus) {
         MainUiStatus.NavToSettings -> {
@@ -78,16 +98,60 @@ fun MainScreen(
         else -> {}
     }
 
-    MainScaffold(
-        uiState = uiState,
-        setStatusBarColor = setStatusBarColor,
-        onSettingsClicked = viewModel::onSettingsClicked,
-        onToday = viewModel::onTodayClicked,
-        onRefresh = viewModel::retrieveData,
-        onNextDate = viewModel::onNextDateButton,
-        onPreviousDate = viewModel::onPreviousDateButton,
-        onLitHoursButton = viewModel::onLitHoursButton,
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        MainScaffold(
+            uiState = uiState,
+            setStatusBarColor = setStatusBarColor,
+            onSettingsClicked = viewModel::onSettingsClicked,
+            onToday = viewModel::onTodayClicked,
+            onRefresh = viewModel::retrieveData,
+            onNextDate = viewModel::onNextDateButton,
+            onPreviousDate = viewModel::onPreviousDateButton,
+            onLitHoursButton = viewModel::onLitHoursButton,
+            onCalendarClicked = { showDatePicker = true },
+        )
+        if (showDatePicker) {
+            datePickerState.selectedDateMillis = uiState.currLocalDate.toEpochDays()
+                .toDuration(DurationUnit.DAYS).inWholeMilliseconds
+            DatePickerDialog(
+                colors = MyDatePickerColors.colors(),
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            val date = datePickerState.selectedDateMillis?.let {
+                                val days = it.toDuration(DurationUnit.MILLISECONDS)
+                                    .inWholeDays
+                                    .toInt()
+
+                                LocalDate.fromEpochDays(days)
+                            }
+                            viewModel.onDateSelected(date)
+                            showDatePicker = false
+                        }
+                    ) {
+                        Text(text = "OK")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = { showDatePicker = false }
+                    ) {
+                        Text(text = "Cancel")
+                    }
+                }
+            ) {
+                DatePicker(
+                    colors = MyDatePickerColors.colors(),
+                    state = datePickerState,
+                    showModeToggle = false,
+                )
+            }
+        }
+
+    }
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,6 +165,7 @@ fun MainScaffold(
     onNextDate: () -> Unit,
     onPreviousDate: () -> Unit,
     onLitHoursButton: (Boolean) -> Unit,
+    onCalendarClicked: () -> Unit = {},
 ) {
 
     val pullRefreshState =
@@ -141,7 +206,15 @@ fun MainScaffold(
                         containerColor = MaterialTheme.colorScheme.primary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
-//                actions = {
+                actions = {
+                    IconButton(onClick = { onCalendarClicked() }) {
+                        Icon(
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            painter = painterResource(Res.drawable.baseline_calendar_today_24),
+                            contentDescription = null,
+                        )
+                    }
+
 //                    IconButton(onClick = onSettingsClicked) {
 //                        Icon(
 //                            tint = MaterialTheme.colorScheme.onPrimary,
@@ -149,7 +222,7 @@ fun MainScaffold(
 //                            contentDescription = null,
 //                        )
 //                    }
-//                }
+                }
             )
         },
         containerColor = MaterialTheme.colorScheme.primary,
@@ -302,7 +375,8 @@ fun MainContent(
                     text = "Report a bug or send me suggestions!",
                     link = "https://forms.gle/SWjRG7xEMgRv6Voq5",
 
-            )),
+                    )
+            ),
             onNavUrl = onNavUrl
         )
     }
@@ -334,7 +408,7 @@ fun LinkCardHeader(
             text = uiState.title
         )
 
-        if(uiState.isExpanded != null){
+        if (uiState.isExpanded != null) {
             IconButton(onClick = { onButton(uiState.isExpanded.not()) }) {
                 val drawable =
                     if (uiState.isExpanded) Res.drawable.baseline_expand_less_24 else Res.drawable.baseline_expand_more_24

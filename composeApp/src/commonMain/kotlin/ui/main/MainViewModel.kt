@@ -98,7 +98,7 @@ class MainViewModel(
         retrieveData()
     }
 
-    fun onLitHoursButton(isExpanded: Boolean){
+    fun onLitHoursButton(isExpanded: Boolean) {
         updateLiturgyOfHours(isExpanded)
     }
 
@@ -110,6 +110,13 @@ class MainViewModel(
     fun onNextDateButton() {
         currDate = currDate.plus(DatePeriod(days = 1))
         retrieveData()
+    }
+
+    fun onDateSelected(newDate: LocalDate?) {
+        if (newDate != null) {
+            currDate = newDate
+            retrieveData()
+        }
     }
 
     fun retrieveData() {
@@ -124,6 +131,7 @@ class MainViewModel(
                     _uiState.update { curr ->
                         curr.copy(
                             date = data.date,
+                            currLocalDate = currDate,
                             isToday = currDate == today,
                             todayIcon = getTodayIcon(),
                             title = data.readings.title ?: "", // RIP my calendar data.title,
@@ -178,7 +186,7 @@ class MainViewModel(
         }
     }
 
-    private fun updateLiturgyOfHours(isExpanded: Boolean){
+    private fun updateLiturgyOfHours(isExpanded: Boolean) {
         viewModelScope.launch {
             getOfficeListItemUseCase(currDate, isExpanded).collect { newItem ->
                 _uiState.update {
