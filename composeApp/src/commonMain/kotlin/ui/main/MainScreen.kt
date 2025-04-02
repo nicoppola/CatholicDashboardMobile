@@ -78,7 +78,7 @@ fun MainScreen(
 ) {
     val viewModel = koinViewModel<MainViewModel>()
     val uiState by viewModel.uiState.collectAsState()
-    val uiStatus by viewModel.uiStatus.collectAsState()
+    val navStatus by viewModel.navStatus.collectAsState()
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle) {
@@ -98,32 +98,13 @@ fun MainScreen(
         }
     }
 
-//    registerOnResume(viewModel::onResume)
-//    LaunchedEffect(Unit){
-//        navComponent.lifecycle.subscribe(
-//            object : Lifecycle.Callbacks {
-//                override fun onResume() {
-//                    super.onResume()
-//                    viewModel.onResume()
-//                }
-//            }
-//        )
-//
-//        navComponent.lifecycle.subscribe(
-//            onResume = {viewModel.onResume()}
-//        )
-//
-//
-//    }
-
-
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
         yearRange = 2025..2025,
     )
 
-    when (uiStatus) {
-        MainUiStatus.NavToSettings -> {
+    when (navStatus) {
+        MainNavStatus.NavToSettings -> {
             viewModel.clearUiStatus()
             navComponent.onNavSettings()
         }

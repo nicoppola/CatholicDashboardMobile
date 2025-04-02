@@ -71,8 +71,8 @@ class MainViewModel(
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    private val _uiStatus = MutableStateFlow<MainUiStatus?>(null)
-    val uiStatus: StateFlow<MainUiStatus?> = _uiStatus.asStateFlow()
+    private val _uiStatus = MutableStateFlow<MainNavStatus?>(null)
+    val navStatus: StateFlow<MainNavStatus?> = _uiStatus.asStateFlow()
 
 
     init {
@@ -81,7 +81,7 @@ class MainViewModel(
 
     fun onSettingsClicked() {
         _uiStatus.update {
-            MainUiStatus.NavToSettings
+            MainNavStatus.NavToSettings
         }
     }
 
