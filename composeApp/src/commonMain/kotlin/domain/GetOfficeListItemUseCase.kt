@@ -83,7 +83,7 @@ private fun LiturgyHours.getTimeSetting(prefs: OfficePrefs): TimeRangePrefs? {
     }
 }
 
-private fun LiturgyHours.getLink(data: CalendarData.Office?): String {
+private fun LiturgyHours.getLink(data: CalendarData.Office?): String? {
     if (data == null) {
         return ""
     }

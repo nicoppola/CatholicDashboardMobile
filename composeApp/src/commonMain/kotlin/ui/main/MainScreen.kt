@@ -15,15 +15,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerColors
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import androidx.compose.ui.zIndex
 import com.coppola.catholic.Res
 import com.coppola.catholic.baseline_calendar_today_24
@@ -61,11 +56,7 @@ import com.final_class.webview_multiplatform_mobile.webview.settings.android.And
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.urlBarHidingEnabled
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.IosWebViewModifier
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.barCollapsingEnabled
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -321,19 +312,11 @@ fun MainContent(
         )
 
         // Feasts
-        if (uiState.feasts.isNotEmpty()) {
-            LinkCardHeader(ListItemHeaderUiState(title = "Optional Memorials"))
-            uiState.feasts.forEach {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 4.dp),
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                    textAlign = TextAlign.Start,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    text = it.title
-                )
-            }
+//        uiState.memorials?.let {
+//            FeastsSection(it)
+//        }
+        uiState.optionalMemorials?.let {
+            FeastsSection(it)
         }
 
         Spacer(Modifier.padding(bottom = 16.dp))
@@ -346,10 +329,10 @@ fun MainContent(
                 )
             }
         }
-        if (uiState.office.isNotEmpty()) {
-            if (uiState.office.find { it.isEnabled } != null) {
+        if (uiState.liturgyOfHours.isNotEmpty()) {
+            if (uiState.liturgyOfHours.find { it.isEnabled } != null) {
                 LinkSection(
-                    uiStates = uiState.office,
+                    uiStates = uiState.liturgyOfHours,
                     onNavUrl = onNavUrl,
                     onHeaderButton = onLitHoursButton
                 )
@@ -378,6 +361,24 @@ fun MainContent(
                     )
             ),
             onNavUrl = onNavUrl
+        )
+    }
+}
+
+@Composable
+fun FeastsSection(
+    uiState: FeastsUiState,
+) {
+    LinkCardHeader(ListItemHeaderUiState(title = uiState.title))
+    uiState.feasts.forEach {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+            textAlign = TextAlign.Start,
+            color = MaterialTheme.colorScheme.onPrimary,
+            text = it
         )
     }
 }
@@ -453,7 +454,7 @@ fun LinkCard(
         colors = CardDefaults.cardColors().copy(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
-        onClick = { onNavUrl(uiState.link, "") }
+        onClick = { uiState.link?.let { onNavUrl(it, "") } }
     ) {
         Row(
             modifier = Modifier
@@ -464,12 +465,14 @@ fun LinkCard(
                 modifier = Modifier.weight(1F),
                 text = uiState.text ?: "ahhhhh put text here"
             )
-            Icon(
-                painter = painterResource(
-                    resource = Res.drawable.keyboard_arrow_right
-                ),
-                contentDescription = null,
-            )
+            uiState.link?.let {
+                Icon(
+                    painter = painterResource(
+                        resource = Res.drawable.keyboard_arrow_right
+                    ),
+                    contentDescription = null,
+                )
+            }
         }
     }
 }

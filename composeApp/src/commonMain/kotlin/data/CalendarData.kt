@@ -14,18 +14,18 @@ data class CalendarData(
         var color: Color,
         val readings: Readings,
         val office: Office,
-        val proper: MutableList<Proper>,
+        val propers: MutableList<Proper>,
     )
     @Serializable
     data class Office(
-        val link: String,
-        val morning: String,
-        val midMorning: String,
-        val midday: String,
-        val midAfternoon: String,
-        val evening: String,
-        val night: String,
-        val officeOfReadings: String,
+        val link: String?,
+        val morning: String?,
+        val midMorning: String?,
+        val midday: String?,
+        val midAfternoon: String?,
+        val evening: String?,
+        val night: String?,
+        val officeOfReadings: String?,
         val officeOfReadingsSubtitle: String? = "",
     )
 
@@ -52,8 +52,10 @@ data class CalendarData(
         ROSE("rose"),
         WHITE("white"),
         RED("red"),
+        UNDEFINED("undefined"),
     }
     enum class Rank(value: String, rank: Int) {
+        UNKNOWN("undefined", 0),
         SOLEMNITY("Solemnity", 1),
         SUNDAY("Sunday", 2),
         FEAST("Feast", 3),

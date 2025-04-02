@@ -18,7 +18,7 @@ import com.coppola.catholic.Res
 import com.coppola.catholic.arrow_back_24
 import com.coppola.catholic.settings_24
 import org.jetbrains.compose.resources.painterResource
-import ui.main.FeastUiState
+import ui.main.FeastsUiState
 import ui.main.ListItemHeaderUiState
 import ui.main.ListItemType
 import ui.main.ListItemUiState
@@ -130,11 +130,15 @@ private fun PreviewMainLight() {
                 date = "October 5, 2024",
                 title = "Twenty Sixth Week of Ordinary Time",
                 color = LiturgicalColor.GREEN,
-                feasts = listOf(
-                    FeastUiState("Saint Faustina Kowalska, virgin"),
-                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
+                optionalMemorials = FeastsUiState(
+                    title = "Optional Memorials",
+                    feasts = listOf(
+                        "Saint Faustina Kowalska, virgin",
+                        "Blessed Francis Xavier Seelos, Priest"
+                    )
                 ),
-                upcoming = emptyList(),
+                memorials = null,
+                upcoming = null,
                 readings =
                 ListItemUiState(
                     isEnabled = true,
@@ -142,7 +146,7 @@ private fun PreviewMainLight() {
                     header = ListItemHeaderUiState("Daily Readings"),
                     text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
                 ),
-                office =
+                liturgyOfHours =
                 listOf(
                     ListItemUiState(
                         isEnabled = true,
@@ -172,11 +176,15 @@ private fun PreviewMainDark() {
                 date = "December 22, 2024",
                 title = "Fourth Sunday of Advent",
                 color = LiturgicalColor.VIOLET,
-                feasts = listOf(
-                    FeastUiState("Saint Faustina Kowalska, virgin"),
-                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
+                optionalMemorials = FeastsUiState(
+                    title = "Optional Memorials",
+                    feasts = listOf(
+                        "Saint Faustina Kowalska, virgin",
+                        "Blessed Francis Xavier Seelos, Priest"
+                    )
                 ),
-                upcoming = emptyList(),
+                memorials = null,
+                upcoming = null,
                 readings =
                 ListItemUiState(
                     isEnabled = true,
@@ -184,7 +192,7 @@ private fun PreviewMainDark() {
                     header = ListItemHeaderUiState("Daily Readings"),
                     text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
                 ),
-                office =
+                liturgyOfHours =
                 listOf(
                     ListItemUiState(
                         isEnabled = true,
@@ -193,7 +201,7 @@ private fun PreviewMainDark() {
                         text = "Evening Prayer 4:00p - 6:00p"
                     )
                 ),
-                officeOfReadings =  ListItemUiState(
+                officeOfReadings = ListItemUiState(
                     isEnabled = true,
                     type = ListItemType.OFFICE_OF_READINGS,
                     header = ListItemHeaderUiState("Office of Readings"),

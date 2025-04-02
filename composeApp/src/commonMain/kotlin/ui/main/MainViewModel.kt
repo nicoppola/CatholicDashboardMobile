@@ -37,7 +37,6 @@ import com.coppola.catholic.calendar_30
 import com.coppola.catholic.calendar_31
 import data.CalendarData
 import data.MainRepository
-import datastore.PreferencesRepository
 import domain.GetOfficeListItemUseCase
 import domain.GetOfficeOfReadingsListItemUseCase
 import domain.GetReadingsListItemUseCase
@@ -56,7 +55,6 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import ui.theme.LiturgicalColor
-import util.addNotNull
 import util.onError
 import util.onSuccess
 
@@ -128,6 +126,9 @@ class MainViewModel(
                 .onSuccess { data ->
                     val startData = _uiState.value
                     println("***** SUCCESS $data")
+                    if (data.propers.find { it.rank != CalendarData.Rank.MEMORIAL && it.rank != CalendarData.Rank.OPTIONAL_MEMORIAL } != null) {
+                        println("************** UNKNOWN PROPER **************")
+                    }
                     _uiState.update { curr ->
                         curr.copy(
                             date = data.date,
@@ -137,15 +138,34 @@ class MainViewModel(
                             title = data.readings.title ?: "", // RIP my calendar data.title,
                             color = LiturgicalColor.fromName(data.color.name)
                                 ?: LiturgicalColor.GREEN,
-                            feasts = data.proper.mapNotNull {
-                                if (it.title != null && !(data.title.contains(it.title))) {
-                                    FeastUiState(it.title)
-                                } else {
-                                    null
-                                }
-                            },
+                            memorials = data.propers.filter { it.rank == CalendarData.Rank.MEMORIAL }
+                                .let { memorials ->
+                                    if (memorials.isNotEmpty()) {
+                                        FeastsUiState(
+                                            title = "Memorials",
+                                            feasts = memorials.mapNotNull { it.title }
+                                        )
+                                    } else {
+                                        null
+                                    }
+
+                                },
+                            optionalMemorials = data.propers.filter { it.rank == CalendarData.Rank.OPTIONAL_MEMORIAL }
+                                .let { optionalMemorials ->
+                                    if (optionalMemorials.isNotEmpty()) {
+                                        FeastsUiState(
+                                            title = "Optional Memorials",
+                                            feasts = optionalMemorials.mapNotNull { it.title }
+                                        )
+                                    } else {
+                                        null
+                                    }
+
+                                },
                         )
                     }
+
+                    //update office of readings
                     viewModelScope.launch {
                         getOfficeOfReadingsListItemUseCase(currDate).collect { newItem ->
                             _uiState.update {
@@ -153,6 +173,8 @@ class MainViewModel(
                             }
                         }
                     }
+
+                    //update readings
                     viewModelScope.launch {
                         getReadingsListItemUseCase(currDate).collect { newItem ->
                             _uiState.update {
@@ -190,7 +212,7 @@ class MainViewModel(
         viewModelScope.launch {
             getOfficeListItemUseCase(currDate, isExpanded).collect { newItem ->
                 _uiState.update {
-                    uiState.value.copy(office = newItem)
+                    uiState.value.copy(liturgyOfHours = newItem)
                 }
             }
         }

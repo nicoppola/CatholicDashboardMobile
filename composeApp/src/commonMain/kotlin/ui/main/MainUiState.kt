@@ -16,17 +16,18 @@ data class MainUiState(
     val currLocalDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     val title: String = "",
     val color: LiturgicalColor = LiturgicalColor.GREEN,
-    val feasts: List<FeastUiState> = emptyList(),
-    val upcoming: List<FeastUiState> = emptyList(),
+    val memorials: FeastsUiState? = null,
+    val optionalMemorials: FeastsUiState? = null,
+    val upcoming: FeastsUiState? = null,
     val readings: ListItemUiState? = null,
-    val office: List<ListItemUiState> = emptyList(),
+    val liturgyOfHours: List<ListItemUiState> = emptyList(),
     val officeOfReadings: ListItemUiState? = null,
     val isRefreshing: Boolean = false,
 )
 
-data class FeastUiState(
+data class FeastsUiState(
     val title: String = "",
-    val feast: String = "",
+    val feasts: List<String> = emptyList(),
 )
 
 data class ListItemUiState(
@@ -34,7 +35,7 @@ data class ListItemUiState(
     val type: ListItemType,
     val isEnabled: Boolean = true,
     val text: String? = null,
-    val link: String = "",
+    val link: String? = null,
 )
 
 data class ListItemHeaderUiState(
