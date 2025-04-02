@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,7 +8,6 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
-   // alias(libs.plugins.wire)
     id("com.squareup.wire") version "5.0.0"
 }
 
@@ -43,6 +43,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.ui.tooling.preview)
+//            implementation(libs.androidx.lifecycle.runtime.compose.android)
             implementation(compose.preview)
             implementation(libs.core.splashscreen)
 
@@ -59,7 +60,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.bundles.ktor)
             implementation(libs.kotlinx.datetime)
             implementation(compose.components.resources)
@@ -69,12 +69,15 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             api(libs.compose.webview.multiplatform)
 
+            // Lifecycle
+            implementation(libs.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+
             implementation(libs.webview.multiplatform.mobile)
 
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-            implementation(libs.lifecycle.viewmodel)
             implementation(libs.navigation.compose)
             implementation(libs.androidx.datastore)
         }
@@ -124,7 +127,8 @@ android {
 dependencies {
     implementation(libs.androidx.core.i18n)
     implementation(libs.androidx.material3.android)
-    implementation(libs.androidx.ui.tooling.preview.android)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.runtime.android)
 }
 
 compose.resources {

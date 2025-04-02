@@ -31,6 +31,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.coppola.catholic.Res
 import com.coppola.catholic.baseline_calendar_today_24
 import com.coppola.catholic.baseline_expand_less_24
@@ -65,15 +68,54 @@ import ui.theme.MyDatePickerColors
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+import androidx.lifecycle.compose.LocalLifecycleOwner
+
 @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     navComponent: MainComponent,
-    setStatusBarColor: @Composable (Color) -> Unit
+    setStatusBarColor: @Composable (Color) -> Unit,
 ) {
     val viewModel = koinViewModel<MainViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val uiStatus by viewModel.uiStatus.collectAsState()
+
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    viewModel.onResume()
+                }
+
+                else -> {}
+            }
+        }
+        lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
+
+//    registerOnResume(viewModel::onResume)
+//    LaunchedEffect(Unit){
+//        navComponent.lifecycle.subscribe(
+//            object : Lifecycle.Callbacks {
+//                override fun onResume() {
+//                    super.onResume()
+//                    viewModel.onResume()
+//                }
+//            }
+//        )
+//
+//        navComponent.lifecycle.subscribe(
+//            onResume = {viewModel.onResume()}
+//        )
+//
+//
+//    }
+
 
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(

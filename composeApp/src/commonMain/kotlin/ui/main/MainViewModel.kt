@@ -66,7 +66,7 @@ class MainViewModel(
 ) : ViewModel() {
 
     private var currDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    private val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    private var today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -113,6 +113,16 @@ class MainViewModel(
     fun onDateSelected(newDate: LocalDate?) {
         if (newDate != null) {
             currDate = newDate
+            retrieveData()
+        }
+    }
+
+    fun onResume(){
+        println("************** ON RESUME ")
+        val newToday = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        if(today != newToday){
+            today = newToday
+            currDate = today
             retrieveData()
         }
     }
