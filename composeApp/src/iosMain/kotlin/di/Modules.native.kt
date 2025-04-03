@@ -1,6 +1,5 @@
 package di
 
-import datastore.PreferencesRepository
 import datastore.getDataStore
 import io.ktor.client.engine.darwin.Darwin
 import networking.DefaultMyClient
