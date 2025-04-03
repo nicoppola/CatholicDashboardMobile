@@ -89,7 +89,7 @@ class GetOfficeListItemUseCase(
 
     }
 
-    private fun LiturgyHours.getLink(data: CalendarData.Office?): String? {
+    private fun LiturgyHours.getLink(data: CalendarData.LiturgyHours?): String? {
         if (data == null) {
             return ""
         }

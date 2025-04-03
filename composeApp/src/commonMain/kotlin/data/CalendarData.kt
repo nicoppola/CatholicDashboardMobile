@@ -4,20 +4,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CalendarData(
-    val year: String,
-    val months: MutableMap<Int, MutableMap<Int, Day>>,
+    val year: String?,
+    val months: Map<Int, MutableMap<Int, Day>>? = emptyMap(),
 ){
     @Serializable
     data class Day(
-        val date: String,
-        var title: String,
-        var color: Color,
-        val readings: Readings,
-        val office: Office,
-        val propers: MutableList<Proper>,
+        val date: String? = "",
+        var title: String? = "",
+        var color: Color? = Color.UNDEFINED, //todo, not correct rn
+        val readings: Readings? = null,
+        val office: LiturgyHours? = null,
+        val propers: List<Proper>? = emptyList(),
     )
     @Serializable
-    data class Office(
+    data class LiturgyHours(
         val link: String?,
         val morning: String?,
         val midMorning: String?,
@@ -31,11 +31,11 @@ data class CalendarData(
 
     @Serializable
     data class Readings(
-        val link: String,
-        val readingOne: String,
-        val psalm: String,
+        val link: String?,
+        val readingOne: String?,
+        val psalm: String?,
         val readingTwo: String? = null,
-        val gospel: String,
+        val gospel: String?,
         val title: String? = null,
     )
 

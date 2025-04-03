@@ -57,20 +57,20 @@ class MainViewModel(
                 .onSuccess { data ->
                     val startData = _uiState.value
                     println("***** SUCCESS $data")
-                    if (data.propers.find { it.rank != CalendarData.Rank.MEMORIAL && it.rank != CalendarData.Rank.OPTIONAL_MEMORIAL } != null) {
+                    if (data.propers?.find { it.rank != CalendarData.Rank.MEMORIAL && it.rank != CalendarData.Rank.OPTIONAL_MEMORIAL } != null) {
                         println("************** UNKNOWN PROPER **************")
                     }
                     _uiState.update { curr ->
                         curr.copy(
-                            date = data.date,
+                            date = data.date ?: "",
                             currLocalDate = currDate,
                             isToday = currDate == today,
                             todayIcon = getTodayIconUseCase(today),
-                            title = data.readings.title ?: "", // RIP my calendar data.title,
-                            color = LiturgicalColor.fromName(data.color.name)
+                            title = data.readings?.title ?: "", // RIP my calendar data.title,
+                            color = data.color?.name?.let { LiturgicalColor.fromName(it) }
                                 ?: LiturgicalColor.GREEN,
-                            memorials = data.propers.filter { it.rank == CalendarData.Rank.MEMORIAL }
-                                .let { memorials ->
+                            memorials = data.propers?.filter { it.rank == CalendarData.Rank.MEMORIAL }
+                                ?.let { memorials ->
                                     if (memorials.isNotEmpty()) {
                                         FeastsUiState(
                                             title = "Memorials",
@@ -81,8 +81,8 @@ class MainViewModel(
                                     }
 
                                 },
-                            optionalMemorials = data.propers.filter { it.rank == CalendarData.Rank.OPTIONAL_MEMORIAL }
-                                .let { optionalMemorials ->
+                            optionalMemorials = data.propers?.filter { it.rank == CalendarData.Rank.OPTIONAL_MEMORIAL }
+                                ?.let { optionalMemorials ->
                                     if (optionalMemorials.isNotEmpty()) {
                                         FeastsUiState(
                                             title = "Optional Memorials",
