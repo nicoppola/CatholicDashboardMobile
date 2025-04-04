@@ -1,6 +1,8 @@
 package di
 
 //import datastore.getDataStore
+import datastore.SettingsRepository
+import datastore.createDataStore
 import io.ktor.client.engine.okhttp.OkHttp
 import networking.DefaultMyClient
 import networking.MyClient
@@ -15,11 +17,11 @@ actual val platformModule: Module = module {
         DefaultMyClient(createHttpClient(OkHttp.create()))
     }.bind<MyClient>()
 
-//    single {
-//        getDataStore(androidContext())
-//    }
-//
-//    single {
-//        PreferencesRepository(get())
-//    }
+    single {
+        createDataStore(androidContext())
+    }
+
+    single {
+        SettingsRepository(get())
+    }
 }

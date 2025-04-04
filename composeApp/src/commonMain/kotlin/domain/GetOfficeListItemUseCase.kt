@@ -143,7 +143,7 @@ class GetOfficeListItemUseCase(
             novusLabel = "Night",
             latinLabel = "Compline",
             timeStart = LocalTime(19, 30),
-            timeEnd = LocalTime(0, 0)
+            timeEnd = LocalTime(23, 59)
         );
     }
 }

@@ -1,10 +1,12 @@
 package ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import datastore.ColorMode
 
 
 val DarkColorScheme = darkColorScheme(
@@ -25,13 +27,18 @@ val LightColorScheme = lightColorScheme(
 
 @Composable
 fun CatholicDashboardTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    colorMode: ColorMode,
+    //darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme =
-            if (darkTheme) DarkColorScheme else LightColorScheme
+        when(colorMode){
+            ColorMode.DARK -> DarkColorScheme
+            ColorMode.LIGHT -> LightColorScheme
+            ColorMode.SYSTEM -> if(isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
+        }
 
     MaterialTheme(
         colorScheme = colorScheme,

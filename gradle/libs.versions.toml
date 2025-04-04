@@ -8,7 +8,7 @@ android-targetSdk = "34"
 compose = "1.7.8"
 androidx-activityCompose = "1.9.3"
 material3Android = "1.3.1"
-datastore-core = "1.1.4"
+datastore = "1.1.4"
 core-splashscreen = "1.0.1"
 coreI18n = "1.0.0-alpha01"
 
@@ -44,7 +44,8 @@ runtimeAndroid = "1.7.8"
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "compose" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-datastore = { module = "androidx.datastore:datastore-core-okio", version.ref = "datastore-core"}
+androidx-datastore = { module = "androidx.datastore:datastore-core-okio", version.ref = "datastore"}
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 androidx-core-i18n = { group = "androidx.core", name = "core-i18n", version.ref = "coreI18n" }
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }

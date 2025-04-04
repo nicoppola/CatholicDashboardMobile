@@ -1,6 +1,7 @@
 package di
 
-import datastore.getDataStore
+import datastore.SettingsRepository
+import datastore.createDataStore
 import io.ktor.client.engine.darwin.Darwin
 import networking.DefaultMyClient
 import networking.MyClient
@@ -15,10 +16,10 @@ actual val platformModule = module {
     }.bind<MyClient>()
 
     single {
-        getDataStore()
+        createDataStore()
     }
 
     single {
-        PreferencesRepository(get())
-    }.bind<PreferencesRepository>()
+        SettingsRepository(get())
+    }.bind<SettingsRepository>()
 }

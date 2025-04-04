@@ -1,15 +1,9 @@
 package datastore
 
-//import android.content.Context
-//import androidx.datastore.core.DataStore
-//import org.coppola.catholic.PreferenceData
-//import org.coppola.catholic.AndroidPlatformContextProvider
-//import okio.FileSystem
-//import okio.Path.Companion.toPath
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 
-//fun getDataStore(context: Context): DataStore<PreferenceData> {
-//    val content = requireNotNull(context)
-//    val producePath = { content.filesDir.resolve(DATA_STORE_FILE_NAME).absolutePath.toPath() }
-//
-//    return createDataStore(fileSystem = FileSystem.SYSTEM, producePath = producePath)
-//}
+fun createDataStore(context: Context): DataStore<Preferences> = createDataStore(
+    producePath = { context.filesDir.resolve(DATA_STORE_FILE_NAME).absolutePath }
+)
