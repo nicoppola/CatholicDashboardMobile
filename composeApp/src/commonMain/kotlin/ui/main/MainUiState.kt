@@ -19,15 +19,33 @@ data class MainUiState(
     val memorials: FeastsUiState? = null,
     val optionalMemorials: FeastsUiState? = null,
     val upcoming: FeastsUiState? = null,
-    val readings: ListItemUiState? = null,
-    val liturgyOfHours: List<ListItemUiState> = emptyList(),
-    val officeOfReadings: ListItemUiState? = null,
+    val readings: ListCollectionUiState? = null,
+    val liturgyOfHours: ListCollectionUiState? = null,
+    val officeOfReadings: ListCollectionUiState? = null,
     val isRefreshing: Boolean = false,
 )
 
 data class FeastsUiState(
     val title: String = "",
     val feasts: List<String> = emptyList(),
+)
+
+//todo implement this
+data class ListCollectionUiState(
+    val header: String,
+    val isExpanded: Boolean? = null,
+    val items: List<ListCollectionItemUiState>,
+)
+
+data class ListCollectionItemUiState(
+    val subHeader: String? = null,
+    val rows: List<TextRow>,
+    val link: String? = null,
+)
+
+data class TextRow(
+    val title: String?,
+    val text: String?,
 )
 
 data class ListItemUiState(

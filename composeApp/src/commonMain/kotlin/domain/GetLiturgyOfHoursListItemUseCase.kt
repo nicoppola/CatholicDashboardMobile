@@ -7,23 +7,17 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import ui.main.ListItemHeaderUiState
-import ui.main.ListItemType
-import ui.main.ListItemUiState
+import ui.main.ListCollectionItemUiState
+import ui.main.ListCollectionUiState
+import ui.main.TextRow
 
-private val baseItem = ListItemUiState(
-    type = ListItemType.OFFICE,
-    isEnabled = true,
-    header = ListItemHeaderUiState("Liturgy of the Hours"),
-)
-
-class GetOfficeListItemUseCase(
+class GetLiturgyOfHoursListItemUseCase(
     private val mainRepository: MainRepository,
 ) {
     suspend operator fun invoke(
         date: LocalDate,
         isExpanded: Boolean = false
-    ): List<ListItemUiState> {
+    ): ListCollectionUiState {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
 
         val office = mainRepository.retrieveCachedData(date)?.office
@@ -34,13 +28,22 @@ class GetOfficeListItemUseCase(
                 it.contains(now)
             }
         }
-        return hours.map {
-            baseItem.copy(
-                text = it.getText(),
-                link = it.getLink(office),
-                header = baseItem.header.copy(isExpanded = isExpanded)
-            )
-        }
+        return ListCollectionUiState(
+            header = "Liturgy of the Hours",
+            isExpanded = isExpanded,
+            items = hours.map {
+                ListCollectionItemUiState(
+                    subHeader = null,
+                    rows = listOf(
+                        TextRow(
+                            title = it.novusLabel,
+                            text = it.getTimeText(use24HourTime = false)
+                        )
+                    ),
+                    link = it.getLink(office)
+                )
+            }
+        )
     }
 
     private fun LiturgyHours.contains(now: LocalTime): LiturgyHours? {
@@ -59,13 +62,11 @@ class GetOfficeListItemUseCase(
         return this >= time
     }
 
-    private fun LiturgyHours.getText(
+    private fun LiturgyHours.getTimeText(
         use24HourTime: Boolean = false,
-        isNovus: Boolean = true
     ): String {
         val formattedStart: String
         val formattedEnd: String
-        val label = if (isNovus) this.novusLabel else this.latinLabel
 
         if (use24HourTime) {
             formattedStart = this.timeStart.to24HourTime()
@@ -75,7 +76,7 @@ class GetOfficeListItemUseCase(
             formattedEnd = this.timeEnd.toMeridianTime()
         }
 
-        return "$label:\t $formattedStart - $formattedEnd"
+        return "$formattedStart - $formattedEnd"
     }
 
     private fun LocalTime.to24HourTime(): String {

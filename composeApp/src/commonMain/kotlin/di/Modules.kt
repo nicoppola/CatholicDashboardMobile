@@ -1,9 +1,8 @@
 package di
 
-import androidx.datastore.core.DataStoreFactory
 import data.DefaultMainRepository
 import data.MainRepository
-import domain.GetOfficeListItemUseCase
+import domain.GetLiturgyOfHoursListItemUseCase
 import domain.GetOfficeOfReadingsListItemUseCase
 import domain.GetReadingsListItemUseCase
 import domain.GetTodayIconUseCase
@@ -20,7 +19,7 @@ expect val platformModule: Module
 
 val sharedModule = module {
     singleOf(::DefaultMainRepository).bind<MainRepository>()
-    single { GetOfficeListItemUseCase(get()) }
+    single { GetLiturgyOfHoursListItemUseCase(get()) }
     single { GetReadingsListItemUseCase(get()) }
     single { GetOfficeOfReadingsListItemUseCase(get()) }
     single { GetTodayIconUseCase() }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import data.CalendarData
 import data.MainRepository
-import domain.GetOfficeListItemUseCase
+import domain.GetLiturgyOfHoursListItemUseCase
 import domain.GetOfficeOfReadingsListItemUseCase
 import domain.GetReadingsListItemUseCase
 import domain.GetTodayIconUseCase
@@ -27,7 +27,7 @@ import util.onSuccess
 
 class MainViewModel(
     private val repo: MainRepository,
-    private val getOfficeListItemUseCase: GetOfficeListItemUseCase,
+    private val getLiturgyOfHoursListItemUseCase: GetLiturgyOfHoursListItemUseCase,
     private val getReadingsListItemUseCase: GetReadingsListItemUseCase,
     private val getOfficeOfReadingsListItemUseCase: GetOfficeOfReadingsListItemUseCase,
     private val getTodayIconUseCase: GetTodayIconUseCase,
@@ -57,7 +57,7 @@ class MainViewModel(
                 .onSuccess { data ->
                     val startData = _uiState.value
                     println("***** SUCCESS $data")
-                    if (data.propers?.find { it.rank != CalendarData.Rank.MEMORIAL && it.rank != CalendarData.Rank.OPTIONAL_MEMORIAL } != null) {
+                    if (data.propers.find { it.rank != CalendarData.Rank.MEMORIAL && it.rank != CalendarData.Rank.OPTIONAL_MEMORIAL } != null) {
                         println("************** UNKNOWN PROPER **************")
                     }
                     _uiState.update { curr ->
@@ -66,11 +66,11 @@ class MainViewModel(
                             currLocalDate = currDate,
                             isToday = currDate == today,
                             todayIcon = getTodayIconUseCase(today),
-                            title = data.readings?.title ?: "", // RIP my calendar data.title,
+                            title = data.title ?: "",
                             color = data.color?.name?.let { LiturgicalColor.fromName(it) }
                                 ?: LiturgicalColor.GREEN,
-                            memorials = data.propers?.filter { it.rank == CalendarData.Rank.MEMORIAL }
-                                ?.let { memorials ->
+                            memorials = data.propers.filter { it.rank == CalendarData.Rank.MEMORIAL }
+                                .let { memorials ->
                                     if (memorials.isNotEmpty()) {
                                         FeastsUiState(
                                             title = "Memorials",
@@ -81,8 +81,8 @@ class MainViewModel(
                                     }
 
                                 },
-                            optionalMemorials = data.propers?.filter { it.rank == CalendarData.Rank.OPTIONAL_MEMORIAL }
-                                ?.let { optionalMemorials ->
+                            optionalMemorials = data.propers.filter { it.rank == CalendarData.Rank.OPTIONAL_MEMORIAL }
+                                .let { optionalMemorials ->
                                     if (optionalMemorials.isNotEmpty()) {
                                         FeastsUiState(
                                             title = "Optional Memorials",
@@ -110,7 +110,7 @@ class MainViewModel(
                         }
                     }
 
-                    updateLiturgyOfHours(isExpanded = uiState.value.officeOfReadings?.header?.isExpanded == true)
+                    updateLiturgyOfHours(isExpanded = uiState.value.officeOfReadings?.isExpanded == true)
 
                     if (startData == _uiState.value) {
                         delay(2000)
@@ -154,9 +154,19 @@ class MainViewModel(
         retrieveData()
     }
 
-    fun onLitHoursButton(isExpanded: Boolean) {
+    fun onLitHoursExpandButton(isExpanded: Boolean) {
         viewModelScope.launch {
-            updateLiturgyOfHours(isExpanded)
+            _uiState.update {
+                it.copy(liturgyOfHours = it.liturgyOfHours?.copy(isExpanded = isExpanded))
+            }
+        }
+    }
+
+    fun onReadingsExpandButton(isExpanded: Boolean) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(readings = it.readings?.copy(isExpanded = isExpanded))
+            }
         }
     }
 
@@ -190,7 +200,7 @@ class MainViewModel(
     //////////////////////////////// Private Funs ////////////////////////////////
 
     private suspend fun updateLiturgyOfHours(isExpanded: Boolean) {
-        getOfficeListItemUseCase(currDate, isExpanded).let { newItem ->
+        getLiturgyOfHoursListItemUseCase(currDate, isExpanded).let { newItem ->
             _uiState.update {
                 uiState.value.copy(liturgyOfHours = newItem)
             }

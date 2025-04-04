@@ -2,29 +2,27 @@ package domain
 
 import data.MainRepository
 import kotlinx.datetime.LocalDate
-import ui.main.ListItemHeaderUiState
-import ui.main.ListItemType
-import ui.main.ListItemUiState
+import ui.main.ListCollectionItemUiState
+import ui.main.ListCollectionUiState
+import ui.main.TextRow
 
 class GetOfficeOfReadingsListItemUseCase(
     private val mainRepository: MainRepository,
 ) {
 
-    private val baseItem = ListItemUiState(
-        header = ListItemHeaderUiState(
-            title = "Office of Readings",
-        ),
-        type = ListItemType.OFFICE_OF_READINGS,
-        isEnabled = true,
-        text = "",
-        link = "",
-    )
-
-    suspend operator fun invoke(date: LocalDate): ListItemUiState {
+    suspend operator fun invoke(date: LocalDate): ListCollectionUiState {
         val office = mainRepository.retrieveCachedData(date)?.office
-        return baseItem.copy(
-            link = office?.officeOfReadings ?: "",
-            text = office?.officeOfReadingsSubtitle
+        return ListCollectionUiState(
+            header = "Office of Readings",
+            isExpanded = null,
+            items = listOf(
+                ListCollectionItemUiState(
+                    link = office?.officeOfReadings ?: "",
+                    rows = listOf(
+                        TextRow(title = null, text = office?.officeOfReadingsSubtitle)
+                    )
+                )
+            )
         )
     }
 }

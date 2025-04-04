@@ -12,9 +12,9 @@ data class CalendarData(
         val date: String? = "",
         var title: String? = "",
         var color: Color? = Color.UNDEFINED, //todo, not correct rn
-        val readings: Readings? = null,
+        val readings: List<Readings> = emptyList(),
         val office: LiturgyHours? = null,
-        val propers: List<Proper>? = emptyList(),
+        val propers: List<Proper> = emptyList(),
     )
     @Serializable
     data class LiturgyHours(

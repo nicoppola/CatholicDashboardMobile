@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -121,7 +122,8 @@ fun MainScreen(
             onRefresh = viewModel::retrieveData,
             onNextDate = viewModel::onNextDateButton,
             onPreviousDate = viewModel::onPreviousDateButton,
-            onLitHoursButton = viewModel::onLitHoursButton,
+            onLitHoursExpandBtn = viewModel::onLitHoursExpandButton,
+            onReadingsExpandBtn = viewModel::onReadingsExpandButton,
             onCalendarClicked = { showDatePicker = true },
         )
         if (showDatePicker) {
@@ -178,7 +180,8 @@ fun MainScaffold(
     onRefresh: () -> Unit,
     onNextDate: () -> Unit,
     onPreviousDate: () -> Unit,
-    onLitHoursButton: (Boolean) -> Unit,
+    onLitHoursExpandBtn: (Boolean) -> Unit,
+    onReadingsExpandBtn: (Boolean) -> Unit,
     onCalendarClicked: () -> Unit = {},
 ) {
 
@@ -260,7 +263,8 @@ fun MainScaffold(
                         },
                         onNextDateButton = onNextDate,
                         onPreviousDateButton = onPreviousDate,
-                        onLitHoursButton = onLitHoursButton,
+                        onLitHoursButton = onLitHoursExpandBtn,
+                        onReadingsExpandBtn = onReadingsExpandBtn,
                     )
                 }
             }
@@ -277,6 +281,7 @@ fun MainContent(
     onPreviousDateButton: () -> Unit,
     onNextDateButton: () -> Unit,
     onLitHoursButton: (Boolean) -> Unit,
+    onReadingsExpandBtn: (Boolean) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -334,10 +339,6 @@ fun MainContent(
             text = uiState.title
         )
 
-        // Feasts
-//        uiState.memorials?.let {
-//            FeastsSection(it)
-//        }
         uiState.optionalMemorials?.let {
             FeastsSection(it)
         }
@@ -345,46 +346,42 @@ fun MainContent(
         Spacer(Modifier.padding(bottom = 16.dp))
 
         uiState.readings?.let {
-            if (it.isEnabled) {
-                LinkSection(
-                    uiStates = listOf(it),
-                    onNavUrl = onNavUrl
-                )
-            }
+           ListCollection(
+               uiState = it,
+               onNavUrl = onNavUrl,
+               onHeaderButton = onReadingsExpandBtn,
+           )
         }
-        if (uiState.liturgyOfHours.isNotEmpty()) {
-            if (uiState.liturgyOfHours.find { it.isEnabled } != null) {
-                LinkSection(
-                    uiStates = uiState.liturgyOfHours,
-                    onNavUrl = onNavUrl,
-                    onHeaderButton = onLitHoursButton
-                )
-            }
+        uiState.liturgyOfHours?.let {
+            ListCollection(
+                uiState = it,
+                onNavUrl = onNavUrl,
+                onHeaderButton = onLitHoursButton,
+            )
         }
         uiState.officeOfReadings?.let {
-            if (it.isEnabled) {
-                LinkSection(
-                    uiStates = listOf(it),
-                    onNavUrl = onNavUrl
-                )
-            }
+            ListCollection(
+                uiState = it,
+                onNavUrl = onNavUrl,
+                onHeaderButton = {},
+            )
         }
         Spacer(Modifier.weight(1F))
-        LinkSection(
-            uiStates = listOf(
-                ListItemUiState(
-                    header = ListItemHeaderUiState(
-                        title = "Feedback"
-                    ),
-                    type = ListItemType.FEEDBACK,
-                    isEnabled = true,
-                    text = "Report a bug or send me suggestions!",
-                    link = "https://forms.gle/SWjRG7xEMgRv6Voq5",
-
-                    )
-            ),
-            onNavUrl = onNavUrl
-        )
+//        ListCollection(
+//            uiStates = listOf(
+//                ListItemUiState(
+//                    header = ListItemHeaderUiState(
+//                        title = "Feedback"
+//                    ),
+//                    type = ListItemType.FEEDBACK,
+//                    isEnabled = true,
+//                    text = "Report a bug or send me suggestions!",
+//                    link = "https://forms.gle/SWjRG7xEMgRv6Voq5",
+//
+//                    )
+//            ),
+//            onNavUrl = onNavUrl
+//        )
     }
 }
 
@@ -392,7 +389,7 @@ fun MainContent(
 fun FeastsSection(
     uiState: FeastsUiState,
 ) {
-    LinkCardHeader(ListItemHeaderUiState(title = uiState.title))
+    ListHeader(text = uiState.title)
     uiState.feasts.forEach {
         Text(
             modifier = Modifier
@@ -407,21 +404,26 @@ fun FeastsSection(
 }
 
 @Composable
-fun LinkSection(
+fun ListCollection(
     modifier: Modifier = Modifier,
-    uiStates: List<ListItemUiState>,
+    uiState: ListCollectionUiState,
     onNavUrl: (String, String) -> Unit,
     onHeaderButton: (Boolean) -> Unit = {},
 ) {
+    val filteredItems = if(uiState.isExpanded == true) uiState.items else listOf(uiState.items.first())
     Column(modifier) {
-        LinkCardHeader(uiStates.first().header, onHeaderButton)
-        uiStates.forEach { LinkCard(it, onNavUrl) }
+        ListHeader(
+            uiState.header,
+            uiState.isExpanded,
+            onHeaderButton)
+        filteredItems.forEach { LinkCard(it, onNavUrl) }
     }
 }
 
 @Composable
-fun LinkCardHeader(
-    uiState: ListItemHeaderUiState,
+fun ListHeader(
+    text: String,
+    isExpanded: Boolean? = null,
     onButton: (Boolean) -> Unit = {},
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -429,13 +431,13 @@ fun LinkCardHeader(
             modifier = Modifier.padding(vertical = 8.dp),
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleSmall,
-            text = uiState.title
+            text = text
         )
 
-        if (uiState.isExpanded != null) {
-            IconButton(onClick = { onButton(uiState.isExpanded.not()) }) {
+        if (isExpanded != null) {
+            IconButton(onClick = { onButton(isExpanded.not()) }) {
                 val drawable =
-                    if (uiState.isExpanded) Res.drawable.baseline_expand_less_24 else Res.drawable.baseline_expand_more_24
+                    if (isExpanded) Res.drawable.baseline_expand_less_24 else Res.drawable.baseline_expand_more_24
                 Icon(
                     tint = MaterialTheme.colorScheme.onPrimary,
                     painter = painterResource(drawable),
@@ -445,31 +447,15 @@ fun LinkCardHeader(
         } else {
             Spacer(Modifier.height(40.dp)) // height of icon btn; want to make all spacing consistent
         }
-        uiState.isExpanded?.let {
-
-//            TextButton(
-//                modifier = Modifier.padding(start = 4.dp),
-//                onClick = onButton
-//            ) {
-//                Text(
-//                    style = TextStyle.Default,
-//                    text = it,
-//                    color = MaterialTheme.colorScheme.onPrimary,
-//                )
-//            }
-        }
     }
 
 }
 
 @Composable
 fun LinkCard(
-    uiState: ListItemUiState,
+    uiState: ListCollectionItemUiState,
     onNavUrl: (String, String) -> Unit,
 ) {
-    if (!uiState.isEnabled) {
-        return
-    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -484,10 +470,23 @@ fun LinkCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                modifier = Modifier.weight(1F),
-                text = uiState.text ?: "ahhhhh put text here"
-            )
+            uiState.rows.forEach {
+                Row(modifier = Modifier.weight(1F)){
+                    it.title?.let { title ->
+                        Text(
+                            text = title,
+                            style = TextStyle.Default.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                    it.text?.let { text ->
+                        Text(
+                            text = text,
+                        )
+                    }
+                }
+
+            }
+
             uiState.link?.let {
                 Icon(
                     painter = painterResource(

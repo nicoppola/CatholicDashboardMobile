@@ -162,7 +162,7 @@ private fun PreviewMainLight() {
             onNextDate = { },
             onPreviousDate = { },
             onToday = {},
-            onLitHoursButton = {},
+            onLitHoursExpandBtn = {},
         )
     }
 }
@@ -214,7 +214,7 @@ private fun PreviewMainDark() {
             onNextDate = { },
             onPreviousDate = { },
             onToday = {},
-            onLitHoursButton = {},
+            onLitHoursExpandBtn = {},
         )
     }
 }
