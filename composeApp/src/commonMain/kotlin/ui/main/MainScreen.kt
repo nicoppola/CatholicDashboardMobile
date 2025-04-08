@@ -1,6 +1,7 @@
 package ui.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -20,6 +22,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,20 +44,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.coppola.catholic.Res
+import com.coppola.catholic.baseline_bug_report_24
 import com.coppola.catholic.baseline_calendar_today_24
 import com.coppola.catholic.baseline_expand_less_24
 import com.coppola.catholic.baseline_expand_more_24
+import com.coppola.catholic.baseline_more_vert_24
 import com.coppola.catholic.keyboard_arrow_left
 import com.coppola.catholic.keyboard_arrow_right
+import com.coppola.catholic.settings_24
 import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
 import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.AndroidWebViewModifier
@@ -68,8 +79,6 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import ui.theme.MyDatePickerColors
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-
-import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -189,6 +198,8 @@ fun MainScaffold(
         rememberPullToRefreshState(
         )
 
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
     val webViewController by rememberWebViewController()
     WebViewPlatform(
         webViewController = webViewController,
@@ -224,21 +235,62 @@ fun MainScaffold(
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                 actions = {
-                    IconButton(onClick = { onCalendarClicked() }) {
+//                    IconButton(onClick = { onCalendarClicked() }) {
+//                        Icon(
+//                            tint = MaterialTheme.colorScheme.onPrimary,
+//                            painter = painterResource(Res.drawable.baseline_calendar_today_24),
+//                            contentDescription = null,
+//                        )
+//                    }
+
+                    IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                         Icon(
                             tint = MaterialTheme.colorScheme.onPrimary,
-                            painter = painterResource(Res.drawable.baseline_calendar_today_24),
+                            painter = painterResource(Res.drawable.baseline_more_vert_24),
                             contentDescription = null,
                         )
                     }
 
-//                    IconButton(onClick = onSettingsClicked) {
-//                        Icon(
-//                            tint = MaterialTheme.colorScheme.onPrimary,
-//                            painter = painterResource(Res.drawable.settings_24),
-//                            contentDescription = null,
-//                        )
-//                    }
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false }) {
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    painter = painterResource(Res.drawable.baseline_calendar_today_24),
+                                    contentDescription = null,
+                                )
+                            },
+                            text = { Text("Calendar") },
+                            onClick = { isMenuExpanded = false
+                                onCalendarClicked() }
+                        )
+
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    painter = painterResource(Res.drawable.settings_24),
+                                    contentDescription = null,
+                                )
+                            },
+                            text = { Text("Settings") },
+                            onClick = onSettingsClicked
+                        )
+
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    painter = painterResource(Res.drawable.baseline_bug_report_24),
+                                    contentDescription = null,
+                                )
+                            },
+                            text = { Text("Report a bug | Give feedback") },
+                            onClick = {webViewController.open(url = "https://forms.gle/wW4zkZmTAyY7rTtFA")}
+                        )
+                    }
                 }
             )
         },
@@ -346,11 +398,11 @@ fun MainContent(
         Spacer(Modifier.padding(bottom = 16.dp))
 
         uiState.readings?.let {
-           ListCollection(
-               uiState = it,
-               onNavUrl = onNavUrl,
-               onHeaderButton = onReadingsExpandBtn,
-           )
+            ListCollection(
+                uiState = it,
+                onNavUrl = onNavUrl,
+                onHeaderButton = onReadingsExpandBtn,
+            )
         }
         uiState.liturgyOfHours?.let {
             ListCollection(
@@ -410,13 +462,25 @@ fun ListCollection(
     onNavUrl: (String, String) -> Unit,
     onHeaderButton: (Boolean) -> Unit = {},
 ) {
-    val filteredItems = if(uiState.isExpanded == true) uiState.items else listOf(uiState.items.first())
+    val filteredItems =
+        if (uiState.isExpanded == true) uiState.items else uiState.items.filter { it.showOnCollapsed }
     Column(modifier) {
         ListHeader(
             uiState.header,
             uiState.isExpanded,
-            onHeaderButton)
-        filteredItems.forEach { LinkCard(it, onNavUrl) }
+            onHeaderButton
+        )
+        filteredItems.forEach { item ->
+//            item.subHeader?.let {
+//                Text(
+//                    modifier = Modifier.padding(vertical = 8.dp),
+//                    color = MaterialTheme.colorScheme.onPrimary,
+//                    style = MaterialTheme.typography.titleSmall,
+//                    text = item.subHeader,
+//                )
+//            }
+            LinkCard(item, onNavUrl)
+        }
     }
 }
 
@@ -444,8 +508,6 @@ fun ListHeader(
                     contentDescription = null,
                 )
             }
-        } else {
-            Spacer(Modifier.height(40.dp)) // height of icon btn; want to make all spacing consistent
         }
     }
 
@@ -467,24 +529,42 @@ fun LinkCard(
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            uiState.rows.forEach {
-                Row(modifier = Modifier.weight(1F)){
-                    it.title?.let { title ->
+            Row(Modifier.weight(1F).fillMaxSize(), verticalAlignment = Alignment.Top) {
+                Column(
+                    modifier = Modifier.wrapContentSize(),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    uiState.subHeader?.let {
                         Text(
-                            text = title,
-                            style = TextStyle.Default.copy(fontWeight = FontWeight.Bold)
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleSmall,
+                            text = uiState.subHeader,
                         )
                     }
-                    it.text?.let { text ->
-                        Text(
-                            text = text,
-                        )
+                    uiState.rows.forEach {
+                        Row(modifier = Modifier.wrapContentSize()) {
+                            val text = buildAnnotatedString {
+                                it.title?.let {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = FontWeight.Medium,
+                                        )
+                                    ) {
+                                        append(it)
+                                    }
+                                    append(" ")
+                                }
+                                it.text?.let { append(it) }
+                            }
+                            Text(text)
+                        }
                     }
                 }
-
             }
 
             uiState.link?.let {

@@ -19,11 +19,13 @@ import com.coppola.catholic.arrow_back_24
 import com.coppola.catholic.settings_24
 import org.jetbrains.compose.resources.painterResource
 import ui.main.FeastsUiState
-import ui.main.ListItemHeaderUiState
-import ui.main.ListItemType
-import ui.main.ListItemUiState
+import ui.main.LinkCard
+import ui.main.ListCollection
+import ui.main.ListCollectionItemUiState
+import ui.main.ListCollectionUiState
 import ui.main.MainScaffold
 import ui.main.MainUiState
+import ui.main.TextRow
 import ui.theme.DarkColorScheme
 import ui.theme.LightColorScheme
 import ui.theme.LiturgicalColor
@@ -140,20 +142,30 @@ private fun PreviewMainLight() {
                 memorials = null,
                 upcoming = null,
                 readings =
-                ListItemUiState(
-                    isEnabled = true,
-                    type = ListItemType.READINGS,
-                    header = ListItemHeaderUiState("Daily Readings"),
-                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                ListCollectionUiState(
+                    header = "Daily Readings",
+                    isExpanded = null,
+                    items = listOf(
+                        ListCollectionItemUiState(
+                            rows = listOf(
+                                TextRow("Reading 1:", "Ez 2:8—3:4"),
+                                TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
+                                TextRow("Gospel:", "Matt 18:1-5, 10, 12-14")
+                            )
+                        )
+                    ),
                 ),
                 liturgyOfHours =
-                listOf(
-                    ListItemUiState(
-                        isEnabled = true,
-                        type = ListItemType.OFFICE,
-                        header = ListItemHeaderUiState("Liturgy of the Hours"),
-                        text = "Evening Prayer 4:00p - 6:00p"
-                    )
+                ListCollectionUiState(
+                    header = "Liturgy of the Hours",
+                    isExpanded = false,
+                    items = listOf(
+                        ListCollectionItemUiState(
+                            rows = listOf(
+                                TextRow("Evening Prayer", "4:00p - 6:00p"),
+                            )
+                        )
+                    ),
                 ),
             ),
             setStatusBarColor = { _ -> },
@@ -163,6 +175,7 @@ private fun PreviewMainLight() {
             onPreviousDate = { },
             onToday = {},
             onLitHoursExpandBtn = {},
+            onReadingsExpandBtn = {},
         )
     }
 }
@@ -186,27 +199,55 @@ private fun PreviewMainDark() {
                 memorials = null,
                 upcoming = null,
                 readings =
-                ListItemUiState(
-                    isEnabled = true,
-                    type = ListItemType.READINGS,
-                    header = ListItemHeaderUiState("Daily Readings"),
-                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
+                ListCollectionUiState(
+                    header = "Daily Readings",
+                    isExpanded = true,
+                    items = listOf(
+                        ListCollectionItemUiState(
+                            subHeader = "Year C Readings",
+                            rows = listOf(
+                                TextRow("Reading 1:", "Ez 2:8—3:4"),
+                                TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
+                                TextRow("Gospel:", "Matt 18:1-5, 10, 12-14")
+                            ),
+                            link = "LINK",
+                        ),
+                        ListCollectionItemUiState(
+                            subHeader = "Scrutenies Year A Readings",
+                            rows = listOf(
+                                TextRow("Reading 1:", "Ez 2:8—3:4"),
+                                TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
+                                TextRow("Gospel:", "Matt 18:1-5, 10, 12-14")
+                            ),
+                            link = "LINK",
+                        )
+                    ),
                 ),
                 liturgyOfHours =
-                listOf(
-                    ListItemUiState(
-                        isEnabled = true,
-                        type = ListItemType.OFFICE,
-                        header = ListItemHeaderUiState("Liturgy of the Hours", false, "Show all"),
-                        text = "Evening Prayer 4:00p - 6:00p"
-                    )
+                ListCollectionUiState(
+                    header = "Liturgy of the Hours",
+                    isExpanded = false,
+                    items = listOf(
+                        ListCollectionItemUiState(
+                            rows = listOf(
+                                TextRow("Evening Prayer", "4:00p - 6:00p"),
+                            ),
+                            link = "LINK",
+                        )
+                    ),
                 ),
-                officeOfReadings = ListItemUiState(
-                    isEnabled = true,
-                    type = ListItemType.OFFICE_OF_READINGS,
-                    header = ListItemHeaderUiState("Office of Readings"),
-                    text = "Fourth sunday of Advent",
-                )
+                officeOfReadings = ListCollectionUiState(
+                    header = "Office of Readings",
+                    isExpanded = null,
+                    items = listOf(
+                        ListCollectionItemUiState(
+                            rows = listOf(
+                                TextRow(null, "Readings for the day."),
+                            ),
+                            link = "LINK",
+                        )
+                    ),
+                ),
             ),
             setStatusBarColor = { _ -> },
             onSettingsClicked = {},
@@ -215,130 +256,47 @@ private fun PreviewMainDark() {
             onPreviousDate = { },
             onToday = {},
             onLitHoursExpandBtn = {},
+            onReadingsExpandBtn = {},
         )
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//private fun PreviewRose() {
-//    MaterialTheme {
-//        MainScaffold(
-//            uiState = MainUiState(
-//                date = "December 15, 2024",
-//                title = "Third Sunday of Advent",
-//                color = LiturgicalColor.ROSE,
-//                feasts = listOf(
-//                    FeastUiState("Saint Faustina Kowalska, virgin"),
-//                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
-//                ),
-//                upcoming = emptyList(),
-//                readings =
-//                ListItemUiState(
-//                    isEnabled = true,
-//                    type = ListItemType.READINGS,
-//                    title = "Daily Readings",
-//                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
-//                ),
-//                office =
-//                listOf(
-//                    ListItemUiState(
-//                        isEnabled = true,
-//                        type = ListItemType.OFFICE,
-//                        title = "Divine Office",
-//                        text = "Evening Prayer 4:00p - 6:00p"
-//                    )
-//                ),
-//            ),
-//            setStatusBarColor = { _ -> },
-//            onSettingsClicked = {},
-//            onRefresh = { },
-//            onNextDate = { },
-//            onPreviousDate = { },
-//            onToday = {},
-//        )
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//private fun PreviewRed() {
-//    MaterialTheme {
-//        MainScaffold(
-//            uiState = MainUiState(
-//                date = "December 15, 2024",
-//                title = "Feast of Martyr",
-//                color = LiturgicalColor.RED,
-//                feasts = listOf(
-//                    FeastUiState("Saint Faustina Kowalska, virgin"),
-//                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
-//                ),
-//                upcoming = emptyList(),
-//                readings =
-//                ListItemUiState(
-//                    isEnabled = true,
-//                    type = ListItemType.READINGS,
-//                    title = "Daily Readings",
-//                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
-//                ),
-//                office =
-//                listOf(
-//                    ListItemUiState(
-//                        isEnabled = true,
-//                        type = ListItemType.OFFICE,
-//                        title = "Divine Office",
-//                        text = "Evening Prayer 4:00p - 6:00p"
-//                    )
-//                ),
-//            ),
-//            setStatusBarColor = { _ -> },
-//            onSettingsClicked = {},
-//            onRefresh = { },
-//            onNextDate = { },
-//            onPreviousDate = { },
-//            onToday = {},
-//        )
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//private fun PreviewWhite() {
-//    MaterialTheme {
-//        MainScaffold(
-//            uiState = MainUiState(
-//                date = "December 15, 2024",
-//                title = "Holy Holy Day",
-//                color = LiturgicalColor.WHITE,
-//                feasts = listOf(
-//                    FeastUiState("Saint Faustina Kowalska, virgin"),
-//                    FeastUiState("Blessed Francis Xavier Seelos, Priest")
-//                ),
-//                upcoming = emptyList(),
-//                readings =
-//                ListItemUiState(
-//                    isEnabled = true,
-//                    type = ListItemType.READINGS,
-//                    title = "Daily Readings",
-//                    text = "Reading 1: Ez 2:8—3:4\nPsalm: 119:14, 24, 72, 103, 111, 131\nGospel: Matt 18:1-5, 10, 12-14",
-//                ),
-//                office =
-//                listOf(
-//                    ListItemUiState(
-//                        isEnabled = true,
-//                        type = ListItemType.OFFICE,
-//                        title = "Divine Office",
-//                        text = "Evening Prayer 4:00p - 6:00p"
-//                    )
-//                ),
-//            ),
-//            setStatusBarColor = { _ -> },
-//            onToday = {},
-//            onSettingsClicked = {},
-//            onRefresh = { },
-//            onNextDate = { },
-//            onPreviousDate = { },
-//        )
-//    }
-//}
+@Preview
+@Composable
+private fun PreviewTest() {
+    ListCollection(
+        uiState = ListCollectionUiState(
+            header = "Daily Readings",
+            isExpanded = null,
+            items = listOf(
+                ListCollectionItemUiState(
+                    rows = listOf(
+                        TextRow("Reading 1:", "Ez 2:8—3:4"),
+                        TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
+                        TextRow("Gospel:", "Matt 18:1-5, 10, 12-14")
+                    )
+                )
+            ),
+        ),
+        onNavUrl = { _, _ -> },
+        onHeaderButton = { _ -> },
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewTestTwo() {
+    LinkCard(
+        uiState = ListCollectionItemUiState(
+            rows = listOf(
+                TextRow("Reading 1:", "Ez 2:8—3:4"),
+                TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
+                TextRow("Gospel:", "Matt 18:1-5, 10, 12-14")
+            ),
+            link = "LINK",
+        ),
+        onNavUrl = {_,_ ->}
+    )
+}
+
 

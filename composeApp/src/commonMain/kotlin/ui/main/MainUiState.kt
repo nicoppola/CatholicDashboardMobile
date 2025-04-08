@@ -30,7 +30,6 @@ data class FeastsUiState(
     val feasts: List<String> = emptyList(),
 )
 
-//todo implement this
 data class ListCollectionUiState(
     val header: String,
     val isExpanded: Boolean? = null,
@@ -41,30 +40,10 @@ data class ListCollectionItemUiState(
     val subHeader: String? = null,
     val rows: List<TextRow>,
     val link: String? = null,
+    val showOnCollapsed: Boolean = true,
 )
 
 data class TextRow(
     val title: String?,
     val text: String?,
 )
-
-data class ListItemUiState(
-    val header: ListItemHeaderUiState,
-    val type: ListItemType,
-    val isEnabled: Boolean = true,
-    val text: String? = null,
-    val link: String? = null,
-)
-
-data class ListItemHeaderUiState(
-    val title: String,
-    val isExpanded: Boolean? = null,
-    val ctaText: String? = null,
-)
-
-enum class ListItemType {
-    READINGS,
-    OFFICE,
-    OFFICE_OF_READINGS,
-    FEEDBACK,
-}

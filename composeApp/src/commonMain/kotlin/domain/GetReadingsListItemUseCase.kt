@@ -11,17 +11,19 @@ class GetReadingsListItemUseCase(
     private val repository: MainRepository,
 ) {
 
-    suspend operator fun invoke(date: LocalDate, isExpanded: Boolean = false): ListCollectionUiState {
+    suspend operator fun invoke(date: LocalDate): ListCollectionUiState {
         val readings = repository.retrieveCachedData(date)?.readings
+        val willBeExpanded = readings?.let { if(it.size > 1) false else null }
 
         return ListCollectionUiState(
-            isExpanded = isExpanded,
+            isExpanded = willBeExpanded,
             header = "Daily Readings",
-            items = readings?.map { readingSet ->
+            items = readings?.mapIndexed { index, readingSet ->
                 ListCollectionItemUiState(
-                    subHeader = readingSet.title,
+                    subHeader = willBeExpanded?.let { readingSet.title },
                     rows = getVerseRows(readingSet),
                     link = readingSet.link,
+                    showOnCollapsed = index == 0
                 )
             } ?: emptyList()
         )
@@ -29,10 +31,10 @@ class GetReadingsListItemUseCase(
 
     private fun getVerseRows(readings: CalendarData.Readings): List<TextRow> {
         return listOfNotNull(
-            TextRow(title = "Reading 1", text = readings.readingOne),
-            TextRow(title = "Psalm", text = readings.readingOne),
-            readings.readingTwo?.let { TextRow(title = "Reading 2", text = it) },
-            TextRow(title = "Gospel", text = readings.gospel)
+            TextRow(title = "Reading 1: ", text = readings.readingOne),
+            TextRow(title = "Psalm: ", text = readings.psalm),
+            readings.readingTwo?.let { TextRow(title = "Reading 2: ", text = it) },
+            TextRow(title = "Gospel: ", text = readings.gospel)
         )
     }
 }

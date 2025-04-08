@@ -21,37 +21,28 @@ class GetLiturgyOfHoursListItemUseCase(
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
 
         val office = mainRepository.retrieveCachedData(date)?.office
-        val hours = if (isExpanded) {
-            LiturgyHours.entries
-        } else {
-            LiturgyHours.entries.mapNotNull {
-                it.contains(now)
-            }
-        }
+
         return ListCollectionUiState(
             header = "Liturgy of the Hours",
             isExpanded = isExpanded,
-            items = hours.map {
+            items = LiturgyHours.entries.map {
                 ListCollectionItemUiState(
                     subHeader = null,
                     rows = listOf(
                         TextRow(
-                            title = it.novusLabel,
+                            title = "${it.novusLabel}:",
                             text = it.getTimeText(use24HourTime = false)
                         )
                     ),
-                    link = it.getLink(office)
+                    link = it.getLink(office),
+                    showOnCollapsed = it.contains(now),
                 )
             }
         )
     }
 
-    private fun LiturgyHours.contains(now: LocalTime): LiturgyHours? {
-        return if (this.timeStart.isEarlierOrEqualTo(now) && this.timeEnd.isLaterOrEqualTo(now)) {
-            this
-        } else {
-            null
-        }
+    private fun LiturgyHours.contains(now: LocalTime): Boolean {
+        return this.timeStart.isEarlierOrEqualTo(now) && this.timeEnd.isLaterOrEqualTo(now)
     }
 
     private fun LocalTime.isEarlierOrEqualTo(time: LocalTime): Boolean {

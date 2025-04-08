@@ -110,7 +110,7 @@ class MainViewModel(
                         }
                     }
 
-                    updateLiturgyOfHours(isExpanded = uiState.value.officeOfReadings?.isExpanded == true)
+                    updateLiturgyOfHours(isExpanded = uiState.value.liturgyOfHours?.isExpanded == true)
 
                     if (startData == _uiState.value) {
                         delay(2000)
