@@ -1,5 +1,6 @@
 package ui.settings
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,9 +49,18 @@ fun SettingsScreen(
         },
         containerColor = MaterialTheme.colorScheme.primary,
         content = { innerPadding ->
-//            SettingsContentOld(innerPadding, uiState, viewModel)
+            SettingsContent(innerPadding, uiState, viewModel)
 
             //todo - radio buttons for dark/light/system; save in system prefs
         }
     )
+}
+
+@Composable
+private fun SettingsContent(
+    innerPadding: PaddingValues,
+    uiState: SettingsScreenUiState,
+    viewModel: SettingsViewModel
+) {
+
 }

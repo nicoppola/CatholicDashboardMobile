@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDatePickerState
@@ -263,8 +266,10 @@ fun MainScaffold(
                                 )
                             },
                             text = { Text("Calendar") },
-                            onClick = { isMenuExpanded = false
-                                onCalendarClicked() }
+                            onClick = {
+                                isMenuExpanded = false
+                                onCalendarClicked()
+                            }
                         )
 
                         DropdownMenuItem(
@@ -287,8 +292,8 @@ fun MainScaffold(
                                     contentDescription = null,
                                 )
                             },
-                            text = { Text("Report a bug | Give feedback") },
-                            onClick = {webViewController.open(url = "https://forms.gle/wW4zkZmTAyY7rTtFA")}
+                            text = { Text("Report a bug") },
+                            onClick = { webViewController.open(url = "https://forms.gle/wW4zkZmTAyY7rTtFA") }
                         )
                     }
                 }
@@ -471,14 +476,6 @@ fun ListCollection(
             onHeaderButton
         )
         filteredItems.forEach { item ->
-//            item.subHeader?.let {
-//                Text(
-//                    modifier = Modifier.padding(vertical = 8.dp),
-//                    color = MaterialTheme.colorScheme.onPrimary,
-//                    style = MaterialTheme.typography.titleSmall,
-//                    text = item.subHeader,
-//                )
-//            }
             LinkCard(item, onNavUrl)
         }
     }
@@ -492,7 +489,9 @@ fun ListHeader(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .padding(top = 4.dp),
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleSmall,
             text = text
@@ -508,6 +507,8 @@ fun ListHeader(
                     contentDescription = null,
                 )
             }
+        } else {
+//            Box(modifier = Modifier.size(40.dp).minimumInteractiveComponentSize())
         }
     }
 
