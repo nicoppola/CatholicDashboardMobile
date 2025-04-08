@@ -16,7 +16,6 @@ data class MainUiState(
     val currLocalDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     val title: String = "",
     val color: LiturgicalColor = LiturgicalColor.GREEN,
-    val memorials: FeastsUiState? = null,
     val optionalMemorials: FeastsUiState? = null,
     val upcoming: FeastsUiState? = null,
     val readings: ListCollectionUiState? = null,

@@ -9,12 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDatePickerState
@@ -47,9 +44,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -238,64 +236,64 @@ fun MainScaffold(
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                 actions = {
-//                    IconButton(onClick = { onCalendarClicked() }) {
-//                        Icon(
-//                            tint = MaterialTheme.colorScheme.onPrimary,
-//                            painter = painterResource(Res.drawable.baseline_calendar_today_24),
-//                            contentDescription = null,
-//                        )
-//                    }
-
-                    IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                    IconButton(onClick = { onCalendarClicked() }) {
                         Icon(
                             tint = MaterialTheme.colorScheme.onPrimary,
-                            painter = painterResource(Res.drawable.baseline_more_vert_24),
+                            painter = painterResource(Res.drawable.baseline_calendar_today_24),
                             contentDescription = null,
                         )
                     }
 
-                    DropdownMenu(
-                        expanded = isMenuExpanded,
-                        onDismissRequest = { isMenuExpanded = false }) {
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Icon(
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                    painter = painterResource(Res.drawable.baseline_calendar_today_24),
-                                    contentDescription = null,
-                                )
-                            },
-                            text = { Text("Calendar") },
-                            onClick = {
-                                isMenuExpanded = false
-                                onCalendarClicked()
-                            }
-                        )
-
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Icon(
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                    painter = painterResource(Res.drawable.settings_24),
-                                    contentDescription = null,
-                                )
-                            },
-                            text = { Text("Settings") },
-                            onClick = onSettingsClicked
-                        )
-
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Icon(
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                    painter = painterResource(Res.drawable.baseline_bug_report_24),
-                                    contentDescription = null,
-                                )
-                            },
-                            text = { Text("Report a bug") },
-                            onClick = { webViewController.open(url = "https://forms.gle/wW4zkZmTAyY7rTtFA") }
-                        )
-                    }
+//                    IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+//                        Icon(
+//                            tint = MaterialTheme.colorScheme.onPrimary,
+//                            painter = painterResource(Res.drawable.baseline_more_vert_24),
+//                            contentDescription = null,
+//                        )
+//                    }
+//
+//                    DropdownMenu(
+//                        expanded = isMenuExpanded,
+//                        onDismissRequest = { isMenuExpanded = false }) {
+//                        DropdownMenuItem(
+//                            leadingIcon = {
+//                                Icon(
+//                                    tint = MaterialTheme.colorScheme.onPrimary,
+//                                    painter = painterResource(Res.drawable.baseline_calendar_today_24),
+//                                    contentDescription = null,
+//                                )
+//                            },
+//                            text = { Text("Calendar") },
+//                            onClick = {
+//                                isMenuExpanded = false
+//                                onCalendarClicked()
+//                            }
+//                        )
+//
+//                        DropdownMenuItem(
+//                            leadingIcon = {
+//                                Icon(
+//                                    tint = MaterialTheme.colorScheme.onPrimary,
+//                                    painter = painterResource(Res.drawable.settings_24),
+//                                    contentDescription = null,
+//                                )
+//                            },
+//                            text = { Text("Settings") },
+//                            onClick = onSettingsClicked
+//                        )
+//
+//                        DropdownMenuItem(
+//                            leadingIcon = {
+//                                Icon(
+//                                    tint = MaterialTheme.colorScheme.onPrimary,
+//                                    painter = painterResource(Res.drawable.baseline_bug_report_24),
+//                                    contentDescription = null,
+//                                )
+//                            },
+//                            text = { Text("Report a bug") },
+//                            onClick = { webViewController.open(url = "https://forms.gle/wW4zkZmTAyY7rTtFA") }
+//                        )
+//                    }
                 }
             )
         },
@@ -400,7 +398,7 @@ fun MainContent(
             FeastsSection(it)
         }
 
-        Spacer(Modifier.padding(bottom = 16.dp))
+        Spacer(Modifier.padding(bottom = 12.dp))
 
         uiState.readings?.let {
             ListCollection(
@@ -424,21 +422,6 @@ fun MainContent(
             )
         }
         Spacer(Modifier.weight(1F))
-//        ListCollection(
-//            uiStates = listOf(
-//                ListItemUiState(
-//                    header = ListItemHeaderUiState(
-//                        title = "Feedback"
-//                    ),
-//                    type = ListItemType.FEEDBACK,
-//                    isEnabled = true,
-//                    text = "Report a bug or send me suggestions!",
-//                    link = "https://forms.gle/SWjRG7xEMgRv6Voq5",
-//
-//                    )
-//            ),
-//            onNavUrl = onNavUrl
-//        )
     }
 }
 
@@ -469,7 +452,9 @@ fun ListCollection(
 ) {
     val filteredItems =
         if (uiState.isExpanded == true) uiState.items else uiState.items.filter { it.showOnCollapsed }
-    Column(modifier) {
+    Column(
+        modifier.wrapContentHeight()
+    ) {
         ListHeader(
             uiState.header,
             uiState.isExpanded,
@@ -487,11 +472,14 @@ fun ListHeader(
     isExpanded: Boolean? = null,
     onButton: (Boolean) -> Unit = {},
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp)
+            .semantics(mergeDescendants = true) { heading() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
-            modifier = Modifier
-                .padding(vertical = 12.dp)
-                .padding(top = 4.dp),
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleSmall,
             text = text
@@ -508,10 +496,9 @@ fun ListHeader(
                 )
             }
         } else {
-//            Box(modifier = Modifier.size(40.dp).minimumInteractiveComponentSize())
+            IconButton(onClick = {}, enabled = false){}
         }
     }
-
 }
 
 @Composable

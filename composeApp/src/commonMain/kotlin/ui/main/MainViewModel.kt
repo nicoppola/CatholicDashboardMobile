@@ -69,18 +69,6 @@ class MainViewModel(
                             title = data.title ?: "",
                             color = data.color?.name?.let { LiturgicalColor.fromName(it) }
                                 ?: LiturgicalColor.GREEN,
-                            memorials = data.propers.filter { it.rank == CalendarData.Rank.MEMORIAL }
-                                .let { memorials ->
-                                    if (memorials.isNotEmpty()) {
-                                        FeastsUiState(
-                                            title = "Memorials",
-                                            feasts = memorials.mapNotNull { it.title }
-                                        )
-                                    } else {
-                                        null
-                                    }
-
-                                },
                             optionalMemorials = data.propers.filter { it.rank == CalendarData.Rank.OPTIONAL_MEMORIAL }
                                 .let { optionalMemorials ->
                                     if (optionalMemorials.isNotEmpty()) {
@@ -97,20 +85,33 @@ class MainViewModel(
                     }
 
                     //update office of readings
-                    getOfficeOfReadingsListItemUseCase(currDate).let { newItem ->
-                        _uiState.update {
-                            it.copy(officeOfReadings = newItem)
+                    viewModelScope.launch {
+                        getOfficeOfReadingsListItemUseCase(currDate).let { newItem ->
+                            _uiState.update {
+                                it.copy(officeOfReadings = newItem)
+                            }
                         }
                     }
 
                     //update readings
-                    getReadingsListItemUseCase(currDate).let { newItem ->
-                        _uiState.update {
-                            it.copy(readings = newItem)
+                    viewModelScope.launch {
+                        getReadingsListItemUseCase(currDate).let { newItem ->
+                            _uiState.update {
+                                it.copy(readings = newItem)
+                            }
                         }
                     }
 
-                    updateLiturgyOfHours(isExpanded = uiState.value.liturgyOfHours?.isExpanded == true)
+                    viewModelScope.launch {
+                        getLiturgyOfHoursListItemUseCase(
+                            currDate,
+                            isExpanded = uiState.value.liturgyOfHours?.isExpanded == true
+                        ).let { newItem ->
+                            _uiState.update {
+                                uiState.value.copy(liturgyOfHours = newItem)
+                            }
+                        }
+                    }
 
                     if (startData == _uiState.value) {
                         delay(2000)
@@ -194,16 +195,6 @@ class MainViewModel(
             today = newToday
             currDate = today
             retrieveData()
-        }
-    }
-
-    //////////////////////////////// Private Funs ////////////////////////////////
-
-    private suspend fun updateLiturgyOfHours(isExpanded: Boolean) {
-        getLiturgyOfHoursListItemUseCase(currDate, isExpanded).let { newItem ->
-            _uiState.update {
-                uiState.value.copy(liturgyOfHours = newItem)
-            }
         }
     }
 }
