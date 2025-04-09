@@ -1,5 +1,9 @@
 package ui.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,8 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,14 +60,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.coppola.catholic.Res
-import com.coppola.catholic.baseline_bug_report_24
 import com.coppola.catholic.baseline_calendar_today_24
 import com.coppola.catholic.baseline_expand_less_24
 import com.coppola.catholic.baseline_expand_more_24
-import com.coppola.catholic.baseline_more_vert_24
 import com.coppola.catholic.keyboard_arrow_left
 import com.coppola.catholic.keyboard_arrow_right
-import com.coppola.catholic.settings_24
 import com.final_class.webview_multiplatform_mobile.webview.WebViewPlatform
 import com.final_class.webview_multiplatform_mobile.webview.controller.rememberWebViewController
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.AndroidWebViewModifier
@@ -305,11 +304,18 @@ fun MainScaffold(
                     .padding(innerPadding)
                     .padding(horizontal = 18.dp)
             ) {
-                PullToRefreshBox(
-                    state = pullRefreshState,
-                    isRefreshing = uiState.isRefreshing,
-                    onRefresh = onRefresh,
-                    modifier = Modifier.align(Alignment.TopCenter).zIndex(1F),
+                AnimatedVisibility(
+                    visible = uiState.isLoading,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 220)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 220)),
+                ) {
+                    RefreshContent()
+                }
+
+                AnimatedVisibility(
+                    visible = !uiState.isLoading,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 320)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 320)),
                 ) {
                     MainContent(
                         uiState = uiState,
@@ -445,7 +451,6 @@ fun FeastsSection(
 
 @Composable
 fun ListCollection(
-    modifier: Modifier = Modifier,
     uiState: ListCollectionUiState,
     onNavUrl: (String, String) -> Unit,
     onHeaderButton: (Boolean) -> Unit = {},
@@ -453,27 +458,31 @@ fun ListCollection(
     val filteredItems =
         if (uiState.isExpanded == true) uiState.items else uiState.items.filter { it.showOnCollapsed }
     Column(
-        modifier.wrapContentHeight()
+        Modifier.wrapContentHeight()
     ) {
         ListHeader(
-            uiState.header,
-            uiState.isExpanded,
-            onHeaderButton
+            text = uiState.header,
+            isExpanded = uiState.isExpanded,
+            onButton = onHeaderButton
         )
         filteredItems.forEach { item ->
-            LinkCard(item, onNavUrl)
+            LinkCard(
+                uiState = item,
+                onNavUrl = onNavUrl
+            )
         }
     }
 }
 
 @Composable
 fun ListHeader(
+    modifier: Modifier = Modifier,
     text: String,
     isExpanded: Boolean? = null,
     onButton: (Boolean) -> Unit = {},
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 4.dp)
             .semantics(mergeDescendants = true) { heading() },
@@ -496,20 +505,22 @@ fun ListHeader(
                 )
             }
         } else {
-            IconButton(onClick = {}, enabled = false){}
+            IconButton(onClick = {}, enabled = false) {}
         }
     }
 }
 
 @Composable
 fun LinkCard(
+    modifier: Modifier = Modifier,
     uiState: ListCollectionItemUiState,
     onNavUrl: (String, String) -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp),
+            .padding(bottom = 8.dp)
+            .then(modifier),
         colors = CardDefaults.cardColors().copy(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),

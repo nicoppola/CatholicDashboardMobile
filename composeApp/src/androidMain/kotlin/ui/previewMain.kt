@@ -139,7 +139,6 @@ private fun PreviewMainLight() {
                         "Blessed Francis Xavier Seelos, Priest"
                     )
                 ),
-                memorials = null,
                 upcoming = null,
                 readings =
                 ListCollectionUiState(
@@ -196,7 +195,6 @@ private fun PreviewMainDark() {
                         "Blessed Francis Xavier Seelos, Priest"
                     )
                 ),
-                memorials = null,
                 upcoming = null,
                 readings =
                 ListCollectionUiState(

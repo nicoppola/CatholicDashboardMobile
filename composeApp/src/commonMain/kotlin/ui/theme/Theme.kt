@@ -14,6 +14,7 @@ val DarkColorScheme = darkColorScheme(
     onPrimary = onPrimaryDark,
     primaryContainer = primaryContainerDark,
     onPrimaryContainer = onPrimaryContainerDark,
+    surfaceDim = shimmerLoadToDark,
     tertiary = tertiaryDark,
 )
 
@@ -22,6 +23,7 @@ val LightColorScheme = lightColorScheme(
     onPrimary = onPrimaryLight,
     primaryContainer = primaryContainerLight,
     onPrimaryContainer = onPrimaryContainerLight,
+    surfaceDim = shimmerLoadToLight,
     tertiary = tertiaryLight,
 )
 

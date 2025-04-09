@@ -21,7 +21,7 @@ data class MainUiState(
     val readings: ListCollectionUiState? = null,
     val liturgyOfHours: ListCollectionUiState? = null,
     val officeOfReadings: ListCollectionUiState? = null,
-    val isRefreshing: Boolean = false,
+    val isLoading: Boolean = false,
 )
 
 data class FeastsUiState(
