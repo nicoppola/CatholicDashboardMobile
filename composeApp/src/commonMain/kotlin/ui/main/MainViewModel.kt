@@ -53,7 +53,6 @@ class MainViewModel(
             _uiState.update {
                 _uiState.value.copy(isLoading = true)
             }
-            //delay(10000)
             repo.retrieveData(currDate)
                 .onSuccess { data ->
                     val startData = _uiState.value
@@ -70,8 +69,7 @@ class MainViewModel(
                             title = data.title ?: "",
                             color = data.color?.name?.let { LiturgicalColor.fromName(it) }
                                 ?: LiturgicalColor.GREEN,
-                            optionalMemorials = data.propers.filter { it.rank == CalendarData.Rank.OPTIONAL_MEMORIAL }
-                                .let { optionalMemorials ->
+                            optionalMemorials = data.propers.let { optionalMemorials ->
                                     if (optionalMemorials.isNotEmpty()) {
                                         FeastsUiState(
                                             title = "Optional Memorials",
@@ -80,7 +78,6 @@ class MainViewModel(
                                     } else {
                                         null
                                     }
-
                                 },
                         )
                     }

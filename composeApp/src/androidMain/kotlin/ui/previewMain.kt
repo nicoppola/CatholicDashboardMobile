@@ -25,6 +25,7 @@ import ui.main.ListCollectionItemUiState
 import ui.main.ListCollectionUiState
 import ui.main.MainScaffold
 import ui.main.MainUiState
+import ui.main.RefreshContent
 import ui.main.TextRow
 import ui.theme.DarkColorScheme
 import ui.theme.LightColorScheme
@@ -295,6 +296,14 @@ private fun PreviewTestTwo() {
         ),
         onNavUrl = {_,_ ->}
     )
+}
+
+@Preview
+@Composable
+private fun PreviewRefresh(){
+    MaterialTheme{
+        RefreshContent()
+    }
 }
 
 

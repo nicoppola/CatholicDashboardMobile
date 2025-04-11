@@ -111,6 +111,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            ndk.debugSymbolLevel = "FULL"
         }
     }
     compileOptions {

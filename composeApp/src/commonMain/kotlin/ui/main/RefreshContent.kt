@@ -26,9 +26,11 @@ import ui.util.shimmerEffect
 fun RefreshContent() {
     Column {
         // Date
+        Spacer(Modifier.height(12.dp))
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -42,14 +44,12 @@ fun RefreshContent() {
             )
         }
 
-        Spacer(Modifier.height(4.dp))
-
         // Season
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 4.dp)
-                .padding(bottom = 48.dp),
+                .padding(bottom = 44.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
