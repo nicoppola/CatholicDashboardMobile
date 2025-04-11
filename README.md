@@ -17,3 +17,17 @@ Additionally, as a professional Android developer who owns an iPhone, I needed a
 <img src="https://github.com/user-attachments/assets/e02e5ffd-86f5-4bb1-b447-4e59e28ac923" width="300">
 <img src="https://github.com/user-attachments/assets/b1047eb7-7900-47c3-8d6d-5cbcbd1bb2aa" width="300">
 <img src="https://github.com/user-attachments/assets/c7ee2660-bf13-44ea-89f6-7d3b5d9b0c8f" width="300">
+
+## Privacy Policy
+### Privacy Policy for Catholic Dashboard
+
+Effective Date: April 11, 2025
+
+Catholic Dashboard does not collect, store, or share any personal data from users.
+
+The app may display content from third-party websites via embedded webviews. We do not control or monitor the data practices of these external sources. Users interacting with third-party content are subject to the respective websites' privacy policies.
+
+We do not use analytics tools, tracking technologies, or request access to device data.
+
+For questions, email: [catholicdshbd@gmail.com](mailto:catholicdshbd@gmail.com)
+
