@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -71,6 +72,7 @@ import com.final_class.webview_multiplatform_mobile.webview.settings.android.And
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.urlBarHidingEnabled
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.IosWebViewModifier
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.barCollapsingEnabled
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
@@ -110,7 +112,16 @@ fun MainScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
-        yearRange = 2025..2025,
+        selectableDates =
+            object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return viewModel.isDateSelectable(utcTimeMillis)
+                }
+
+                override fun isSelectableYear(year: Int): Boolean {
+                    return viewModel.isYearSelectable(year)
+                }
+            }
     )
 
     when (navStatus) {
@@ -144,14 +155,9 @@ fun MainScreen(
                 confirmButton = {
                     Button(
                         onClick = {
-                            val date = datePickerState.selectedDateMillis?.let {
-                                val days = it.toDuration(DurationUnit.MILLISECONDS)
-                                    .inWholeDays
-                                    .toInt()
-
-                                LocalDate.fromEpochDays(days)
+                            datePickerState.selectedDateMillis?.let {
+                                viewModel.onDateSelected(it)
                             }
-                            viewModel.onDateSelected(date)
                             showDatePicker = false
                         }
                     ) {
@@ -359,13 +365,16 @@ fun MainContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = onPreviousDateButton
+                onClick = onPreviousDateButton,
+                enabled = uiState.canSelectPrevious
             ) {
-                Icon(
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    painter = painterResource(Res.drawable.keyboard_arrow_left),
-                    contentDescription = null,
-                )
+                if(uiState.canSelectPrevious){
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        painter = painterResource(Res.drawable.keyboard_arrow_left),
+                        contentDescription = null,
+                    )
+                }
             }
             Text(
                 modifier = Modifier.weight(1F).fillMaxWidth(),
@@ -376,13 +385,16 @@ fun MainContent(
             )
 
             IconButton(
-                onClick = onNextDateButton
+                onClick = onNextDateButton,
+                enabled = uiState.canSelectNext
             ) {
-                Icon(
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    painter = painterResource(Res.drawable.keyboard_arrow_right),
-                    contentDescription = null,
-                )
+                if(uiState.canSelectNext) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        painter = painterResource(Res.drawable.keyboard_arrow_right),
+                        contentDescription = null,
+                    )
+                }
             }
         }
 

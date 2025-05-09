@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.DateTimeUnit.Companion.DAY
+import kotlinx.datetime.DateTimeUnit.Companion.MONTH
+import kotlinx.datetime.DateTimeUnit.Companion.YEAR
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
@@ -24,6 +27,8 @@ import kotlinx.datetime.toLocalDateTime
 import ui.theme.LiturgicalColor
 import util.onError
 import util.onSuccess
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class MainViewModel(
     private val repo: MainRepository,
@@ -53,6 +58,7 @@ class MainViewModel(
             _uiState.update {
                 _uiState.value.copy(isLoading = true)
             }
+            setNextPreviousButtons()
             repo.retrieveData(currDate)
                 .onSuccess { data ->
                     val startData = _uiState.value
@@ -70,15 +76,15 @@ class MainViewModel(
                             color = data.color?.name?.let { LiturgicalColor.fromName(it) }
                                 ?: LiturgicalColor.GREEN,
                             optionalMemorials = data.propers.let { optionalMemorials ->
-                                    if (optionalMemorials.isNotEmpty()) {
-                                        FeastsUiState(
-                                            title = "Optional Memorials",
-                                            feasts = optionalMemorials.mapNotNull { it.title }
-                                        )
-                                    } else {
-                                        null
-                                    }
-                                },
+                                if (optionalMemorials.isNotEmpty()) {
+                                    FeastsUiState(
+                                        title = "Optional Memorials",
+                                        feasts = optionalMemorials.mapNotNull { it.title }
+                                    )
+                                } else {
+                                    null
+                                }
+                            },
                         )
                     }
 
@@ -134,6 +140,15 @@ class MainViewModel(
         }
     }
 
+    private fun setNextPreviousButtons() {
+        _uiState.update {
+            _uiState.value.copy(canSelectNext = isDateSelectable(currDate.plus(1, DAY)))
+        }
+        _uiState.update {
+            _uiState.value.copy(canSelectPrevious = isDateSelectable(currDate.minus(1, DAY)))
+        }
+    }
+
     //////////////////////////////// Click Handlers ////////////////////////////////
 
     fun onSettingsClicked() {
@@ -179,11 +194,38 @@ class MainViewModel(
         retrieveData()
     }
 
-    fun onDateSelected(newDate: LocalDate?) {
-        if (newDate != null) {
-            currDate = newDate
-            retrieveData()
-        }
+    fun onDateSelected(newDateMillis: Long) {
+        currDate = millisToLocalDate(newDateMillis)
+        retrieveData()
+    }
+
+    fun isYearSelectable(year: Int): Boolean {
+        val furthestYear = today.plus(6, MONTH).year
+        val earliestYear = today.minus(6, MONTH).year
+
+        return year >= earliestYear && year <= furthestYear
+    }
+
+    fun isDateSelectable(dateMillis: Long): Boolean {
+        val date = millisToLocalDate(dateMillis)
+        return isDateSelectable(date)
+    }
+
+    // if is within a year of current date
+    private fun isDateSelectable(date: LocalDate): Boolean {
+        val furthestDate = today.plus(6, MONTH)
+        val earliestDate = today.minus(6, MONTH)
+
+        return date >= earliestDate && date <= furthestDate
+    }
+
+
+    private fun millisToLocalDate(millis: Long): LocalDate {
+        val days = millis.toDuration(DurationUnit.MILLISECONDS)
+            .inWholeDays
+            .toInt()
+
+        return LocalDate.fromEpochDays(days)
     }
 
     fun onResume() {

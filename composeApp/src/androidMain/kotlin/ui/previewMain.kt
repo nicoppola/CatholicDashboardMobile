@@ -129,6 +129,7 @@ private fun PreviewMainLight() {
     MaterialTheme(colorScheme = LightColorScheme) {
         MainScaffold(
             uiState = MainUiState(
+                canSelectPrevious = false,
                 isToday = false,
                 date = "October 5, 2024",
                 title = "Twenty Sixth Week of Ordinary Time",
