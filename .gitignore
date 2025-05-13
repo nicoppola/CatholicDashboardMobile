@@ -8,12 +8,22 @@ local.properties
 # Log/OS Files
 *.log
 
+# iOS build file
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
+
 # Android Studio generated files and folders
 captures/
 .externalNativeBuild/
 .cxx/
 *.apk
 output.json
+composeApp/release/
 
 # IntelliJ
 *.iml

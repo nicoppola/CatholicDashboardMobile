@@ -100,8 +100,13 @@ android {
         applicationId = "org.coppola.catholic"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+
+        val versionMajor = 1
+        val versionMinor = 0
+        val versionPatch = 1
+
+        versionCode = versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100
+        versionName = "$versionMajor.$versionMinor.$versionPatch"
     }
     packaging {
         resources {
