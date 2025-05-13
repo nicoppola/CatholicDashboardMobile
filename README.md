@@ -2,7 +2,7 @@
 Provides daily readings and liturgy of the hours consolidated in one place!
 
 ## Support
-If you have any issues, please contact me at [catholicdshbd@gmail.com](mailto:catholicdshbd@gmail.com)
+If you have any issues, please contact me at [coppolan32@gmail.com](mailto:coppolan32@gmail.com)
 
 ## Background and Motivation
 ### Quality Catholic Apps
@@ -29,5 +29,5 @@ The app may display content from third-party websites via embedded webviews. We 
 
 We do not use analytics tools, tracking technologies, or request access to device data.
 
-For questions, email: [catholicdshbd@gmail.com](mailto:catholicdshbd@gmail.com)
+For questions, email: [coppolan32@gmail.com](mailto:coppolan32@gmail.com)
 
