@@ -37,7 +37,17 @@ class GetLiturgyOfHoursListItemUseCase(
                     link = it.getLink(office),
                     showOnCollapsed = it.contains(now),
                 )
-            }
+            } + ListCollectionItemUiState(
+                subHeader = null,
+                rows = listOf(
+                    TextRow(
+                        title = "Office of Readings",
+                        text = null,
+                    )
+                ),
+                link = office?.officeOfReadings,
+                showOnCollapsed = true,
+            )
         )
     }
 

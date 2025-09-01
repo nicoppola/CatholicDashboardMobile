@@ -8,7 +8,6 @@ import domain.GetLiturgyOfHoursListItemUseCase
 import domain.GetOfficeOfReadingsListItemUseCase
 import domain.GetReadingsListItemUseCase
 import domain.GetTodayIconUseCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +17,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.DateTimeUnit.Companion.MONTH
-import kotlinx.datetime.DateTimeUnit.Companion.YEAR
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
@@ -61,7 +59,6 @@ class MainViewModel(
             setNextPreviousButtons()
             repo.retrieveData(currDate)
                 .onSuccess { data ->
-                    val startData = _uiState.value
                     println("***** SUCCESS $data")
                     if (data.propers.find { it.rank != CalendarData.Rank.MEMORIAL && it.rank != CalendarData.Rank.OPTIONAL_MEMORIAL } != null) {
                         println("************** UNKNOWN PROPER **************")
@@ -89,13 +86,13 @@ class MainViewModel(
                     }
 
                     //update office of readings
-                    viewModelScope.launch {
-                        getOfficeOfReadingsListItemUseCase(currDate).let { newItem ->
-                            _uiState.update {
-                                it.copy(officeOfReadings = newItem)
-                            }
-                        }
-                    }
+//                    viewModelScope.launch {
+//                        getOfficeOfReadingsListItemUseCase(currDate).let { newItem ->
+//                            _uiState.update {
+//                                it.copy(officeOfReadings = newItem)
+//                            }
+//                        }
+//                    }
 
                     //update readings
                     viewModelScope.launch {
@@ -117,9 +114,6 @@ class MainViewModel(
                         }
                     }
 
-                    if (startData == _uiState.value) {
-                        delay(2000)
-                    }
                     _uiState.update {
                         _uiState.value.copy(isLoading = false)
                     }

@@ -18,6 +18,7 @@ class DefaultMyClient(
     private val httpClient: HttpClient
 ) : MyClient {
 
+
     override suspend fun getDate(date: String): Result<CalendarData.Day, NetworkError> {
         val response = try {
             httpClient.get(
