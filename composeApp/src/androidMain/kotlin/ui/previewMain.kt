@@ -134,13 +134,13 @@ private fun PreviewMainLight() {
                 date = "October 5, 2024",
                 title = "Twenty Sixth Week of Ordinary Time",
                 color = LiturgicalColor.GREEN,
-                optionalMemorials = FeastsUiState(
+                optionalMemorials = listOf(FeastsUiState(
                     title = "Optional Memorials",
                     feasts = listOf(
                         "Saint Faustina Kowalska, virgin",
                         "Blessed Francis Xavier Seelos, Priest"
                     )
-                ),
+                )),
                 upcoming = null,
                 readings =
                 ListCollectionUiState(
@@ -190,13 +190,13 @@ private fun PreviewMainDark() {
                 date = "December 22, 2024",
                 title = "Fourth Sunday of Advent",
                 color = LiturgicalColor.VIOLET,
-                optionalMemorials = FeastsUiState(
+                optionalMemorials = listOf(FeastsUiState(
                     title = "Optional Memorials",
                     feasts = listOf(
                         "Saint Faustina Kowalska, virgin",
                         "Blessed Francis Xavier Seelos, Priest"
                     )
-                ),
+                )),
                 upcoming = null,
                 readings =
                 ListCollectionUiState(
@@ -236,13 +236,18 @@ private fun PreviewMainDark() {
                         )
                     ),
                 ),
-                officeOfReadings = ListCollectionUiState(
-                    header = "Office of Readings",
+                rosary = ListCollectionUiState(
+                    header = "Rosary",
                     isExpanded = null,
                     items = listOf(
                         ListCollectionItemUiState(
+                            subHeader = "The Joyful Mysteries",
                             rows = listOf(
-                                TextRow(null, "Readings for the day."),
+                                TextRow(null, "The Annunciation"),
+                                TextRow(null, "The Visitation"),
+                                TextRow(null, "The Nativity"),
+                                TextRow(null, "The Presentation"),
+                                TextRow(null, "The Finding of Jesus in the Temple"),
                             ),
                             link = "LINK",
                         )

@@ -1,6 +1,6 @@
 package networking
 
-import data.CalendarData
+import data.DayData
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -11,20 +11,19 @@ import util.NetworkError
 import util.Result
 
 interface MyClient {
-    suspend fun getDate(date: String): Result<CalendarData.Day, NetworkError>
+    suspend fun getData(date: String): Result<DayData, NetworkError>
 }
 
 class DefaultMyClient(
     private val httpClient: HttpClient
 ) : MyClient {
 
-
-    override suspend fun getDate(date: String): Result<CalendarData.Day, NetworkError> {
+    override suspend fun getData(date: String): Result<DayData, NetworkError> {
         val response = try {
             httpClient.get(
                 //ie date = "2015/6/27"
-                urlString = "https://catholicdashboardapi.onrender.com/novus/$date"
-//                urlString = "http://10.0.2.2:8080/novus/$date"
+//                urlString = "https://catholicdashboardapi.onrender.com/v2/novus/$date"
+                urlString = "http://10.0.2.2:8080/v2/novus/$date"
             )
         } catch (e: UnresolvedAddressException) {
             return Result.Error(NetworkError.NO_INTERNET)
@@ -32,15 +31,14 @@ class DefaultMyClient(
             return Result.Error(NetworkError.SERIALIZATION)
         } catch (e: JsonConvertException) {
             return Result.Error(NetworkError.SERIALIZATION)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             //java.net.ConnectException: Failed to connect to /10.0.2.2:8080
             return Result.Error(NetworkError.UNKNOWN)
         }
 
         return when (response.status.value) {
             in 200..299 -> {
-                val result = response.body<CalendarData.Day>()
+                val result = response.body<DayData>()
                 Result.Success(result)
             }
 

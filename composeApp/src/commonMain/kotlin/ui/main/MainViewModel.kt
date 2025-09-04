@@ -2,11 +2,8 @@ package ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import data.CalendarData
-import data.MainRepository
-import domain.GetLiturgyOfHoursListItemUseCase
-import domain.GetOfficeOfReadingsListItemUseCase
-import domain.GetReadingsListItemUseCase
+import data.DayData
+import data.V2MainRepository
 import domain.GetTodayIconUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,22 +19,22 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import ui.theme.LiturgicalColor
+import util.contains
 import util.onError
 import util.onSuccess
+import util.toMeridianTime
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class MainViewModel(
-    private val repo: MainRepository,
-    private val getLiturgyOfHoursListItemUseCase: GetLiturgyOfHoursListItemUseCase,
-    private val getReadingsListItemUseCase: GetReadingsListItemUseCase,
-    private val getOfficeOfReadingsListItemUseCase: GetOfficeOfReadingsListItemUseCase,
+    private val newRepo: V2MainRepository,
     private val getTodayIconUseCase: GetTodayIconUseCase,
 ) : ViewModel() {
 
     private var currDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     private var today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+    private var currData: DayData? = null
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -57,68 +54,75 @@ class MainViewModel(
                 _uiState.value.copy(isLoading = true)
             }
             setNextPreviousButtons()
-            repo.retrieveData(currDate)
+            newRepo.retrieveData(currDate)
                 .onSuccess { data ->
-                    println("***** SUCCESS $data")
-                    if (data.propers.find { it.rank != CalendarData.Rank.MEMORIAL && it.rank != CalendarData.Rank.OPTIONAL_MEMORIAL } != null) {
-                        println("************** UNKNOWN PROPER **************")
-                    }
+                    currData = data
+                    val currTime =
+                        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
                     _uiState.update { curr ->
                         curr.copy(
-                            date = data.date ?: "",
+                            date = data.date,
                             currLocalDate = currDate,
                             isToday = currDate == today,
                             todayIcon = getTodayIconUseCase(today),
-                            title = data.title ?: "",
-                            color = data.color?.name?.let { LiturgicalColor.fromName(it) }
-                                ?: LiturgicalColor.GREEN,
-                            optionalMemorials = data.propers.let { optionalMemorials ->
-                                if (optionalMemorials.isNotEmpty()) {
-                                    FeastsUiState(
-                                        title = "Optional Memorials",
-                                        feasts = optionalMemorials.mapNotNull { it.title }
-                                    )
-                                } else {
-                                    null
-                                }
+                            title = data.title,
+                            optionalMemorials = data.secondaryCelebrations.map {
+                                FeastsUiState(title = it.rankTitle, feasts = it.titles)
                             },
+                            readings =
+                                ListCollectionUiState(
+                                    header = data.readingSections.sectionTitle,
+                                    isExpanded = if (data.readingSections.subSections.size > 1) false else null,
+                                    items = data.readingSections.subSections.mapIndexed { i, it ->
+                                        ListCollectionItemUiState(
+                                            subHeader = if (data.readingSections.subSections.size > 1) it.sectionSubtitle else null,
+                                            rows = it.readingTitles.map { j ->
+                                                TextRow(j.title, j.verses)
+                                            },
+                                            link = it.link,
+                                            showOnCollapsed = i == 0
+                                        )
+                                    }
+                                ),
+                            liturgyOfHours = ListCollectionUiState(
+                                header = data.liturgyHours.sectionTitle,
+                                isExpanded = false,
+                                items = data.liturgyHours.hours.map {
+                                    ListCollectionItemUiState(
+                                        subHeader = null,
+                                        rows = listOf(
+                                            TextRow(
+                                                it.id.novusLabel,
+                                                "${it.id.timeStart.toMeridianTime()} - ${it.id.timeEnd.toMeridianTime()}"
+                                            )
+                                        ),
+                                        link = it.link,
+                                        showOnCollapsed = it.id.contains(currTime)
+                                    )
+                                }
+                            ),
+                            rosary = ListCollectionUiState(
+                                header = data.rosary.sectionTitle,
+                                isExpanded = null,
+                                items = listOf(
+                                    ListCollectionItemUiState(
+                                        subHeader = data.rosary.rosary.mysteryTitle,
+                                        link = data.rosary.rosary.link,
+                                        rows = data.rosary.rosary.mysteries.map {
+                                            TextRow(
+                                                title = null,
+                                                text = it,
+                                            )
+                                        }
+                                    )
+                                )
+                            )
                         )
                     }
-
-                    //update office of readings
-//                    viewModelScope.launch {
-//                        getOfficeOfReadingsListItemUseCase(currDate).let { newItem ->
-//                            _uiState.update {
-//                                it.copy(officeOfReadings = newItem)
-//                            }
-//                        }
-//                    }
-
-                    //update readings
-                    viewModelScope.launch {
-                        getReadingsListItemUseCase(currDate).let { newItem ->
-                            _uiState.update {
-                                it.copy(readings = newItem)
-                            }
-                        }
-                    }
-
-                    viewModelScope.launch {
-                        getLiturgyOfHoursListItemUseCase(
-                            currDate,
-                            isExpanded = uiState.value.liturgyOfHours?.isExpanded == true
-                        ).let { newItem ->
-                            _uiState.update {
-                                uiState.value.copy(liturgyOfHours = newItem)
-                            }
-                        }
-                    }
-
                     _uiState.update {
                         _uiState.value.copy(isLoading = false)
                     }
-                }
-                .onError { data ->
+                }.onError { data ->
                     println("***** ERROR $data")
                     println("ERROR!!!!!!!")
                     _uiState.update { _ ->
@@ -143,7 +147,7 @@ class MainViewModel(
         }
     }
 
-    //////////////////////////////// Click Handlers ////////////////////////////////
+//////////////////////////////// Click Handlers ////////////////////////////////
 
     fun onSettingsClicked() {
         _uiStatus.update {
@@ -213,6 +217,33 @@ class MainViewModel(
         return date >= earliestDate && date <= furthestDate
     }
 
+    private fun updateLiturgyOfTheHours() {
+        currData?.let { data ->
+            val currTime =
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
+            _uiState.update {
+                it.copy(
+                    liturgyOfHours = ListCollectionUiState(
+                        header = data.liturgyHours.sectionTitle,
+                        isExpanded = false,
+                        items = data.liturgyHours.hours.map { hour ->
+                            ListCollectionItemUiState(
+                                subHeader = null,
+                                rows = listOf(
+                                    TextRow(
+                                        hour.id.novusLabel,
+                                        "${hour.id.timeStart.toMeridianTime()} - ${hour.id.timeEnd.toMeridianTime()}"
+                                    )
+                                ),
+                                link = hour.link,
+                                showOnCollapsed = hour.id.contains(currTime)
+                            )
+                        }
+                    ),
+                )
+            }
+        }
+    }
 
     private fun millisToLocalDate(millis: Long): LocalDate {
         val days = millis.toDuration(DurationUnit.MILLISECONDS)
@@ -229,6 +260,8 @@ class MainViewModel(
             today = newToday
             currDate = today
             retrieveData()
+        } else {
+            updateLiturgyOfTheHours()
         }
     }
 }

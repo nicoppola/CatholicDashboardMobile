@@ -29,7 +29,7 @@ val tertiaryDark = Color(0x66BB6A)
 val primaryLight = Color(0xFFF0F0F3)
 val onPrimaryLight = Color(0xFF0E0E0E)
 val primaryContainerLight = Color(0xFFFCFCFF)
-val shimmerLoadToLight = Color(0xFFF8F8FA)
+val shimmerLoadToLight = Color(0xFFEEEEF3)
 val onPrimaryContainerLight = Color(0xFF1B1B1B)
 val tertiaryLight = Color(0x66BB6A)
 

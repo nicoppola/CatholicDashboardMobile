@@ -9,12 +9,7 @@ import networking.MyClient
 import util.NetworkError
 import util.Result
 
-interface MainRepository {
-    suspend fun retrieveData(date: LocalDate): Result<CalendarData.Day, NetworkError>
-    suspend fun retrieveCachedData(date: LocalDate): CalendarData.Day?
-}
-
-private val lru = mutableMapOf<String, CalendarData.Day>()
+private val lru = mutableMapOf<String, DayData>()
 
 @OptIn(FormatStringsInDatetimeFormats::class)
 private fun LocalDate.apiFormat(): String {
@@ -23,17 +18,17 @@ private fun LocalDate.apiFormat(): String {
     }.format(this)
 }
 
-class DefaultMainRepository(
+class V2MainRepository(
     private val myRemoteData: MyClient,
-) : MainRepository {
-    override suspend fun retrieveData(date: LocalDate): Result<CalendarData.Day, NetworkError> =
+) {
+    suspend fun retrieveData(date: LocalDate): util.Result<DayData, NetworkError> =
         with(Dispatchers.IO) {
             val formattedDate = date.apiFormat()
             val cache = lru[formattedDate]
             return if (cache != null) {
-                return Result.Success(cache)
+                return util.Result.Success(cache)
             } else {
-                val result = myRemoteData.getDate(formattedDate)
+                val result = myRemoteData.getData(formattedDate)
                 if (result is Result.Success) {
                     lru[formattedDate] = result.data
                 }
@@ -41,7 +36,7 @@ class DefaultMainRepository(
             }
         }
 
-    override suspend fun retrieveCachedData(date: LocalDate): CalendarData.Day? {
+    suspend fun retrieveCachedData(date: LocalDate): DayData? {
         val formattedDate = date.apiFormat()
         return lru[formattedDate]
     }

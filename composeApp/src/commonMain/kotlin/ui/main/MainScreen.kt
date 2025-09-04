@@ -76,8 +76,11 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import ui.theme.DarkColorScheme
+import ui.theme.LiturgicalColor
 import ui.theme.MyDatePickerColors
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -368,7 +371,7 @@ fun MainContent(
                 onClick = onPreviousDateButton,
                 enabled = uiState.canSelectPrevious
             ) {
-                if(uiState.canSelectPrevious){
+                if (uiState.canSelectPrevious) {
                     Icon(
                         tint = MaterialTheme.colorScheme.onPrimary,
                         painter = painterResource(Res.drawable.keyboard_arrow_left),
@@ -388,7 +391,7 @@ fun MainContent(
                 onClick = onNextDateButton,
                 enabled = uiState.canSelectNext
             ) {
-                if(uiState.canSelectNext) {
+                if (uiState.canSelectNext) {
                     Icon(
                         tint = MaterialTheme.colorScheme.onPrimary,
                         painter = painterResource(Res.drawable.keyboard_arrow_right),
@@ -412,7 +415,8 @@ fun MainContent(
             text = uiState.title
         )
 
-        uiState.optionalMemorials?.let {
+        //todo loop through
+        uiState.optionalMemorials.firstOrNull()?.let {
             FeastsSection(it)
         }
 
@@ -432,7 +436,7 @@ fun MainContent(
                 onHeaderButton = onLitHoursButton,
             )
         }
-        uiState.officeOfReadings?.let {
+        uiState.rosary?.let {
             ListCollection(
                 uiState = it,
                 onNavUrl = onNavUrl,
@@ -587,5 +591,93 @@ fun LinkCard(
                 )
             }
         }
+    }
+
+}
+
+@Preview
+@Composable
+private fun PreviewMainDark() {
+    MaterialTheme(colorScheme = DarkColorScheme) {
+        MainScaffold(
+            uiState = MainUiState(
+                date = "December 22, 2024",
+                title = "Fourth Sunday of Advent",
+                color = LiturgicalColor.VIOLET,
+                optionalMemorials = listOf(
+                    FeastsUiState(
+                        title = "Optional Memorials",
+                        feasts = listOf(
+                            "Saint Faustina Kowalska, virgin",
+                            "Blessed Francis Xavier Seelos, Priest"
+                        )
+                    )
+                ),
+                upcoming = null,
+                readings =
+                    ListCollectionUiState(
+                        header = "Daily Readings",
+                        isExpanded = true,
+                        items = listOf(
+                            ListCollectionItemUiState(
+                                subHeader = "Year C Readings",
+                                rows = listOf(
+                                    TextRow("Reading 1:", "Ez 2:8—3:4"),
+                                    TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
+                                    TextRow("Gospel:", "Matt 18:1-5, 10, 12-14")
+                                ),
+                                link = "LINK",
+                            ),
+                            ListCollectionItemUiState(
+                                subHeader = "Scrutenies Year A Readings",
+                                rows = listOf(
+                                    TextRow("Reading 1:", "Ez 2:8—3:4"),
+                                    TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
+                                    TextRow("Gospel:", "Matt 18:1-5, 10, 12-14")
+                                ),
+                                link = "LINK",
+                            )
+                        ),
+                    ),
+                liturgyOfHours =
+                    ListCollectionUiState(
+                        header = "Liturgy of the Hours",
+                        isExpanded = false,
+                        items = listOf(
+                            ListCollectionItemUiState(
+                                rows = listOf(
+                                    TextRow("Evening Prayer", "4:00p - 6:00p"),
+                                ),
+                                link = "LINK",
+                            )
+                        ),
+                    ),
+                rosary = ListCollectionUiState(
+                    header = "Rosary",
+                    isExpanded = null,
+                    items = listOf(
+                        ListCollectionItemUiState(
+                            subHeader = "The Joyful Mysteries",
+                            rows = listOf(
+                                TextRow(null, "The Annunciation"),
+                                TextRow(null, "The Visitation"),
+                                TextRow(null, "The Nativity"),
+                                TextRow(null, "The Presentation"),
+                                TextRow(null, "The Finding of Jesus in the Temple"),
+                            ),
+                            link = "LINK",
+                        )
+                    ),
+                ),
+            ),
+            setStatusBarColor = { _ -> },
+            onSettingsClicked = {},
+            onRefresh = { },
+            onNextDate = { },
+            onPreviousDate = { },
+            onToday = {},
+            onLitHoursExpandBtn = {},
+            onReadingsExpandBtn = {},
+        )
     }
 }
