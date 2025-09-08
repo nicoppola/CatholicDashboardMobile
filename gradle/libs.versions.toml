@@ -20,7 +20,7 @@ composeWebviewMultiplatform = "2.0.3"
 
 #Kotlin
 kotlin = "2.2.10"
-kotlinxDatetime = "0.7.1"
+kotlinxDatetime = "0.7.1-0.6.x-compat"
 kotlinxSerializationJson = "1.9.0"
 decompose = "2.2.3"
 extensionsComposeJetbrains = "2.2.2-compose-experimental"
