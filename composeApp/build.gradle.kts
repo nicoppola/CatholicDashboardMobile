@@ -102,8 +102,8 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
 
         val versionMajor = 1
-        val versionMinor = 0
-        val versionPatch = 1
+        val versionMinor = 2
+        val versionPatch = 0
 
         versionCode = versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100
         versionName = "$versionMajor.$versionMinor.$versionPatch"

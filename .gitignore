@@ -1,6 +1,7 @@
 .DS_Store
 .kotlin/
 iosApp/iosApp/Assets.xcassets/.DS_Store
+iosApp/.DS_Store
 keystoreAndroid
 
 # Gradle files

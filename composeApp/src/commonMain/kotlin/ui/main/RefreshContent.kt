@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ui.util.shimmerEffect
@@ -73,11 +74,12 @@ fun RefreshContent() {
 
         // Liturgy of Hours
         RefreshHeader()
+        RefreshCard(bottomPadding = false)
         RefreshCard()
 
-        // Office of Readings
+        // Rosary
         RefreshHeader()
-        RefreshCard()
+        RefreshCard(numRows = 5)
     }
 }
 
@@ -103,11 +105,11 @@ private fun RefreshHeader(){
 }
 
 @Composable
-private fun RefreshCard(numRows: Int = 1){
+private fun RefreshCard(numRows: Int = 1, bottomPadding: Boolean = true){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 20.dp)
+            .padding(bottom = if(bottomPadding) 20.dp else 0.dp)
             .clip(RoundedCornerShape(8.dp))
             .shimmerEffect(),
         )
