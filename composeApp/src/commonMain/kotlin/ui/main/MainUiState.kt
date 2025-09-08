@@ -19,9 +19,9 @@ data class MainUiState @OptIn(ExperimentalTime::class) constructor(
     val color: LiturgicalColor = LiturgicalColor.GREEN,
     val optionalMemorials: List<FeastsUiState> = emptyList(),
     val upcoming: FeastsUiState? = null,
-    val readings: ListCollectionUiState? = null,
-    val liturgyOfHours: ListCollectionUiState? = null,
-    val rosary: ListCollectionUiState? = null,
+    val readings: SectionUiState? = null,
+    val liturgyOfHours: SectionUiState? = null,
+    val rosary: SectionUiState? = null,
     val isLoading: Boolean = false,
     val canSelectNext: Boolean = true,
     val canSelectPrevious: Boolean = true,
@@ -32,13 +32,13 @@ data class FeastsUiState(
     val feasts: List<String> = emptyList(),
 )
 
-data class ListCollectionUiState(
+data class SectionUiState(
     val header: String,
     val isExpanded: Boolean? = null,
-    val items: List<ListCollectionItemUiState>,
+    val items: List<SectionItem>,
 )
 
-data class ListCollectionItemUiState(
+data class SectionItem(
     val subHeader: String? = null,
     val rows: List<TextRow>,
     val link: String? = null,

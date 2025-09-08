@@ -22,8 +22,8 @@ class DefaultMyClient(
         val response = try {
             httpClient.get(
                 //ie date = "2015/6/27"
-//                urlString = "https://catholicdashboardapi.onrender.com/v2/novus/$date"
-                urlString = "http://10.0.2.2:8080/v2/novus/$date"
+                urlString = "https://catholicdashboardapi.onrender.com/v2/novus/$date"
+//                urlString = "http://10.0.2.2:8080/v2/novus/$date"
             )
         } catch (e: UnresolvedAddressException) {
             return Result.Error(NetworkError.NO_INTERNET)

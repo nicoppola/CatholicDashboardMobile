@@ -34,7 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -56,7 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -72,8 +70,6 @@ import com.final_class.webview_multiplatform_mobile.webview.settings.android.And
 import com.final_class.webview_multiplatform_mobile.webview.settings.android.urlBarHidingEnabled
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.IosWebViewModifier
 import com.final_class.webview_multiplatform_mobile.webview.settings.ios.barCollapsingEnabled
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import navigation.MainComponent
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -467,7 +463,7 @@ fun FeastsSection(
 
 @Composable
 fun ListCollection(
-    uiState: ListCollectionUiState,
+    uiState: SectionUiState,
     onNavUrl: (String, String) -> Unit,
     onHeaderButton: (Boolean) -> Unit = {},
 ) {
@@ -529,7 +525,7 @@ fun ListHeader(
 @Composable
 fun LinkCard(
     modifier: Modifier = Modifier,
-    uiState: ListCollectionItemUiState,
+    uiState: SectionItem,
     onNavUrl: (String, String) -> Unit,
 ) {
     Card(
@@ -615,11 +611,11 @@ private fun PreviewMainDark() {
                 ),
                 upcoming = null,
                 readings =
-                    ListCollectionUiState(
+                    SectionUiState(
                         header = "Daily Readings",
                         isExpanded = true,
                         items = listOf(
-                            ListCollectionItemUiState(
+                            SectionItem(
                                 subHeader = "Year C Readings",
                                 rows = listOf(
                                     TextRow("Reading 1:", "Ez 2:8—3:4"),
@@ -628,7 +624,7 @@ private fun PreviewMainDark() {
                                 ),
                                 link = "LINK",
                             ),
-                            ListCollectionItemUiState(
+                            SectionItem(
                                 subHeader = "Scrutenies Year A Readings",
                                 rows = listOf(
                                     TextRow("Reading 1:", "Ez 2:8—3:4"),
@@ -640,11 +636,11 @@ private fun PreviewMainDark() {
                         ),
                     ),
                 liturgyOfHours =
-                    ListCollectionUiState(
+                    SectionUiState(
                         header = "Liturgy of the Hours",
                         isExpanded = false,
                         items = listOf(
-                            ListCollectionItemUiState(
+                            SectionItem(
                                 rows = listOf(
                                     TextRow("Evening Prayer", "4:00p - 6:00p"),
                                 ),
@@ -652,11 +648,11 @@ private fun PreviewMainDark() {
                             )
                         ),
                     ),
-                rosary = ListCollectionUiState(
+                rosary = SectionUiState(
                     header = "Rosary",
                     isExpanded = null,
                     items = listOf(
-                        ListCollectionItemUiState(
+                        SectionItem(
                             subHeader = "The Joyful Mysteries",
                             rows = listOf(
                                 TextRow(null, "The Annunciation"),

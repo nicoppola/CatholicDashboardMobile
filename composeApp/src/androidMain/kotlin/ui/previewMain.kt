@@ -21,8 +21,8 @@ import org.jetbrains.compose.resources.painterResource
 import ui.main.FeastsUiState
 import ui.main.LinkCard
 import ui.main.ListCollection
-import ui.main.ListCollectionItemUiState
-import ui.main.ListCollectionUiState
+import ui.main.SectionItem
+import ui.main.SectionUiState
 import ui.main.MainScaffold
 import ui.main.MainUiState
 import ui.main.RefreshContent
@@ -143,11 +143,11 @@ private fun PreviewMainLight() {
                 )),
                 upcoming = null,
                 readings =
-                ListCollectionUiState(
+                SectionUiState(
                     header = "Daily Readings",
                     isExpanded = null,
                     items = listOf(
-                        ListCollectionItemUiState(
+                        SectionItem(
                             rows = listOf(
                                 TextRow("Reading 1:", "Ez 2:8—3:4"),
                                 TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
@@ -157,11 +157,11 @@ private fun PreviewMainLight() {
                     ),
                 ),
                 liturgyOfHours =
-                ListCollectionUiState(
+                SectionUiState(
                     header = "Liturgy of the Hours",
                     isExpanded = false,
                     items = listOf(
-                        ListCollectionItemUiState(
+                        SectionItem(
                             rows = listOf(
                                 TextRow("Evening Prayer", "4:00p - 6:00p"),
                             )
@@ -199,11 +199,11 @@ private fun PreviewMainDark() {
                 )),
                 upcoming = null,
                 readings =
-                ListCollectionUiState(
+                SectionUiState(
                     header = "Daily Readings",
                     isExpanded = true,
                     items = listOf(
-                        ListCollectionItemUiState(
+                        SectionItem(
                             subHeader = "Year C Readings",
                             rows = listOf(
                                 TextRow("Reading 1:", "Ez 2:8—3:4"),
@@ -212,7 +212,7 @@ private fun PreviewMainDark() {
                             ),
                             link = "LINK",
                         ),
-                        ListCollectionItemUiState(
+                        SectionItem(
                             subHeader = "Scrutenies Year A Readings",
                             rows = listOf(
                                 TextRow("Reading 1:", "Ez 2:8—3:4"),
@@ -224,11 +224,11 @@ private fun PreviewMainDark() {
                     ),
                 ),
                 liturgyOfHours =
-                ListCollectionUiState(
+                SectionUiState(
                     header = "Liturgy of the Hours",
                     isExpanded = false,
                     items = listOf(
-                        ListCollectionItemUiState(
+                        SectionItem(
                             rows = listOf(
                                 TextRow("Evening Prayer", "4:00p - 6:00p"),
                             ),
@@ -236,11 +236,11 @@ private fun PreviewMainDark() {
                         )
                     ),
                 ),
-                rosary = ListCollectionUiState(
+                rosary = SectionUiState(
                     header = "Rosary",
                     isExpanded = null,
                     items = listOf(
-                        ListCollectionItemUiState(
+                        SectionItem(
                             subHeader = "The Joyful Mysteries",
                             rows = listOf(
                                 TextRow(null, "The Annunciation"),
@@ -270,11 +270,11 @@ private fun PreviewMainDark() {
 @Composable
 private fun PreviewTest() {
     ListCollection(
-        uiState = ListCollectionUiState(
+        uiState = SectionUiState(
             header = "Daily Readings",
             isExpanded = null,
             items = listOf(
-                ListCollectionItemUiState(
+                SectionItem(
                     rows = listOf(
                         TextRow("Reading 1:", "Ez 2:8—3:4"),
                         TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),
@@ -292,7 +292,7 @@ private fun PreviewTest() {
 @Composable
 private fun PreviewTestTwo() {
     LinkCard(
-        uiState = ListCollectionItemUiState(
+        uiState = SectionItem(
             rows = listOf(
                 TextRow("Reading 1:", "Ez 2:8—3:4"),
                 TextRow("Psalm:", "119:14, 24, 72, 103, 111, 131"),

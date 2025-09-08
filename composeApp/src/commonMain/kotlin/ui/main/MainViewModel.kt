@@ -72,11 +72,11 @@ class MainViewModel(
                                 FeastsUiState(title = it.rankTitle, feasts = it.titles)
                             },
                             readings =
-                                ListCollectionUiState(
+                                SectionUiState(
                                     header = data.readingSections.sectionTitle,
                                     isExpanded = if (data.readingSections.subSections.size > 1) false else null,
                                     items = data.readingSections.subSections.mapIndexed { i, it ->
-                                        ListCollectionItemUiState(
+                                        SectionItem(
                                             subHeader = if (data.readingSections.subSections.size > 1) it.sectionSubtitle else null,
                                             rows = it.readingTitles.map { j ->
                                                 TextRow(j.title, j.verses)
@@ -86,11 +86,11 @@ class MainViewModel(
                                         )
                                     }
                                 ),
-                            liturgyOfHours = ListCollectionUiState(
+                            liturgyOfHours = SectionUiState(
                                 header = data.liturgyHours.sectionTitle,
                                 isExpanded = false,
                                 items = data.liturgyHours.hours.map {
-                                    ListCollectionItemUiState(
+                                    SectionItem(
                                         subHeader = null,
                                         rows = listOf(
                                             TextRow(
@@ -103,11 +103,11 @@ class MainViewModel(
                                     )
                                 }
                             ),
-                            rosary = ListCollectionUiState(
+                            rosary = SectionUiState(
                                 header = data.rosary.sectionTitle,
                                 isExpanded = null,
                                 items = listOf(
-                                    ListCollectionItemUiState(
+                                    SectionItem(
                                         subHeader = data.rosary.rosary.mysteryTitle,
                                         link = data.rosary.rosary.link,
                                         rows = data.rosary.rosary.mysteries.map {
@@ -225,11 +225,11 @@ class MainViewModel(
                 Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
             _uiState.update {
                 it.copy(
-                    liturgyOfHours = ListCollectionUiState(
+                    liturgyOfHours = SectionUiState(
                         header = data.liturgyHours.sectionTitle,
                         isExpanded = false,
                         items = data.liturgyHours.hours.map { hour ->
-                            ListCollectionItemUiState(
+                            SectionItem(
                                 subHeader = null,
                                 rows = listOf(
                                     TextRow(
