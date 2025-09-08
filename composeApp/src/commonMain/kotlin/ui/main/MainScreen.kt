@@ -560,17 +560,16 @@ fun LinkCard(
                     uiState.rows.forEach {
                         Row(modifier = Modifier.wrapContentSize()) {
                             val text = buildAnnotatedString {
-                                it.title?.let {
+                                it.title?.let { titleTxt ->
                                     withStyle(
                                         style = SpanStyle(
                                             fontWeight = FontWeight.Medium,
                                         )
                                     ) {
-                                        append(it)
+                                        append("$titleTxt:  ")
                                     }
-                                    append(" ")
                                 }
-                                it.text?.let { append(it) }
+                                it.text?.let { txt -> append(txt) }
                             }
                             Text(text)
                         }
