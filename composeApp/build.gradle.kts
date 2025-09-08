@@ -132,7 +132,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.i18n)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.runtime.android)

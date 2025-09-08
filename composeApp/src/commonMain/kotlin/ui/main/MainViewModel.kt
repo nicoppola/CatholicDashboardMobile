@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.DateTimeUnit.Companion.MONTH
@@ -23,9 +22,12 @@ import util.contains
 import util.onError
 import util.onSuccess
 import util.toMeridianTime
+import kotlin.time.Clock
 import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
 
+@OptIn(ExperimentalTime::class)
 class MainViewModel(
     private val newRepo: V2MainRepository,
     private val getTodayIconUseCase: GetTodayIconUseCase,

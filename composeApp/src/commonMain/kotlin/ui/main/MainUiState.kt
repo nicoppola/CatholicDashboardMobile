@@ -2,14 +2,15 @@ package ui.main
 
 import com.coppola.catholic.Res
 import com.coppola.catholic.baseline_calendar_today_24
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import ui.theme.LiturgicalColor
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
-data class MainUiState(
+data class MainUiState @OptIn(ExperimentalTime::class) constructor(
     val isToday: Boolean = true,
     val todayIcon: DrawableResource = Res.drawable.baseline_calendar_today_24,
     val date: String = "",

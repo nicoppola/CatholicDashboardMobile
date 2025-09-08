@@ -5,39 +5,38 @@ android-minSdk = "26"
 android-targetSdk = "35"
 
 # Androidx
-compose = "1.7.8"
-androidx-activityCompose = "1.9.3"
-material3Android = "1.3.1"
-datastore = "1.1.4"
+compose = "1.9.0"
+androidx-activityCompose = "1.10.1"
+material3Android = "1.3.2"
+datastore = "1.1.7"
 core-splashscreen = "1.0.1"
-coreI18n = "1.0.0-alpha01"
 
 # Lifecycle
-androidxLifecycle = "2.8.7"
-androidx-lifecycle-jetbrains = "2.8.4"
+androidxLifecycle = "2.9.3"
+androidx-lifecycle-jetbrains = "2.9.3"
 
-compose-plugin = "1.7.3"
-composeWebviewMultiplatform = "1.9.20"
+compose-plugin = "1.8.2"
+composeWebviewMultiplatform = "2.0.3"
 
 #Kotlin
-kotlin = "2.1.0"
-kotlinxDatetime = "0.6.1"
-kotlinxSerializationJson = "1.7.1"
+kotlin = "2.2.10"
+kotlinxDatetime = "0.7.1"
+kotlinxSerializationJson = "1.9.0"
 decompose = "2.2.3"
 extensionsComposeJetbrains = "2.2.2-compose-experimental"
 
 # Http Client
-ktor = "2.3.12"
+ktor = "3.2.3"
 
 # Dependency Injection
-koin = "3.6.0-Beta4"
-koinComposeMultiplatform = "1.2.0-Beta4"
+koin = "4.1.1"
+koinComposeMultiplatform = "4.1.1"
 
 # Webview
-webviewMultiplatformMobile = "1.1.0"
+webviewMultiplatformMobile = "1.2.0"
 
-navigationCompose = "2.8.0-alpha02"
-runtimeAndroid = "1.7.8"
+navigationCompose = "2.8.0-alpha13"
+runtimeAndroid = "1.9.0"
 
 [libraries]
 # Androidx
@@ -47,7 +46,6 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-datastore = { module = "androidx.datastore:datastore-core-okio", version.ref = "datastore"}
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
-androidx-core-i18n = { group = "androidx.core", name = "core-i18n", version.ref = "coreI18n" }
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 
 # Lifecycle
